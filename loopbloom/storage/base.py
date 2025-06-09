@@ -1,6 +1,7 @@
 """Storage abstraction.
 
-CLI, services, and core modules depend *only* on this protocol, never on concrete IO.
+CLI, services, and core modules depend *only* on this protocol.
+Concrete IO implementations should never leak into higher layers.
 """
 
 from __future__ import annotations
@@ -20,8 +21,8 @@ class Storage(Protocol):
     def load(self) -> List[GoalArea]:
         """Return all goal areas from disk (or remote).
 
-        Implementations must raise ``StorageError`` on unrecoverable errors and return
-        ``[]`` on first-run / no-file conditions.
+        Implementations must raise ``StorageError`` on unrecoverable errors and
+        return ``[]`` on first-run or if the data file is missing.
         """
 
     def save(self, goals: List[GoalArea]) -> None:  # noqa: D401

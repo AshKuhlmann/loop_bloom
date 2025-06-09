@@ -19,7 +19,13 @@ def test_checkin_success_ratio() -> None:
     """Quick sanity check on check-in accumulation."""
     mg = MicroGoal(name="Test")
     mg.checkins.extend(
-        [Checkin(date=date.today() - timedelta(days=i), success=True) for i in range(5)]
+        [
+            Checkin(
+                date=date.today() - timedelta(days=i),
+                success=True,
+            )
+            for i in range(5)
+        ]
     )
     assert len(mg.checkins) == 5
 
