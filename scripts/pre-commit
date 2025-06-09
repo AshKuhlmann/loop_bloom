@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+flake8
+mypy loop_bloom
+PYTHONPATH=. pytest --cov=loop_bloom --cov-fail-under=80 -q
