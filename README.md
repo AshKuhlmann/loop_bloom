@@ -199,7 +199,7 @@ Coping scripts live in `microhabits/data/*.yml`; they drive `micro cope run <nam
 flowchart TD
   Checkin -- emits --> EventBus
   EventBus --> Progression["progression.eval()"]
-  Progression -->|>= 80% / 14d| AdvanceBanner
+  Progression -->|eighty percent consistency for two weeks| AdvanceBanner
   Progression -->|otherwise| CompassionateNudge
 
 ```
