@@ -197,10 +197,11 @@ Coping scripts live in `microhabits/data/*.yml`; they drive `micro cope run <nam
 
 ```mermaid
 flowchart TD
-    Checkin -- emits --> EventBus
-    EventBus --> Progression[progression.eval()]
-    Progression -->|≥ 80 % / 14d| AdvanceBanner
-    Progression -->|otherwise| CompassionateNudge
+  Checkin -- emits --> EventBus
+  EventBus --> Progression["progression.eval()"]
+  Progression -->|>= 80% / 14d| AdvanceBanner
+  Progression -->|otherwise| CompassionateNudge
+
 ```
 
 Parameters `threshold` and `window` are user‑configurable.
