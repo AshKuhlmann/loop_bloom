@@ -50,16 +50,16 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 
 ## 2  Feature Highlights
 
-| Area                    | What you get                                                       |                                      |
-| ----------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| **Hierarchical Goals**  | `goal → phase → micro` with reorder, cancel, edit.                 |                                      |
-| **Fast Check-ins**      | `checkin` records ✓/✕ & note in <10 s—CLI responds with self-talk. |                                      |
-| **Smart Progression**   | ≥ 80 % over 14 days triggers *advance* prompt.                     |                                      |
-| **Guided Coping**       | `cope` launches YAML Q\&A scripts for overwhelm.                   |                                      |
-| **Gentle Banners**      | `summary` prints streaks, nudges, celebrations. Optional `--goal`. |                                      |
-| **Exports**             | \`export csv                                                       | json\` for spreadsheets or BI tools. |
-| **Pluggable Storage**   | JSON by default; SQLite plugin for power-users.                    |                                      |
-| **100 % Test Coverage** | Every line & branch, enforced by CI.                               |                                      |
+| Area                    | What you get                                                       | 
+| ----------------------- | ------------------------------------------------------------------ | 
+| **Hierarchical Goals**  | `goal → phase → micro` with reorder, cancel, edit.                 | 
+| **Fast Check-ins**      | `checkin` records ✓/✕ & note in <10 s—CLI responds with self-talk. | 
+| **Smart Progression**   | ≥ 80 % over 14 days triggers *advance* prompt.                     | 
+| **Guided Coping**       | `cope` launches YAML Q\&A scripts for overwhelm.                   | 
+| **Gentle Banners**      | `summary` prints streaks, nudges, celebrations. Optional `--goal`. | 
+| **Exports**             | \`export csv/json                                                  | 
+| **Pluggable Storage**   | JSON by default; SQLite plugin for power-users.                    | 
+| **100 % Test Coverage** | Every line & branch, enforced by CI.                               | 
 
 <a id="install"></a>
 
@@ -235,5 +235,3 @@ PRs welcome—see `CONTRIBUTING.md`.
 ## 16  Changelog
 
 See [`CHANGELOG.md`](CHANGELOG.md).
-
-```
