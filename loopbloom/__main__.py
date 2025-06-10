@@ -1,12 +1,18 @@
-"""Entry-point stub – will be expanded in Phase 2."""
+"""LoopBloom CLI entry point."""
 
 import click
 
-
-@click.group(help="Loop Bloom – Phase 0 stub")
-def cli() -> None:  # noqa: D401
-    """Root command group."""
+from loopbloom.cli.goal import goal
 
 
-if __name__ == "__main__":  # pragma: no cover
+@click.group()
+def cli() -> None:
+    """LoopBloom – tiny habits, big momentum."""
+    pass
+
+
+# Register sub-commands
+cli.add_command(goal)
+
+if __name__ == "__main__":
     cli()
