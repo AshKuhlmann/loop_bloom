@@ -49,9 +49,11 @@ def _set(key: str, value: str) -> None:
         try:
             cast = float(value)
         except ValueError:
-            cast = (
-                value.lower() == "true" if value.lower() in ("true", "false") else value
-            )
+            lower = value.lower()
+            if lower in ("true", "false"):
+                cast = lower == "true"
+            else:
+                cast = value
     d[parts[-1]] = cast
     cfg.save(conf)
     click.echo("[green]Saved.")
