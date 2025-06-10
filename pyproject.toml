@@ -30,6 +30,7 @@ black = "*"
 mypy = "*"
 beartype = "*"
 types-PyYAML = "*"
+tomli-w = "*"
 
 [tool.poetry.scripts]
 micro = "loopbloom.__main__:cli"
