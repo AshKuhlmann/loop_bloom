@@ -7,7 +7,8 @@ import random
 from pathlib import Path
 from typing import Dict, List
 
-TALKS_PATH = Path(__file__).resolve().parent.parent / "data" / "default_talks.json"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+TALKS_PATH = DATA_DIR / "default_talks.json"
 
 
 class TalkPool:

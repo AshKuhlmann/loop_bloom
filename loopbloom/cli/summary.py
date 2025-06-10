@@ -17,8 +17,16 @@ console = Console()
 WINDOW = 14  # days
 
 
-@click.command(name="summary", help="Show overall or per-goal progress banner.")
-@click.option("--goal", "goal_name", default=None, help="Show detail for one goal.")
+@click.command(
+    name="summary",
+    help="Show overall or per-goal progress banner.",
+)
+@click.option(
+    "--goal",
+    "goal_name",
+    default=None,
+    help="Show detail for one goal.",
+)
 @with_goals
 def summary(ctx, goal_name: str | None, goals: List[GoalArea]):  # type: ignore
     """Display a progress overview or detail view for a specific goal."""

@@ -12,7 +12,11 @@ def test_checkin_generates_peptalk_and_summary(tmp_path) -> None:
 
     # Setup – create goal/phase/micro via Phase 2 commands
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
-    runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Foundation"], env=env)
+    runner.invoke(
+        cli,
+        ["goal", "phase", "add", "Exercise", "Foundation"],
+        env=env,
+    )
     runner.invoke(
         cli,
         ["goal", "micro", "add", "Exercise", "Foundation", "Walk 5 min"],

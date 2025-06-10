@@ -10,7 +10,10 @@ from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
 
 
-@click.command(name="checkin", help="Record today’s success or skip for a goal.")
+@click.command(
+    name="checkin",
+    help="Record today’s success or skip for a goal.",
+)
 @click.argument("goal_name")
 @click.option("--success/--skip", default=True, help="Mark success or skip.")
 @click.option("--note", default="", help="Optional note.")
@@ -24,7 +27,10 @@ def checkin(
 ) -> None:
     """Append a Checkin to the current active micro-goal of GOAL_NAME."""
     # Locate goal
-    goal = next((g for g in goals if g.name.lower() == goal_name.lower()), None)
+    goal = next(
+        (g for g in goals if g.name.lower() == goal_name.lower()),
+        None,
+    )
     if not goal:
         click.echo("[red]Goal not found.")
         return
