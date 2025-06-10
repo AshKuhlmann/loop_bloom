@@ -15,7 +15,10 @@ def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
 
 def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
     """Return phase from ``goal`` matching ``name`` if found."""
-    return next((p for p in goal.phases if p.name.lower() == name.lower()), None)
+    return next(
+        (p for p in goal.phases if p.name.lower() == name.lower()),
+        None,
+    )
 
 
 @click.group(name="goal", help="Manage goals, phases, and micro-habits.")
@@ -51,13 +54,21 @@ def goal_list(ctx: click.Context, goals: List[GoalArea]) -> None:
 @click.argument("name")
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
-def goal_rm(ctx: click.Context, name: str, yes: bool, goals: List[GoalArea]) -> None:
+def goal_rm(
+    ctx: click.Context,
+    name: str,
+    yes: bool,
+    goals: List[GoalArea],
+) -> None:
     """Remove a goal area."""
     g = _find_goal(goals, name)
     if not g:
         click.echo("[red]Goal not found.")
         return
-    if not yes and not click.confirm(f"Delete goal '{name}'?", default=False):
+    if not yes and not click.confirm(
+        f"Delete goal '{name}'?",
+        default=False,
+    ):
         return
     goals.remove(g)
     click.echo(f"[green]Deleted goal:[/] {name}")
@@ -115,7 +126,15 @@ def micro_add(
         click.echo("[red]Goal or phase not found.")
         return
     p.micro_goals.append(MicroGoal(name=micro_name.strip()))
-    click.echo(f"[green]Added micro-habit '{micro_name}' to {goal_name}/{phase_name}")
+    message = (
+        "[green]Added micro-habit '"
+        + micro_name
+        + "' to "
+        + goal_name
+        + "/"
+        + phase_name
+    )
+    click.echo(message)
 
 
 @micro.command(name="cancel")

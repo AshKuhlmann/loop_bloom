@@ -23,7 +23,7 @@ def save_goals(goals: List[GoalArea]) -> None:
 
 
 def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
-    """Decorator: load goals, pass to function, then save after."""  # noqa: D401
+    """Load goals for ``f`` then save afterwards."""  # noqa: D401
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         goals = load_goals()
