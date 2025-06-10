@@ -1,0 +1,8 @@
+id: overwhelmed
+title: Feeling Overwhelmed
+steps:
+  - prompt: "Identify the biggest stressor right now:"
+    store_as: stressor
+  - prompt: "Pick one micro-action to lighten it by 1%:"
+    store_as: action
+  - message: "Great job—action dispels anxiety. 💪"
