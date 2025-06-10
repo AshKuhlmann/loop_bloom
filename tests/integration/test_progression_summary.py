@@ -11,9 +11,8 @@ def _generate_success_history(ratio_target=0.85):
     checks = []
     successes = int(round(14 * ratio_target))
     for i in range(14):
-        checks.append(
-            Checkin(date=date.today() - timedelta(days=i), success=i < successes)
-        )
+        check_date = date.today() - timedelta(days=i)
+        checks.append(Checkin(date=check_date, success=i < successes))
     return checks
 
 
@@ -40,7 +39,11 @@ def test_summary_shows_advance_prompt(tmp_path):
 
     # Setup
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
-    runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Foundation"], env=env)
+    runner.invoke(
+        cli,
+        ["goal", "phase", "add", "Exercise", "Foundation"],
+        env=env,
+    )
     runner.invoke(
         cli,
         ["goal", "micro", "add", "Exercise", "Foundation", "Walk 5 min"],

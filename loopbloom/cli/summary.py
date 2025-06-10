@@ -59,7 +59,10 @@ def _overview(goals: List[GoalArea]) -> None:
         # find first active micro
         active = None
         for ph in g.phases:
-            active = next((m for m in ph.micro_goals if m.status == "active"), None)
+            active = next(
+                (m for m in ph.micro_goals if m.status == "active"),
+                None,
+            )
             if active:
                 break
         flag = "Advance?" if active and should_advance(active) else "\u2014"
@@ -86,4 +89,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     flag = "[green]Advance? (≥ 80 %)" if suggest else "✦"
     console.print(f"[bold]{g.name} \u2192 {mg.name}[/bold]")
     total = len(mg.checkins[-WINDOW:])
-    console.print(f"Success rate last 14\u00a0days: {successes}/{total}  {flag}")
+    console.print(
+        f"Success rate last 14\u00a0days: {successes}/{total}  ",
+        f"{flag}",
+    )

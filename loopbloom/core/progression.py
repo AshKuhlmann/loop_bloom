@@ -1,7 +1,7 @@
 """Automatic progression rule.
 
-If an active micro-habit hits ≥ `threshold` success ratio within the last `window` days,
-`should_advance()` returns True.
+If an active micro-habit hits ≥ `threshold` success ratio within the last
+`window` days, ``should_advance()`` returns ``True``.
 """
 
 from __future__ import annotations
