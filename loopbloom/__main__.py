@@ -6,7 +6,9 @@ import click
 from click import Command
 
 from loopbloom.cli.checkin import checkin
+from loopbloom.cli.config import config  # NEW
 from loopbloom.cli.cope import cope  # NEW
+from loopbloom.cli.export import export  # NEW
 from loopbloom.cli.goal import goal
 from loopbloom.cli.summary import summary
 
@@ -25,6 +27,8 @@ cli.add_command(goal)
 cli.add_command(cast(Command, checkin))  # type: ignore[redundant-cast]  # NEW
 cli.add_command(summary)  # NEW
 cli.add_command(cope)
+cli.add_command(config)
+cli.add_command(export)
 
 if __name__ == "__main__":
     cli()
