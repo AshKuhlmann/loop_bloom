@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import ContextManager, List
@@ -12,7 +13,9 @@ from pydantic.json import pydantic_encoder
 from loopbloom.core.models import GoalArea
 from loopbloom.storage.base import Storage, StorageError
 
-DEFAULT_PATH = Path.home() / ".loopbloom" / "data.json"
+DEFAULT_PATH = Path(
+    os.getenv("LOOPBLOOM_DATA_PATH", Path.home() / ".loopbloom" / "data.json")
+)
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
