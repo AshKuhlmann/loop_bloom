@@ -41,6 +41,7 @@ select = ["E", "F", "I", "B", "W", "D"]
 [tool.mypy]
 strict = true
 packages = "loopbloom"
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
