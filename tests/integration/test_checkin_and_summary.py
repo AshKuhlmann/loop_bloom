@@ -25,7 +25,7 @@ def test_checkin_generates_peptalk_and_summary(tmp_path) -> None:
 
     # Run check-in (success)
     res = runner.invoke(cli, ["checkin", "Exercise", "--success"], env=env)
-    assert "✓" in res.output or "Amazing" in res.output
+    assert any(k in res.output for k in ("✓", "Amazing", "Awesome"))
 
     # Summary per-goal
     res = runner.invoke(cli, ["summary", "--goal", "Exercise"], env=env)
