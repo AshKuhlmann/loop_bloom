@@ -38,7 +38,11 @@ class JSONStore(Storage):
         """Persist the entire goal graph atomically."""
         tmp_path: Path
         try:
-            with NamedTemporaryFile("w", delete=False, dir=self._path.parent) as tmp:
+            with NamedTemporaryFile(
+                "w",
+                delete=False,
+                dir=self._path.parent,
+            ) as tmp:
                 json.dump(goals, tmp, default=pydantic_encoder, indent=2)
                 tmp_path = Path(tmp.name)
             tmp_path.replace(self._path)
