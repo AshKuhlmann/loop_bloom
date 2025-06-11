@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: pip install mypy
       - name: Run mypy
-        run: mypy --strict loop_bloom
+        run: mypy --strict loopbloom
 
   test:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
           pip install -e .
       - name: Run tests with coverage
         run: |
-          pytest --cov=loop_bloom --cov-fail-under=80
+          pytest --cov=loopbloom --cov-fail-under=80
 
   build:
     runs-on: ubuntu-latest
