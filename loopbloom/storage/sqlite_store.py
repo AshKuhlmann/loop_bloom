@@ -51,7 +51,8 @@ class SQLiteStore(Storage):
         """Return stored GoalAreas from disk."""
         try:
             with self._engine.begin() as conn:
-                rows = conn.execute(select(raw_table.c.payload)).scalars().all()
+                query = select(raw_table.c.payload)
+                rows = conn.execute(query).scalars().all()
             if not rows:
                 return []
             # assume single row

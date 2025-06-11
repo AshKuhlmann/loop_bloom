@@ -30,7 +30,11 @@ def test_switch_to_sqlite_and_notify(tmp_path, monkeypatch):
 
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "dummy.json")}
     runner.invoke(new_cli, ["goal", "add", "NotifyGoal"], env=env)
-    runner.invoke(new_cli, ["goal", "phase", "add", "NotifyGoal", "Base"], env=env)
+    runner.invoke(
+        new_cli,
+        ["goal", "phase", "add", "NotifyGoal", "Base"],
+        env=env,
+    )
     runner.invoke(
         new_cli,
         ["goal", "micro", "add", "NotifyGoal", "Base", "Test"],

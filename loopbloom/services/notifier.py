@@ -24,9 +24,14 @@ def send(
             mode = "terminal"
         else:
             try:
-                notification.notify(title=title, message=message, timeout=5)
+                notification.notify(
+                    title=title,
+                    message=message,
+                    timeout=5,
+                )
                 return
-            except Exception:  # pragma: no cover - plyer may fail without backend
-                print("[yellow]Desktop notify failed; falling back to terminal")
+            except Exception:
+                # pragma: no cover - plyer may fail without backend
+                print("Desktop notify failed; falling back to terminal")
     # terminal fallback
     print(f"\n🔔  {title}: {message}\n")
