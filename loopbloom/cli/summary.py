@@ -93,3 +93,13 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
         f"Success rate last 14\u00a0days: {successes}/{total}  ",
         f"{flag}",
     )
+    # notify if eligible for advancement
+    from loopbloom.core import config as cfg
+    from loopbloom.services import notifier
+
+    if should_advance(mg):
+        notifier.send(
+            "LoopBloom",
+            f"Consider advancing '{mg.name}'",
+            mode=cfg.load().get("notify", "terminal"),
+        )
