@@ -45,8 +45,15 @@ def checkin(
         return
     # Create check-in
     talk = TalkPool.random("success" if success else "skip")
+    if success and "\u2713" not in talk:
+        talk = "\u2713 " + talk
     ci = Checkin(success=success, note=note or None, self_talk_generated=talk)
     mg.checkins.append(ci)
 
     # Output pep-talk
     print(talk)
+    from loopbloom.core import config as cfg
+    from loopbloom.services import notifier
+
+    notify_mode = cfg.load().get("notify", "terminal")
+    notifier.send("LoopBloom Check-in", talk, mode=notify_mode)

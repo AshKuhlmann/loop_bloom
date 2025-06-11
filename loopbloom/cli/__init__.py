@@ -5,11 +5,13 @@ from typing import Any, Callable, List
 
 import click
 
+from loopbloom.core import config as cfg
 from loopbloom.core.models import GoalArea
 from loopbloom.storage.json_store import JSONStore
+from loopbloom.storage.sqlite_store import SQLiteStore
 
-# Single JSONStore instance for CLI
-STORE = JSONStore()
+store_backend = cfg.load().get("storage", "json")
+STORE = SQLiteStore() if store_backend == "sqlite" else JSONStore()
 
 
 def load_goals() -> List[GoalArea]:
