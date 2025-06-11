@@ -25,3 +25,15 @@ def test_should_advance_edge_cases(successes, total, expected):
         day = TODAY - timedelta(days=i)
         mg.checkins.append(Checkin(date=day, success=i < successes))
     assert should_advance(mg) is expected
+
+
+def test_should_advance_respects_config(monkeypatch) -> None:
+    """Changing config alters advancement logic."""
+    mg = MicroGoal(name="Cfg")
+    mg.checkins.append(Checkin(date=TODAY, success=True))
+    mg.checkins.append(Checkin(date=TODAY - timedelta(days=1), success=False))
+    monkeypatch.setattr(
+        "loopbloom.core.config.load",
+        lambda: {"advance": {"threshold": 0.5, "window": 2}},
+    )
+    assert should_advance(mg)
