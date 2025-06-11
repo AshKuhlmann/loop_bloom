@@ -10,12 +10,13 @@ from rich.console import Console
 from rich.table import Table
 
 from loopbloom.cli import with_goals
+from loopbloom.core import config as cfg
 from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
 
 console = Console()
 
-WINDOW = 14  # days
+WINDOW_DEFAULT = 14  # days
 
 
 @click.command(
@@ -38,7 +39,8 @@ def summary(ctx, goal_name: str | None, goals: List[GoalArea]):  # type: ignore
 
 
 def _overview(goals: List[GoalArea]) -> None:
-    table = Table(title="LoopBloom Progress (last 14\u00a0days)")
+    window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
+    table = Table(title=f"LoopBloom Progress (last {window}\u00a0days)")
     table.add_column("Goal")
     table.add_column("Successes")
     table.add_column("Next Action")
@@ -50,7 +52,7 @@ def _overview(goals: List[GoalArea]) -> None:
         for ph in g.phases:
             for m in ph.micro_goals:
                 for ci in m.checkins:
-                    if ci.date >= today - timedelta(days=WINDOW - 1):
+                    if ci.date >= today - timedelta(days=window - 1):
                         total += 1
                         if ci.success:
                             successes += 1
@@ -71,6 +73,7 @@ def _overview(goals: List[GoalArea]) -> None:
 
 
 def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
+    window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     g = next((x for x in goals if x.name.lower() == goal_name.lower()), None)
     if not g:
         click.echo("[red]Goal not found.")
@@ -84,17 +87,16 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     if mg is None:
         click.echo("[yellow]No active micro-goal.")
         return
-    successes = sum(ci.success for ci in mg.checkins[-WINDOW:])
+    successes = sum(ci.success for ci in mg.checkins[-window:])
     suggest = should_advance(mg)
     flag = "[green]Advance? (≥ 80 %)" if suggest else "✦"
     console.print(f"[bold]{g.name} \u2192 {mg.name}[/bold]")
-    total = len(mg.checkins[-WINDOW:])
+    total = len(mg.checkins[-window:])
     console.print(
-        f"Success rate last 14\u00a0days: {successes}/{total}  ",
+        f"Success rate last {window}\u00a0days: {successes}/{total}  ",
         f"{flag}",
     )
     # notify if eligible for advancement
-    from loopbloom.core import config as cfg
     from loopbloom.services import notifier
 
     if should_advance(mg):

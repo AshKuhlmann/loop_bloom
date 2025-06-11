@@ -197,6 +197,8 @@ flowchart TD
 ```
 
 Parameters `threshold` and `window` are user-configurable.
+When omitted by commands, the progression rule reads these values from
+`~/.config/loopbloom/config.toml`.
 
 <a id="notifications"></a>
 
