@@ -10,6 +10,7 @@ from loopbloom.cli.config import config  # NEW
 from loopbloom.cli.cope import cope  # NEW
 from loopbloom.cli.export import export  # NEW
 from loopbloom.cli.goal import goal
+from loopbloom.cli.tree import tree
 from loopbloom.cli.summary import summary
 
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
@@ -29,6 +30,7 @@ cli.add_command(summary)  # NEW
 cli.add_command(cope)
 cli.add_command(config)
 cli.add_command(export)
+cli.add_command(tree)
 
 if __name__ == "__main__":
     cli()
