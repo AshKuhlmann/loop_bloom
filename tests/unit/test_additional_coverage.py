@@ -319,3 +319,151 @@ def test_config_branches(
     # restore default config module state
     monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
     importlib.reload(cfg_mod)
+
+
+# --- Additional coverage for CLI interactive paths --------------------------
+
+
+def test_choose_from_empty_list() -> None:
+    """Choosing from an empty list returns ``None``."""
+    from loopbloom.cli.interactive import choose_from
+
+    assert choose_from([], "Pick") is None
+
+
+def test_goal_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deleting without a name should prompt for a goal."""
+    from loopbloom.core.models import GoalArea
+    from loopbloom.storage.json_store import JSONStore
+    import loopbloom.cli.goal as goal_mod
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    store = JSONStore(path=tmp_path / "data.json")
+    store.save([GoalArea(name="A"), GoalArea(name="B")])
+    monkeypatch.setattr(goal_mod, "choose_from", lambda *_, **__: "A")
+    monkeypatch.setattr(click, "confirm", lambda *_, **__: True)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "rm"], env=env)
+    assert "Deleted goal" in res.output
+
+
+def test_phase_add_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Prompt for goal when adding a phase without ``goal_name``."""
+    from loopbloom.core.models import GoalArea
+    import loopbloom.cli.goal as goal_mod
+
+    goals = [GoalArea(name="G")]
+    monkeypatch.setattr(goal_mod, "choose_from", lambda *_, **__: "G")
+    recorded: list[str] = []
+    monkeypatch.setattr(click, "echo", lambda m: recorded.append(m))
+
+    goal_mod.phase_add.callback.__wrapped__.__wrapped__(None, None, "P", goals)
+
+    assert goals[0].phases[0].name == "P"
+    assert any("Added phase 'P'" in m for m in recorded)
+
+
+def test_phase_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Prompt for goal and phase when removing without args."""
+    from loopbloom.core.models import GoalArea, Phase
+    from loopbloom.storage.json_store import JSONStore
+    import loopbloom.cli.goal as goal_mod
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G", phases=[Phase(name="P")])])
+    choices = iter(["G", "P"])
+    monkeypatch.setattr(goal_mod, "choose_from", lambda *_: next(choices))
+    monkeypatch.setattr(click, "confirm", lambda *_, **__: True)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "phase", "rm"], env=env)
+    assert "Deleted phase" in res.output
+
+
+def test_micro_rm_decline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """User declining confirmation should abort micro removal."""
+    from loopbloom.core.models import GoalArea, MicroGoal
+    from loopbloom.storage.json_store import JSONStore
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G", micro_goals=[MicroGoal(name="M")])])
+    monkeypatch.setattr(click, "confirm", lambda *_, **__: False)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "micro", "rm", "M", "--goal", "G"], env=env)
+    assert "Deleted" not in res.output
+
+
+def test_checkin_no_goals(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Running checkin with no goals prints a helpful message."""
+    cli = _reload_cli(tmp_path, monkeypatch)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["checkin"], env=env)
+    assert "No goals" in res.output
+
+
+def test_checkin_cancel(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Canceling goal selection exits early."""
+    from loopbloom.core.models import GoalArea
+    from loopbloom.storage.json_store import JSONStore
+    import loopbloom.cli.checkin as checkin_mod
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
+    monkeypatch.setattr(checkin_mod, "choose_from", lambda *_, **__: None)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["checkin"], env=env)
+    assert res.exit_code == 0
+
+
+def test_cope_new_existing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Creating a new plan with an existing ID warns and exits."""
+    import loopbloom.cli.cope as cope_mod
+    import loopbloom.core.coping as cp_mod
+    from loopbloom import __main__ as main
+    monkeypatch.setattr(cp_mod, "COPING_DIR", tmp_path)
+    monkeypatch.setattr(cp_mod.PlanRepository, "get", lambda *_: True)
+    monkeypatch.setattr(click, "prompt", lambda *_, **__: "X")
+    importlib.reload(cope_mod)
+    importlib.reload(main)
+    cli = main.cli
+    runner = CliRunner()
+    res = runner.invoke(cli, ["cope", "new"])
+    assert "Plan already exists" in res.output
+
+
+def test_cope_new_invalid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Invalid step input and no steps defined triggers warnings."""
+    import loopbloom.cli.cope as cope_mod
+    import loopbloom.core.coping as cp_mod
+    from loopbloom import __main__ as main
+
+    monkeypatch.setattr(cp_mod, "COPING_DIR", tmp_path)
+    monkeypatch.setattr(cp_mod.PlanRepository, "get", lambda *_: None)
+    responses = iter(["new", "Title", "x", "q"])
+    monkeypatch.setattr(click, "prompt", lambda *_, **__: next(responses))
+    importlib.reload(cope_mod)
+    importlib.reload(main)
+    cli = main.cli
+    runner = CliRunner()
+    res = runner.invoke(cli, ["cope", "new"])
+    assert "Use 'p', 'm', or 'q'." in res.output
+    assert "No steps defined" in res.output
+
+
+def test_summary_no_checkins(capsys) -> None:
+    """Overview and detail views handle empty checkin histories."""
+    from loopbloom.cli.summary import _detail_view, _overview
+    from loopbloom.core.models import GoalArea, MicroGoal
+
+    goal = GoalArea(name="G", micro_goals=[MicroGoal(name="M")])
+    _overview([goal])
+    out = capsys.readouterr().out
+    assert "LoopBloom Progress" in out
+    _detail_view("G", [goal])
+    out = capsys.readouterr().out
+    assert "\u2013" in out
+
