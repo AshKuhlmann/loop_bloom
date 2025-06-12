@@ -1,6 +1,6 @@
 
 [project]
-name = "loop_bloom"
+name = "loopbloom-cli"
 version = "0.0.1"
 description = "ADHD Habit Stacking Tool"
 readme = "README.md"
