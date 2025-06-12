@@ -37,7 +37,7 @@ types-PyYAML = "*"
 tomli-w = "*"
 
 [tool.poetry.scripts]
-micro = "loopbloom.__main__:cli"
+loopbloom = "loopbloom.__main__:cli"
 
 [tool.black]
 line-length = 88
