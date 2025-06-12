@@ -57,6 +57,7 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 | **Smart Progression**   | ≥ 80 % over 14 days triggers *advance* prompt.                     | 
 | **Guided Coping**       | `cope` launches YAML Q\&A scripts for overwhelm.                   | 
 | **Gentle Banners**      | `summary` prints streaks, nudges, celebrations. Optional `--goal`. | 
+| **Tree View**           | `tree` shows your goals, phases, and micro-habits. |
 | **Exports**             | \`export csv/json                                                  | 
 | **Pluggable Storage**   | JSON by default; SQLite plugin for power-users.                    | 
 | **100 % Test Coverage** | Every line & branch, enforced by CI.                               | 
@@ -139,6 +140,7 @@ GOALS & MICRO-HABITS
   loopbloom goal  list|add|edit|rm                # manage goal areas
   loopbloom phase list|add|edit|rm                # optional phases
   loopbloom micro list|add|edit|rm|start|cancel   # micro-habit operations
+  loopbloom tree                         # show goal hierarchy
 
 CHECK-INS & FEEDBACK
   loopbloom checkin   [--goal <name>] [--status done|skip] [--note ..]
