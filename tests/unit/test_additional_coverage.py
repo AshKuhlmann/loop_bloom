@@ -148,6 +148,41 @@ def test_goal_rm_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert "Deleted goal" in res.output
 
 
+def test_phase_rm_requires_confirm(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Deleting a phase without ``--yes`` asks for confirmation."""
+    from loopbloom.core.models import GoalArea, Phase
+    from loopbloom.storage.json_store import JSONStore
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    store = JSONStore(path=tmp_path / "data.json")
+    store.save([GoalArea(name="G", phases=[Phase(name="P")])])
+    monkeypatch.setattr(click, "confirm", lambda *a, **k: False)
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "phase", "rm", "G", "P"], env=env)
+    assert "Deleted" not in res.output
+
+
+def test_phase_rm_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Remove a phase immediately with ``--yes``."""
+    from loopbloom.core.models import GoalArea, Phase
+    from loopbloom.storage.json_store import JSONStore
+
+    cli = _reload_cli(tmp_path, monkeypatch)
+    store = JSONStore(path=tmp_path / "data.json")
+    store.save([GoalArea(name="G", phases=[Phase(name="P")])])
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "rm", "G", "P", "--yes"],
+        env=env,
+    )
+    assert "Deleted phase" in res.output
+
+
 def test_micro_add_missing_phase(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
