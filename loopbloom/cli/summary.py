@@ -72,20 +72,8 @@ def _overview(goals: List[GoalArea]) -> None:
         else:
             ratio = "\u2013"
 
-        # Update logic to find the active micro-goal
-        active = None
-        for ph in g.phases:
-            active = next(
-                (m for m in ph.micro_goals if m.status == "active"),
-                None,
-            )
-            if active:
-                break
-        if active is None:
-            active = next(
-                (m for m in g.micro_goals if m.status == "active"),
-                None,
-            )
+        # Find the active micro-goal
+        active = g.get_active_micro_goal()
         flag = "Advance?" if active and should_advance(active) else "\u2014"
         table.add_row(g.name, ratio, flag)
     console.print(table)
@@ -98,13 +86,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
         goal_not_found(goal_name, [x.name for x in goals])
         return
     # Update logic to find the active micro-goal
-    mg = None
-    for ph in g.phases:
-        mg = next((m for m in ph.micro_goals if m.status == "active"), None)
-        if mg:
-            break
-    if mg is None:
-        mg = next((m for m in g.micro_goals if m.status == "active"), None)
+    mg = g.get_active_micro_goal()
 
     if mg is None:
         click.echo("[yellow]No active micro-goal.")
@@ -120,9 +102,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
         progress = Group(bar, f" {successes}/{total}")
     else:
         progress = "\u2013"
-    console.print(
-        f"Success rate last {window}\u00a0days: ", progress, f"  {flag}"
-    )
+    console.print(f"Success rate last {window}\u00a0days: ", progress, f"  {flag}")
     # notify if eligible for advancement
     from loopbloom.services import notifier
 

@@ -58,3 +58,11 @@ class GoalArea(BaseModel):
     phases: list[Phase] = Field(default_factory=list)
     micro_goals: list[MicroGoal] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    def get_active_micro_goal(self) -> MicroGoal | None:
+        """Find the active micro-goal within phases or direct goals."""
+        for ph in self.phases:
+            mg = next((m for m in ph.micro_goals if m.status == "active"), None)
+            if mg:
+                return mg
+        return next((m for m in self.micro_goals if m.status == "active"), None)

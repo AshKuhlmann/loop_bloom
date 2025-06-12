@@ -47,16 +47,7 @@ def checkin(
         goal_not_found(goal_name, [g.name for g in goals])
         return
     # Find the active micro-goal
-    mg = None
-    # First, search in phases
-    for ph in goal.phases:
-        mg = next((m for m in ph.micro_goals if m.status == "active"), None)
-        if mg:
-            break
-
-    # If not found, search in direct micro-goals
-    if mg is None:
-        mg = next((m for m in goal.micro_goals if m.status == "active"), None)
+    mg = goal.get_active_micro_goal()
 
     if mg is None:
         click.echo("[red]No active micro-goal found for this goal.")
