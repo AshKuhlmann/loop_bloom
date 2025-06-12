@@ -2,8 +2,10 @@
 
 import csv
 import json
+import os
 
 from click.testing import CliRunner
+from tests.integration.conftest import reload_modules
 
 
 def test_config_set_get_view(tmp_path):
@@ -21,41 +23,30 @@ def test_config_set_get_view(tmp_path):
 
 def test_export_json_and_csv(tmp_path):
     """Export data in both JSON and CSV formats."""
-    runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    os.environ["LOOPBLOOM_DATA_PATH"] = env["LOOPBLOOM_DATA_PATH"]
 
-    import importlib
-    import os
+    cli = reload_modules()
+    runner = CliRunner()
 
-    import loopbloom.__main__ as main
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.export as export_mod
-    import loopbloom.storage.json_store as js_mod
-
-    os.environ["LOOPBLOOM_DATA_PATH"] = str(tmp_path / "data.json")
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(export_mod)
-    importlib.reload(main)
-
-    runner.invoke(main.cli, ["goal", "add", "Sleep"], env=env)
-    runner.invoke(main.cli, ["goal", "phase", "add", "Sleep", "Base"], env=env)
+    runner.invoke(cli, ["goal", "add", "Sleep"], env=env)
+    runner.invoke(cli, ["goal", "phase", "add", "Sleep", "Base"], env=env)
     runner.invoke(
-        main.cli,
+        cli,
         ["goal", "micro", "add", "Sleep", "Base", "Wake 8"],
         env=env,
     )
-    runner.invoke(main.cli, ["checkin", "Sleep"], env=env)
+    runner.invoke(cli, ["checkin", "Sleep"], env=env)
 
     json_path = tmp_path / "export.json"
     csv_path = tmp_path / "export.csv"
     runner.invoke(
-        main.cli,
+        cli,
         ["export", "--fmt", "json", "--out", str(json_path)],
         env=env,
     )
     runner.invoke(
-        main.cli,
+        cli,
         ["export", "--fmt", "csv", "--out", str(csv_path)],
         env=env,
     )

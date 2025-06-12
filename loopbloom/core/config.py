@@ -10,7 +10,13 @@ import tomli_w
 import tomllib
 
 XDG_CONFIG_HOME = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
-CONFIG_PATH = XDG_CONFIG_HOME / "loopbloom" / "config.toml"
+# Allow tests to override full path directly
+CONFIG_PATH = Path(
+    os.getenv(
+        "LOOPBLOOM_CONFIG_PATH",
+        XDG_CONFIG_HOME / "loopbloom" / "config.toml",
+    )
+)
 CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 DEFAULTS: Dict[str, Any] = {

@@ -1,7 +1,16 @@
 """Daily check-in command."""
 
-from typing import List, Optional
-
+@click.option(
+    "--goal",
+    "goal_opt",
+    help="Goal name (alternative to argument).",
+)
+@click.option(
+    "--success/--skip",
+    "success_flag",
+    default=True,
+    help="Mark success or skip.",
+)
 import click
 from rich import print
 
@@ -16,34 +25,49 @@ from loopbloom.core.talks import TalkPool
     help="Record today’s success or skip for a goal.",
 )
 @click.argument("goal_name", required=False)
-@click.option("--success/--skip", default=True, help="Mark success or skip.")
+@click.option("--goal", "goal_opt", help="Goal name (alternative to argument).")
+@click.option(
+    "--status",
+    type=click.Choice(["done", "skip"]),
+    help="Mark success or skip via status value.",
+)
+@click.option("--success/--skip", "success_flag", default=True, help="Mark success or skip.")
 @click.option("--note", default="", help="Optional note.")
 @with_goals
 def checkin(
     ctx: click.Context,
     goal_name: Optional[str],
-    success: bool,
+    goal_opt: Optional[str],
+    status: Optional[str],
+    success_flag: bool,
     note: str,
     goals: List[GoalArea],
 ) -> None:
     """Append a Checkin to the current active micro-goal of GOAL_NAME."""
-    if goal_name is None:
+    # Determine final goal name from options, or fall back to interactive prompt
+    final_goal_name = goal_opt or goal_name
+    if not final_goal_name:
         names = [g.name for g in goals]
         if not names:
             click.echo("[red]No goals – use `loopbloom goal add`.")
             return
         click.echo("Which goal do you want to check in for?")
-        goal_name = choose_from(names, "Enter number")
-        if goal_name is None:
+        final_goal_name = choose_from(names, "Enter number")
+        if final_goal_name is None:
             return
+
+    # Determine success flag
+    success = success_flag
+    if status is not None:
+        success = status == "done"
 
     # Locate goal
     goal = next(
-        (g for g in goals if g.name.lower() == goal_name.lower()),
+        (g for g in goals if g.name.lower() == final_goal_name.lower()),
         None,
     )
     if not goal:
-        click.echo("[red]Goal not found.")
+        click.echo(f"[red]Goal '{final_goal_name}' not found.")
         return
     # Find first phase with an active micro-goal
     mg = None
