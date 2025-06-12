@@ -1,7 +1,0 @@
-flake8
-mypy
-pytest
-pytest-cov
-
-tomli-w
-types-PyYAML

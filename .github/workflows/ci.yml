@@ -13,9 +13,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install flake8
+        run: |
+          pip install poetry
+          poetry install
       - name: Run flake8
-        run: flake8 .
+        run: poetry run flake8 .
 
   type-check:
     runs-on: ubuntu-latest
@@ -26,10 +28,10 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: |
-          pip install -r requirements-dev.txt
-          pip install -e .
+          pip install poetry
+          poetry install
       - name: Run mypy
-        run: mypy --strict loopbloom
+        run: poetry run mypy --strict loopbloom
 
   test:
     runs-on: ubuntu-latest
@@ -40,11 +42,11 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: |
-          pip install pytest pytest-cov
-          pip install -e .
+          pip install poetry
+          poetry install
       - name: Run tests with coverage
         run: |
-          pytest --cov=loopbloom --cov-fail-under=80
+          poetry run pytest --cov=loopbloom --cov-fail-under=80
 
   build:
     runs-on: ubuntu-latest
