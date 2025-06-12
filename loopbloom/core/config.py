@@ -10,8 +10,9 @@ import tomli_w
 import tomllib
 
 XDG_CONFIG_HOME = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
-CONFIG_PATH = XDG_CONFIG_HOME / "loopbloom" / "config.toml"
-CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+APP_DIR = XDG_CONFIG_HOME / "loopbloom"
+APP_DIR.mkdir(parents=True, exist_ok=True)
+CONFIG_PATH = APP_DIR / "config.toml"
 
 DEFAULTS: Dict[str, Any] = {
     "storage": "json",  # json | sqlite

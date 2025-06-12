@@ -23,9 +23,10 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from loopbloom.core.models import GoalArea
 from loopbloom.storage.base import Storage, StorageError
+from loopbloom.core.config import APP_DIR
 
 DEFAULT_PATH = Path(
-    os.getenv("LOOPBLOOM_SQLITE_PATH", Path.home() / ".loopbloom" / "data.db")
+    os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db")
 )
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 

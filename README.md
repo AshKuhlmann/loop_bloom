@@ -177,8 +177,8 @@ CLI shortcut: `loopbloom config set storage sqlite`.
 
 | Backend                                                              | Path                     | Use-case                             |
 | -------------------------------------------------------------------- | ------------------------ | ------------------------------------ |
-| **JSON** (default)                                                   | `~/.loopbloom/data.json` | Simple, git-friendly.                |
-| **SQLite**                                                           | `~/.loopbloom/data.db`   | Large histories, multi-tool queries. |
+| **JSON** (default)                                                   | `~/.config/loopbloom/data.json` | Simple, git-friendly.                |
+| **SQLite**                                                           | `~/.config/loopbloom/data.db`   | Large histories, multi-tool queries. |
 | Custom stores implement the `Storage` protocol in `storage/base.py`. |                          |                                      |
 
 <a id="coping"></a>
