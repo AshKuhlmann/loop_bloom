@@ -50,7 +50,7 @@ def test_goal_phase_micro_crud(tmp_path):
     # Add micro-habit
     res = runner.invoke(
         cli,
-        ["goal", "micro", "add", "Exercise", "Foundation", "Walk 5 min"],
+        ["goal", "micro", "add", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation"],
         env=env,
     )
     assert "Added micro-habit" in res.output
@@ -58,14 +58,14 @@ def test_goal_phase_micro_crud(tmp_path):
     # Cancel micro-habit
     res = runner.invoke(
         cli,
-        ["goal", "micro", "cancel", "Exercise", "Foundation", "Walk 5 min"],
+        ["goal", "micro", "rm", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation", "--yes"],
         env=env,
     )
-    assert "Cancelled micro-habit" in res.output
+    assert "Deleted micro-habit" in res.output
 
     # Verify JSON structure saved
     data = json.loads(data_file.read_text())
-    assert data[0]["phases"][0]["micro_goals"][0]["status"] == "cancelled"
+    assert data[0]["phases"][0]["micro_goals"] == []
 
 
 def test_goal_rm_missing(tmp_path) -> None:

@@ -19,8 +19,12 @@ def tree(ctx: click.Context, goals: List[GoalArea]) -> None:
     root = Tree("\U0001F333 LoopBloom Goals")
     for g in goals:
         g_branch = root.add(g.name)
+        # Add micro-goals in phases
         for ph in g.phases:
-            p_branch = g_branch.add(ph.name)
+            p_branch = g_branch.add(f"[dim]Phase:[/] {ph.name}")
             for m in ph.micro_goals:
                 p_branch.add(m.name)
+        # Add direct micro-goals
+        for m in g.micro_goals:
+            g_branch.add(m.name)
     console.print(root)

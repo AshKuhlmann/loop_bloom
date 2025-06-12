@@ -159,8 +159,12 @@ def test_micro_add_missing_phase(
     JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    res = runner.invoke(cli, ["goal", "micro", "add", "G", "P", "M"], env=env)
-    assert "Goal or phase not found" in res.output
+    res = runner.invoke(
+        cli,
+        ["goal", "micro", "add", "M", "--goal", "G", "--phase", "P"],
+        env=env,
+    )
+    assert "Phase 'P' not found" in res.output
 
 
 def test_micro_cancel_missing(
@@ -178,10 +182,10 @@ def test_micro_cancel_missing(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "cancel", "G", "P", "M"],
+        ["goal", "micro", "rm", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
-    assert "Micro-habit not found" in res.output
+    assert "Micro-habit 'M' not found" in res.output
 
 
 def test_micro_cancel_no_phase(
@@ -198,10 +202,10 @@ def test_micro_cancel_no_phase(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "cancel", "G", "P", "M"],
+        ["goal", "micro", "rm", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
-    assert "Goal or phase not found" in res.output
+    assert "Phase 'P' not found" in res.output
 
 
 def test_checkin_errors(

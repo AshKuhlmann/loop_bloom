@@ -51,13 +51,20 @@ def _overview(goals: List[GoalArea]) -> None:
     for g in goals:
         successes = 0
         total = 0
+        all_checkins = []
+        # Aggregate checkins from phases
         for ph in g.phases:
             for m in ph.micro_goals:
-                for ci in m.checkins:
-                    if ci.date >= today - timedelta(days=window - 1):
-                        total += 1
-                        if ci.success:
-                            successes += 1
+                all_checkins.extend(m.checkins)
+        # Aggregate checkins from direct micro-goals
+        for m in g.micro_goals:
+            all_checkins.extend(m.checkins)
+
+        for ci in all_checkins:
+            if ci.date >= today - timedelta(days=window - 1):
+                total += 1
+                if ci.success:
+                    successes += 1
         ratio: Group | str
         if total:
             bar = ProgressBar(total=total, completed=successes)
@@ -65,15 +72,14 @@ def _overview(goals: List[GoalArea]) -> None:
         else:
             ratio = "\u2013"
 
-        # find first active micro
+        # Update logic to find the active micro-goal
         active = None
         for ph in g.phases:
-            active = next(
-                (m for m in ph.micro_goals if m.status == "active"),
-                None,
-            )
+            active = next((m for m in ph.micro_goals if m.status == "active"), None)
             if active:
                 break
+        if active is None:
+            active = next((m for m in g.micro_goals if m.status == "active"), None)
         flag = "Advance?" if active and should_advance(active) else "\u2014"
         table.add_row(g.name, ratio, flag)
     console.print(table)
@@ -85,12 +91,15 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])
         return
-    # find active micro
+    # Update logic to find the active micro-goal
     mg = None
     for ph in g.phases:
         mg = next((m for m in ph.micro_goals if m.status == "active"), None)
         if mg:
             break
+    if mg is None:
+        mg = next((m for m in g.micro_goals if m.status == "active"), None)
+
     if mg is None:
         click.echo("[yellow]No active micro-goal.")
         return

@@ -133,116 +133,74 @@ def micro() -> None:
 
 
 @micro.command(name="add")
-@click.argument("goal_name", required=False)
-@click.argument("phase_name", required=False)
-@click.argument("micro_name")
+@click.argument("name")
+@click.option("--goal", "goal_name", required=True, help="The goal to add this to.")
+@click.option("--phase", "phase_name", default=None, help="Add to a specific phase.")
 @with_goals
 def micro_add(
     ctx: click.Context,
-    goal_name: Optional[str],
+    name: str,
+    goal_name: str,
     phase_name: Optional[str],
-    micro_name: str,
     goals: List[GoalArea],
 ) -> None:
-    """Add a micro-habit to a phase."""
-    if goal_name is None:
-        names = [g.name for g in goals]
-        if not names:
-            click.echo("[red]No goals – use `loopbloom goal add`.")
-            return
-        click.echo("Select goal for new micro-habit:")
-        goal_name = choose_from(names, "Enter number")
-        if goal_name is None:
-            return
-
+    """Add a new micro-habit, either to a goal or a phase."""
     g = _find_goal(goals, goal_name)
-    if phase_name is None:
-        if not g:
-            goal_not_found(goal_name, [x.name for x in goals])
-            return
-        options = [p.name for p in g.phases]
-        if not options:
-            click.echo("[red]No phases found for this goal.")
-            return
-        click.echo("Select phase:")
-        phase_name = choose_from(options, "Enter number")
-        if phase_name is None:
-            return
-
-    p = _find_phase(g, phase_name) if g else None
-    if not p:
-        click.echo("[red]Goal or phase not found.")
-        click.echo("Run 'loopbloom goal list' to see your available goals.")
+    if not g:
+        goal_not_found(goal_name, [x.name for x in goals])
         return
-    p.micro_goals.append(MicroGoal(name=micro_name.strip()))
-    message = (
-        "[green]Added micro-habit '"
-        + micro_name
-        + "' to "
-        + goal_name
-        + "/"
-        + phase_name
-    )
-    click.echo(message)
+
+    if phase_name is None:
+        g.micro_goals.append(MicroGoal(name=name.strip()))
+        click.echo(f"[green]Added micro-habit '{name}' to goal '{goal_name}'")
+        return
+
+    p = _find_phase(g, phase_name)
+    if not p:
+        click.echo(f"[red]Phase '{phase_name}' not found in goal '{goal_name}'.")
+        return
+    p.micro_goals.append(MicroGoal(name=name.strip()))
+    click.echo(f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}")
 
 
-@micro.command(name="cancel")
-@click.argument("goal_name", required=False)
-@click.argument("phase_name", required=False)
-@click.argument("micro_name", required=False)
+@micro.command(name="rm")
+@click.argument("name")
+@click.option("--goal", "goal_name", required=True, help="The goal to remove from.")
+@click.option("--phase", "phase_name", default=None, help="Remove from a specific phase.")
+@click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
-def micro_cancel(
+def micro_rm(
     ctx: click.Context,
-    goal_name: Optional[str],
+    name: str,
+    goal_name: str,
     phase_name: Optional[str],
-    micro_name: Optional[str],
+    yes: bool,
     goals: List[GoalArea],
 ) -> None:
-    """Soft-delete (cancel) a micro-habit."""
-    if goal_name is None:
-        names = [g.name for g in goals]
-        if not names:
-            click.echo("[red]No goals – use `loopbloom goal add`.")
-            return
-        click.echo("Select goal:")
-        goal_name = choose_from(names, "Enter number")
-        if goal_name is None:
-            return
-
+    """Remove a micro-habit by its name."""
     g = _find_goal(goals, goal_name)
-    if phase_name is None:
-        if not g:
-            goal_not_found(goal_name, [x.name for x in goals])
-            return
-        options = [p.name for p in g.phases]
-        if not options:
-            click.echo("[red]No phases found for this goal.")
-            return
-        click.echo("Select phase:")
-        phase_name = choose_from(options, "Enter number")
-        if phase_name is None:
-            return
-
-    p = _find_phase(g, phase_name) if g else None
-    if not p:
-        click.echo("[red]Goal or phase not found.")
-        click.echo("Run 'loopbloom goal list' to see your available goals.")
+    if not g:
+        goal_not_found(goal_name, [x.name for x in goals])
         return
 
-    if micro_name is None:
-        options = [m.name for m in p.micro_goals if m.status == Status.active]
-        if not options:
-            click.echo("[red]No active micro-habits in this phase.")
+    target_list: Optional[List[MicroGoal]] = None
+    if phase_name:
+        p = _find_phase(g, phase_name)
+        if not p:
+            click.echo(f"[red]Phase '{phase_name}' not found.")
             return
-        click.echo("Select micro-habit:")
-        micro_name = choose_from(options, "Enter number")
-        if micro_name is None:
-            return
+        target_list = p.micro_goals
+    else:
+        target_list = g.micro_goals
 
-    mg = next((m for m in p.micro_goals if m.name == micro_name), None)
+    mg = next((m for m in target_list if m.name.lower() == name.lower()), None)
     if not mg:
-        click.echo("[red]Micro-habit not found.")
-        click.echo("Run 'loopbloom goal list' to see your available goals.")
+        loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
+        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
-    mg.status = Status.cancelled
-    click.echo(f"[yellow]Cancelled micro-habit:[/] {micro_name}")
+
+    if not yes and not click.confirm(f"Permanently delete '{name}'?", default=False):
+        return
+
+    target_list.remove(mg)
+    click.echo(f"[green]Deleted micro-habit:[/] {name}")
