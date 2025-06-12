@@ -16,5 +16,5 @@ def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
         return None
     for i, opt in enumerate(items, 1):
         click.echo(f"{i}. {opt}")
-    idx = click.prompt("Enter number", type=click.IntRange(1, len(items)))
+    idx: int = click.prompt(prompt, type=click.IntRange(1, len(items)))
     return items[idx - 1]
