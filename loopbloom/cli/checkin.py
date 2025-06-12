@@ -6,6 +6,7 @@ import click
 from rich import print
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
@@ -43,7 +44,7 @@ def checkin(
         None,
     )
     if not goal:
-        click.echo("[red]Goal not found.")
+        goal_not_found(goal_name, [g.name for g in goals])
         return
     # Find first phase with an active micro-goal
     mg = None

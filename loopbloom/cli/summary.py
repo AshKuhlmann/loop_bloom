@@ -11,6 +11,7 @@ from rich.table import Table
 from rich.progress_bar import ProgressBar
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.utils import goal_not_found
 from loopbloom.core import config as cfg
 from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
@@ -82,7 +83,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     g = next((x for x in goals if x.name.lower() == goal_name.lower()), None)
     if not g:
-        click.echo("[red]Goal not found.")
+        goal_not_found(goal_name, [x.name for x in goals])
         return
     # find active micro
     mg = None
