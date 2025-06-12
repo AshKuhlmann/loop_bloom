@@ -56,4 +56,5 @@ class GoalArea(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     phases: list[Phase] = Field(default_factory=list)
+    micro_goals: list[MicroGoal] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
