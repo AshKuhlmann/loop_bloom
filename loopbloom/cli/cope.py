@@ -38,7 +38,8 @@ def _new() -> None:
         click.echo("[red]Plan already exists.")
         return
     title = click.prompt("Plan title").strip()
-    click.echo("Add steps. Type 'p' for prompt, 'm' for message, 'q' to finish.")
+    msg = "Add steps. Type 'p' for prompt, 'm' for message, 'q' to finish."
+    click.echo(msg)
     steps = []
     while True:
         kind = click.prompt("Step type", default="q").lower().strip()
@@ -47,7 +48,9 @@ def _new() -> None:
         if kind.startswith("p"):
             prompt_text = click.prompt("Prompt text").strip()
             store = click.prompt(
-                "Store answer as (blank for none)", default="", show_default=False
+                "Store answer as (blank for none)",
+                default="",
+                show_default=False,
             ).strip()
             step = {"prompt": prompt_text}
             if store:
@@ -63,5 +66,6 @@ def _new() -> None:
         return
     content = {"id": plan_id, "title": title, "steps": steps}
     path = COPING_DIR / f"{plan_id}.yml"
-    path.write_text(yaml.safe_dump(content, sort_keys=False, allow_unicode=True))
+    dumped = yaml.safe_dump(content, sort_keys=False, allow_unicode=True)
+    path.write_text(dumped)
     click.echo(f"[green]Created plan:[/] {path}")
