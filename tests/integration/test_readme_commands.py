@@ -43,38 +43,64 @@ def test_readme_commands(tmp_path, monkeypatch):
     cli = main.cli
 
     # Quick Start commands
-    assert runner.invoke(cli, ["goal", "add", "Sleep Hygiene"], env=env).exit_code == 0
+    res = runner.invoke(cli, ["goal", "add", "Sleep Hygiene"], env=env)
+    assert res.exit_code == 0
     assert (
         runner.invoke(
-            cli, ["goal", "phase", "add", "Sleep Hygiene", "Base"], env=env
+            cli,
+            ["goal", "phase", "add", "Sleep Hygiene", "Base"],
+            env=env,
         ).exit_code
         == 0
     )
     assert (
         runner.invoke(
             cli,
-            ["goal", "micro", "add", "Sleep Hygiene", "Base", "Wake up at 08:00"],
+            [
+                "goal",
+                "micro",
+                "add",
+                "Sleep Hygiene",
+                "Base",
+                "Wake up at 08:00",
+            ],
             env=env,
         ).exit_code
         == 0
     )
     res = runner.invoke(
         cli,
-        ["checkin", "Sleep Hygiene", "--success", "--note", "Groggy but did it!"],
+        [
+            "checkin",
+            "Sleep Hygiene",
+            "--success",
+            "--note",
+            "Groggy but did it!",
+        ],
         env=env,
     )
     assert res.exit_code == 0
 
     # Sample session snippets
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
-    runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Foundation"], env=env)
     runner.invoke(
-        cli, ["goal", "micro", "add", "Exercise", "Foundation", "Walk 5 min"], env=env
+        cli,
+        ["goal", "phase", "add", "Exercise", "Foundation"],
+        env=env,
+    )
+    runner.invoke(
+        cli,
+        ["goal", "micro", "add", "Exercise", "Foundation", "Walk 5 min"],
+        env=env,
     )
     assert "LoopBloom" in runner.invoke(cli, ["summary"], env=env).output
     assert (
         "Exercise"
-        in runner.invoke(cli, ["summary", "--goal", "Exercise"], env=env).output
+        in runner.invoke(
+            cli,
+            ["summary", "--goal", "Exercise"],
+            env=env,
+        ).output
     )
     assert (
         runner.invoke(
@@ -96,14 +122,28 @@ def test_readme_commands(tmp_path, monkeypatch):
 
     # Cheatsheet/Config/Data Export
     assert "overwhelmed" in runner.invoke(cli, ["cope", "list"]).output
-    assert "Saved" in runner.invoke(cli, ["config", "set", "storage", "sqlite"]).output
-    assert "Saved" in runner.invoke(cli, ["config", "set", "notify", "desktop"]).output
+    assert (
+        "Saved"
+        in runner.invoke(
+            cli,
+            ["config", "set", "storage", "sqlite"],
+        ).output
+    )
+    assert (
+        "Saved"
+        in runner.invoke(
+            cli,
+            ["config", "set", "notify", "desktop"],
+        ).output
+    )
     cfg_out = runner.invoke(cli, ["config", "view"]).output
     assert "notify" in cfg_out
     csv_path = tmp_path / "progress.csv"
     assert (
         runner.invoke(
-            cli, ["export", "--fmt", "csv", "--out", str(csv_path)], env=env
+            cli,
+            ["export", "--fmt", "csv", "--out", str(csv_path)],
+            env=env,
         ).exit_code
         == 0
     )
