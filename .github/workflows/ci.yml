@@ -25,7 +25,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install mypy
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e .
       - name: Run mypy
         run: mypy --strict loopbloom
 
