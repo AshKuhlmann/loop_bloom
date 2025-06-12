@@ -1,11 +1,12 @@
 """Daily check-in command."""
 
-from typing import List
+from typing import List, Optional
 
 import click
 from rich import print
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
 
@@ -26,19 +27,25 @@ from loopbloom.core.talks import TalkPool
 @with_goals
 def checkin(
     ctx: click.Context,
-    goal_name: str | None,
-    goal_opt: str | None,
-    status: str | None,
+    goal_name: Optional[str],
+    goal_opt: Optional[str],
+    status: Optional[str],
     success_flag: bool,
     note: str,
     goals: List[GoalArea],
 ) -> None:
     """Append a Checkin to the current active micro-goal of GOAL_NAME."""
-    # Determine final goal name
-    goal_name = goal_opt or goal_name
-    if not goal_name:
-        click.echo("[red]Goal required.")
-        return
+    # Determine final goal name from options, or fall back to interactive prompt
+    final_goal_name = goal_opt or goal_name
+    if not final_goal_name:
+        names = [g.name for g in goals]
+        if not names:
+            click.echo("[red]No goals – use `loopbloom goal add`.")
+            return
+        click.echo("Which goal do you want to check in for?")
+        final_goal_name = choose_from(names, "Enter number")
+        if final_goal_name is None:
+            return
 
     # Determine success flag
     success = success_flag
@@ -47,11 +54,11 @@ def checkin(
 
     # Locate goal
     goal = next(
-        (g for g in goals if g.name.lower() == goal_name.lower()),
+        (g for g in goals if g.name.lower() == final_goal_name.lower()),
         None,
     )
     if not goal:
-        click.echo("[red]Goal not found.")
+        click.echo(f"[red]Goal '{final_goal_name}' not found.")
         return
     # Find first phase with an active micro-goal
     mg = None
