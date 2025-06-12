@@ -1,8 +1,8 @@
 """CLI storage loader and saver for LoopBloom."""
 
+from functools import wraps
 from pathlib import Path  # noqa: F401
 from typing import Any, Callable, List
-from functools import wraps
 
 import click
 

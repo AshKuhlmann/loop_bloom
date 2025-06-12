@@ -147,6 +147,7 @@ CHECK-INS & FEEDBACK
 COPING & SUPPORT
   loopbloom cope list           # view plan names
   loopbloom cope run <name>     # guided coping walkthrough
+  loopbloom cope new            # interactive plan creator
 
 DATA & CONFIG
   loopbloom export --fmt csv|json --out progress.csv
@@ -182,7 +183,10 @@ CLI shortcut: `loopbloom config set storage sqlite`.
 
 ## 9  Coping Plans
 
-Coping scripts live in `loopbloom/data/*.yml`; they drive `loopbloom cope run <name>`.
+Built-in scripts live in `loopbloom/data/coping/*.yml` and power
+`loopbloom cope run <name>`. Create your own plans with
+`loopbloom cope new`—the CLI will prompt for a title and steps, then
+save a YAML file you can edit later.
 
 <a id="progression"></a>
 
