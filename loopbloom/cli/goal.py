@@ -196,7 +196,7 @@ def micro() -> None:
     "--phase",
     "phase_name",
     default=None,
-    help="Add to a specific phase.",
+    help="Add to a specific phase (created if needed).",
 )
 @with_goals
 def micro_add(
@@ -206,7 +206,11 @@ def micro_add(
     phase_name: Optional[str],
     goals: List[GoalArea],
 ) -> None:
-    """Add a new micro-habit, either to a goal or a phase."""
+    """Add a new micro-habit to a goal or phase.
+
+    If ``phase_name`` is provided but doesn't exist, a new phase will be
+    created automatically.
+    """
     g = _find_goal(goals, goal_name)
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])
@@ -219,10 +223,11 @@ def micro_add(
 
     p = _find_phase(g, phase_name)
     if not p:
+        p = Phase(name=phase_name.strip())
+        g.phases.append(p)
         click.echo(
-            f"[red]Phase '{phase_name}' not found in goal '{goal_name}'."
+            f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
         )
-        return
     p.micro_goals.append(MicroGoal(name=name.strip()))
     click.echo(
         f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}"
