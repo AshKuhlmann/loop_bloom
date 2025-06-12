@@ -1,11 +1,12 @@
 """Daily check-in command."""
 
-from typing import List
+from typing import List, Optional
 
 import click
 from rich import print
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
 
@@ -14,18 +15,28 @@ from loopbloom.core.talks import TalkPool
     name="checkin",
     help="Record today’s success or skip for a goal.",
 )
-@click.argument("goal_name")
+@click.argument("goal_name", required=False)
 @click.option("--success/--skip", default=True, help="Mark success or skip.")
 @click.option("--note", default="", help="Optional note.")
 @with_goals
 def checkin(
     ctx: click.Context,
-    goal_name: str,
+    goal_name: Optional[str],
     success: bool,
     note: str,
     goals: List[GoalArea],
 ) -> None:
     """Append a Checkin to the current active micro-goal of GOAL_NAME."""
+    if goal_name is None:
+        names = [g.name for g in goals]
+        if not names:
+            click.echo("[red]No goals – use `loopbloom goal add`.")
+            return
+        click.echo("Which goal do you want to check in for?")
+        goal_name = choose_from(names, "Enter number")
+        if goal_name is None:
+            return
+
     # Locate goal
     goal = next(
         (g for g in goals if g.name.lower() == goal_name.lower()),
