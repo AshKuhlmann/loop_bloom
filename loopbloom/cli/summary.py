@@ -57,6 +57,7 @@ def _overview(goals: List[GoalArea]) -> None:
                         total += 1
                         if ci.success:
                             successes += 1
+        ratio: Group | str
         if total:
             bar = ProgressBar(total=total, completed=successes)
             ratio = Group(bar, f" {successes}/{total}")
@@ -97,6 +98,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     flag = "[green]Advance? (≥ 80 %)" if suggest else "✦"
     console.print(f"[bold]{g.name} \u2192 {mg.name}[/bold]")
     total = len(mg.checkins[-window:])
+    progress: Group | str
     if total:
         bar = ProgressBar(total=total, completed=successes)
         progress = Group(bar, f" {successes}/{total}")
