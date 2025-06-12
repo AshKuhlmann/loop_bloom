@@ -114,5 +114,9 @@ def test_phase_add_missing_goal(tmp_path) -> None:
     importlib.reload(main)
     cli = main.cli
 
-    res = runner.invoke(cli, ["goal", "phase", "add", "Ghost", "Base"], env=env)
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "add", "Ghost", "Base"],
+        env=env,
+    )
     assert "[red]Goal not found." in res.output
