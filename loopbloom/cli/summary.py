@@ -6,8 +6,9 @@ from datetime import date, timedelta
 from typing import List
 
 import click
-from rich.console import Console
+from rich.console import Console, Group
 from rich.table import Table
+from rich.progress_bar import ProgressBar
 
 from loopbloom.cli import with_goals
 from loopbloom.core import config as cfg
@@ -56,7 +57,11 @@ def _overview(goals: List[GoalArea]) -> None:
                         total += 1
                         if ci.success:
                             successes += 1
-        ratio = f"{successes}/{total}" if total else "\u2013"
+        if total:
+            bar = ProgressBar(total=total, completed=successes)
+            ratio = Group(bar, f" {successes}/{total}")
+        else:
+            ratio = "\u2013"
 
         # find first active micro
         active = None
@@ -92,10 +97,12 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     flag = "[green]Advance? (≥ 80 %)" if suggest else "✦"
     console.print(f"[bold]{g.name} \u2192 {mg.name}[/bold]")
     total = len(mg.checkins[-window:])
-    console.print(
-        f"Success rate last {window}\u00a0days: {successes}/{total}  ",
-        f"{flag}",
-    )
+    if total:
+        bar = ProgressBar(total=total, completed=successes)
+        progress = Group(bar, f" {successes}/{total}")
+    else:
+        progress = "\u2013"
+    console.print(f"Success rate last {window}\u00a0days: ", progress, f"  {flag}")
     # notify if eligible for advancement
     from loopbloom.services import notifier
 
