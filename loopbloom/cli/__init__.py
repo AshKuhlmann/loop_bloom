@@ -2,6 +2,7 @@
 
 from pathlib import Path  # noqa: F401
 from typing import Any, Callable, List
+from functools import wraps
 
 import click
 
@@ -27,6 +28,7 @@ def save_goals(goals: List[GoalArea]) -> None:
 def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
     """Load goals for ``f`` then save afterwards."""  # noqa: D401
 
+    @wraps(f)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         goals = load_goals()
         result = f(*args, goals=goals, **kwargs)
