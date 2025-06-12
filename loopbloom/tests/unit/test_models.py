@@ -33,3 +33,9 @@ def test_checkin_success_ratio() -> None:
 def test_status_enum() -> None:
     """Enum members expose the correct value."""
     assert Status.active.value == "active"
+
+
+def test_microgoal_name_trimmed() -> None:
+    """Whitespace is stripped from names."""
+    mg = MicroGoal(name="  Walk  ")
+    assert mg.name == "Walk"
