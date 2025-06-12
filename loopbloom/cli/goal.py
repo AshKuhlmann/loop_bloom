@@ -5,6 +5,7 @@ from typing import List, Optional
 import click
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 
@@ -74,7 +75,7 @@ def goal_rm(
 
     g = _find_goal(goals, name)
     if not g:
-        click.echo("[red]Goal not found.")
+        goal_not_found(name, [g.name for g in goals])
         return
     if not yes and not click.confirm(
         f"Delete goal '{name}'?",
@@ -115,7 +116,7 @@ def phase_add(
 
     g = _find_goal(goals, goal_name)
     if not g:
-        click.echo("[red]Goal not found.")
+        goal_not_found(goal_name, [x.name for x in goals])
         return
     if _find_phase(g, phase_name):
         click.echo("[yellow]Phase exists.")
@@ -157,7 +158,7 @@ def micro_add(
     g = _find_goal(goals, goal_name)
     if phase_name is None:
         if not g:
-            click.echo("[red]Goal not found.")
+            goal_not_found(goal_name, [x.name for x in goals])
             return
         options = [p.name for p in g.phases]
         if not options:
@@ -171,6 +172,7 @@ def micro_add(
     p = _find_phase(g, phase_name) if g else None
     if not p:
         click.echo("[red]Goal or phase not found.")
+        click.echo("Run 'loopbloom goal list' to see your available goals.")
         return
     p.micro_goals.append(MicroGoal(name=micro_name.strip()))
     message = (
@@ -210,7 +212,7 @@ def micro_cancel(
     g = _find_goal(goals, goal_name)
     if phase_name is None:
         if not g:
-            click.echo("[red]Goal not found.")
+            goal_not_found(goal_name, [x.name for x in goals])
             return
         options = [p.name for p in g.phases]
         if not options:
@@ -224,6 +226,7 @@ def micro_cancel(
     p = _find_phase(g, phase_name) if g else None
     if not p:
         click.echo("[red]Goal or phase not found.")
+        click.echo("Run 'loopbloom goal list' to see your available goals.")
         return
 
     if micro_name is None:
@@ -239,6 +242,7 @@ def micro_cancel(
     mg = next((m for m in p.micro_goals if m.name == micro_name), None)
     if not mg:
         click.echo("[red]Micro-habit not found.")
+        click.echo("Run 'loopbloom goal list' to see your available goals.")
         return
     mg.status = Status.cancelled
     click.echo(f"[yellow]Cancelled micro-habit:[/] {micro_name}")

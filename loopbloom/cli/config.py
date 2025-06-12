@@ -29,6 +29,7 @@ def _get(key: str) -> None:
         val = val.get(part) if isinstance(val, dict) else None
     if val is None:
         click.echo("[red]Key not found.")
+        click.echo("Run 'loopbloom config view' to inspect available keys.")
     else:
         click.echo(val)
 

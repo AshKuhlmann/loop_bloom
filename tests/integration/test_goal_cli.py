@@ -90,7 +90,7 @@ def test_goal_rm_missing(tmp_path) -> None:
     cli = main.cli
 
     res = runner.invoke(cli, ["goal", "rm", "Ghost", "--yes"], env=env)
-    assert "Goal not found." in res.output
+    assert "Goal not found" in res.output
 
 
 def test_phase_add_missing_goal(tmp_path) -> None:
@@ -119,4 +119,4 @@ def test_phase_add_missing_goal(tmp_path) -> None:
         ["goal", "phase", "add", "Ghost", "Base"],
         env=env,
     )
-    assert "[red]Goal not found." in res.output
+    assert "[red]Goal not found" in res.output
