@@ -39,10 +39,14 @@ def test_direct_microgoal_workflow(tmp_path):
 
     # 2. Add Micro-Goal directly to Goal
     res_add = runner.invoke(
-        cli, ["goal", "micro", "add", "Read 1 page", "--goal", "Reading"], env=env
+        cli,
+        ["goal", "micro", "add", "Read 1 page", "--goal", "Reading"],
+        env=env,
     )
     assert res_add.exit_code == 0
-    assert "Added micro-habit 'Read 1 page' to goal 'Reading'" in res_add.output
+    assert (
+        "Added micro-habit 'Read 1 page' to goal 'Reading'" in res_add.output
+    )
 
     # 3. Verify with `tree`
     res_tree = runner.invoke(cli, ["tree"], env=env)
@@ -59,7 +63,9 @@ def test_direct_microgoal_workflow(tmp_path):
 
     # 5. Remove micro-goal
     res_rm = runner.invoke(
-        cli, ["goal", "micro", "rm", "Read 1 page", "--goal", "Reading", "--yes"], env=env
+        cli,
+        ["goal", "micro", "rm", "Read 1 page", "--goal", "Reading", "--yes"],
+        env=env,
     )
     assert "Deleted micro-habit" in res_rm.output
 

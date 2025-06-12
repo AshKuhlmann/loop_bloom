@@ -1,4 +1,3 @@
-import pytest
 from loopbloom.core.models import GoalArea, MicroGoal
 
 

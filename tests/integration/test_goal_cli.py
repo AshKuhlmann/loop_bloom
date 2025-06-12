@@ -50,7 +50,16 @@ def test_goal_phase_micro_crud(tmp_path):
     # Add micro-habit
     res = runner.invoke(
         cli,
-        ["goal", "micro", "add", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Walk 5 min",
+            "--goal",
+            "Exercise",
+            "--phase",
+            "Foundation",
+        ],
         env=env,
     )
     assert "Added micro-habit" in res.output
@@ -58,7 +67,17 @@ def test_goal_phase_micro_crud(tmp_path):
     # Cancel micro-habit
     res = runner.invoke(
         cli,
-        ["goal", "micro", "rm", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation", "--yes"],
+        [
+            "goal",
+            "micro",
+            "rm",
+            "Walk 5 min",
+            "--goal",
+            "Exercise",
+            "--phase",
+            "Foundation",
+            "--yes",
+        ],
         env=env,
     )
     assert "Deleted micro-habit" in res.output

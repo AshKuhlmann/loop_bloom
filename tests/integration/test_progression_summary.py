@@ -46,7 +46,16 @@ def test_summary_shows_advance_prompt(tmp_path):
     )
     runner.invoke(
         cli,
-        ["goal", "micro", "add", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Walk 5 min",
+            "--goal",
+            "Exercise",
+            "--phase",
+            "Foundation",
+        ],
         env=env,
     )
 

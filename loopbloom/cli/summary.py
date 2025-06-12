@@ -75,11 +75,17 @@ def _overview(goals: List[GoalArea]) -> None:
         # Update logic to find the active micro-goal
         active = None
         for ph in g.phases:
-            active = next((m for m in ph.micro_goals if m.status == "active"), None)
+            active = next(
+                (m for m in ph.micro_goals if m.status == "active"),
+                None,
+            )
             if active:
                 break
         if active is None:
-            active = next((m for m in g.micro_goals if m.status == "active"), None)
+            active = next(
+                (m for m in g.micro_goals if m.status == "active"),
+                None,
+            )
         flag = "Advance?" if active and should_advance(active) else "\u2014"
         table.add_row(g.name, ratio, flag)
     console.print(table)

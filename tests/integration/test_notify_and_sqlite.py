@@ -37,7 +37,16 @@ def test_switch_to_sqlite_and_notify(tmp_path, monkeypatch):
     )
     runner.invoke(
         new_cli,
-        ["goal", "micro", "add", "Test", "--goal", "NotifyGoal", "--phase", "Base"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Test",
+            "--goal",
+            "NotifyGoal",
+            "--phase",
+            "Base",
+        ],
         env=env,
     )
 

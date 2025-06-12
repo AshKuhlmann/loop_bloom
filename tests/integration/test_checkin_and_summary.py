@@ -19,7 +19,16 @@ def test_checkin_generates_peptalk_and_summary(tmp_path) -> None:
     )
     runner.invoke(
         cli,
-        ["goal", "micro", "add", "Walk 5 min", "--goal", "Exercise", "--phase", "Foundation"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Walk 5 min",
+            "--goal",
+            "Exercise",
+            "--phase",
+            "Foundation",
+        ],
         env=env,
     )
 

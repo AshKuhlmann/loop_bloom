@@ -42,7 +42,16 @@ def test_export_json_and_csv(tmp_path):
     runner.invoke(main.cli, ["goal", "phase", "add", "Sleep", "Base"], env=env)
     runner.invoke(
         main.cli,
-        ["goal", "micro", "add", "Wake 8", "--goal", "Sleep", "--phase", "Base"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Wake 8",
+            "--goal",
+            "Sleep",
+            "--phase",
+            "Base",
+        ],
         env=env,
     )
     runner.invoke(main.cli, ["checkin", "Sleep"], env=env)

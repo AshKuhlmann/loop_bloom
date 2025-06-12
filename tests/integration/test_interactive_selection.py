@@ -32,7 +32,16 @@ def test_checkin_prompts_for_goal(tmp_path) -> None:
     runner.invoke(cli, ["goal", "phase", "add", "Sleep", "Base"], env=env)
     runner.invoke(
         cli,
-        ["goal", "micro", "add", "Lights", "--goal", "Sleep", "--phase", "Base"],
+        [
+            "goal",
+            "micro",
+            "add",
+            "Lights",
+            "--goal",
+            "Sleep",
+            "--phase",
+            "Base",
+        ],
         env=env,
     )
 
