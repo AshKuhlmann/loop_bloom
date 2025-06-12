@@ -123,8 +123,12 @@ def micro_add(
     g = _find_goal(goals, goal_name)
     p = _find_phase(g, phase_name) if g else None
     if not p:
-        click.echo("[red]Goal or phase not found.")
-        return
+        if g and phase_name.lower() == "default":
+            p = Phase(name=phase_name.strip())
+            g.phases.append(p)
+        else:
+            click.echo("[red]Goal or phase not found.")
+            return
     p.micro_goals.append(MicroGoal(name=micro_name.strip()))
     message = (
         "[green]Added micro-habit '"

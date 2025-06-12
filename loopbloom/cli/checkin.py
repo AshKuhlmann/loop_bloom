@@ -14,18 +14,37 @@ from loopbloom.core.talks import TalkPool
     name="checkin",
     help="Record today’s success or skip for a goal.",
 )
-@click.argument("goal_name")
-@click.option("--success/--skip", default=True, help="Mark success or skip.")
+@click.argument("goal_name", required=False)
+@click.option("--goal", "goal_opt", help="Goal name (alternative to argument).")
+@click.option(
+    "--status",
+    type=click.Choice(["done", "skip"]),
+    help="Mark success or skip via status value.",
+)
+@click.option("--success/--skip", "success_flag", default=True, help="Mark success or skip.")
 @click.option("--note", default="", help="Optional note.")
 @with_goals
 def checkin(
     ctx: click.Context,
-    goal_name: str,
-    success: bool,
+    goal_name: str | None,
+    goal_opt: str | None,
+    status: str | None,
+    success_flag: bool,
     note: str,
     goals: List[GoalArea],
 ) -> None:
     """Append a Checkin to the current active micro-goal of GOAL_NAME."""
+    # Determine final goal name
+    goal_name = goal_opt or goal_name
+    if not goal_name:
+        click.echo("[red]Goal required.")
+        return
+
+    # Determine success flag
+    success = success_flag
+    if status is not None:
+        success = status == "done"
+
     # Locate goal
     goal = next(
         (g for g in goals if g.name.lower() == goal_name.lower()),
