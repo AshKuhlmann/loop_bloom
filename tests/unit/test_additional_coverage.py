@@ -175,7 +175,11 @@ def test_phase_rm_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     store.save([GoalArea(name="G", phases=[Phase(name="P")])])
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    res = runner.invoke(cli, ["goal", "phase", "rm", "G", "P", "--yes"], env=env)
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "rm", "G", "P", "--yes"],
+        env=env,
+    )
     assert "Deleted phase" in res.output
 
 
