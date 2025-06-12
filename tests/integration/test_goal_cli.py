@@ -66,3 +66,57 @@ def test_goal_phase_micro_crud(tmp_path):
     # Verify JSON structure saved
     data = json.loads(data_file.read_text())
     assert data[0]["phases"][0]["micro_goals"][0]["status"] == "cancelled"
+
+
+def test_goal_rm_missing(tmp_path) -> None:
+    """Attempting to remove an unknown goal shows an error."""
+    runner = CliRunner()
+    data_file = tmp_path / "data.json"
+    env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
+
+    os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
+
+    import importlib
+
+    import loopbloom.cli as cli_mod
+    import loopbloom.cli.goal as goal_mod
+    import loopbloom.storage.json_store as js_mod
+    from loopbloom import __main__ as main
+
+    importlib.reload(js_mod)
+    importlib.reload(cli_mod)
+    importlib.reload(goal_mod)
+    importlib.reload(main)
+    cli = main.cli
+
+    res = runner.invoke(cli, ["goal", "rm", "Ghost", "--yes"], env=env)
+    assert "Goal not found." in res.output
+
+
+def test_phase_add_missing_goal(tmp_path) -> None:
+    """Adding a phase to a nonexistent goal yields an error message."""
+    runner = CliRunner()
+    data_file = tmp_path / "data.json"
+    env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
+
+    os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
+
+    import importlib
+
+    import loopbloom.cli as cli_mod
+    import loopbloom.cli.goal as goal_mod
+    import loopbloom.storage.json_store as js_mod
+    from loopbloom import __main__ as main
+
+    importlib.reload(js_mod)
+    importlib.reload(cli_mod)
+    importlib.reload(goal_mod)
+    importlib.reload(main)
+    cli = main.cli
+
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "add", "Ghost", "Base"],
+        env=env,
+    )
+    assert "[red]Goal not found." in res.output
