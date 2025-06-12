@@ -5,9 +5,9 @@ from typing import List, Optional
 import click
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
-from loopbloom.core.models import GoalArea, MicroGoal, Phase
+from loopbloom.cli.utils import goal_not_found
+from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
@@ -219,14 +219,10 @@ def micro_add(
 
     p = _find_phase(g, phase_name)
     if not p:
-        click.echo(
-            f"[red]Phase '{phase_name}' not found in goal '{goal_name}'."
-        )
+        click.echo(f"[red]Phase '{phase_name}' not found in goal '{goal_name}'.")
         return
     p.micro_goals.append(MicroGoal(name=name.strip()))
-    click.echo(
-        f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}"
-    )
+    click.echo(f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}")
 
 
 @micro.command(name="rm")
@@ -275,10 +271,68 @@ def micro_rm(
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
 
-    if not yes and not click.confirm(
-        f"Permanently delete '{name}'?", default=False
-    ):
+    if not yes and not click.confirm(f"Permanently delete '{name}'?", default=False):
         return
 
     target_list.remove(mg)
     click.echo(f"[green]Deleted micro-habit:[/] {name}")
+
+
+@micro.command(name="edit")
+@click.argument("name")
+@click.option(
+    "--goal",
+    "goal_name",
+    required=True,
+    help="The goal containing the micro-habit.",
+)
+@click.option(
+    "--phase",
+    "phase_name",
+    default=None,
+    help="Phase containing the micro-habit, if any.",
+)
+@click.option("--new-name", required=True, help="Updated name for the micro-habit.")
+@click.option(
+    "--status",
+    type=click.Choice([s.value for s in Status]),
+    default=None,
+    help="Update the micro-habit status.",
+)
+@with_goals
+def micro_edit(
+    ctx: click.Context,
+    name: str,
+    goal_name: str,
+    phase_name: Optional[str],
+    new_name: str,
+    status: Optional[str],
+    goals: List[GoalArea],
+) -> None:
+    """Modify an existing micro-habit."""
+    g = _find_goal(goals, goal_name)
+    if not g:
+        goal_not_found(goal_name, [x.name for x in goals])
+        return
+
+    target_list: Optional[List[MicroGoal]]
+    if phase_name:
+        p = _find_phase(g, phase_name)
+        if not p:
+            click.echo(f"[red]Phase '{phase_name}' not found.")
+            return
+        target_list = p.micro_goals
+    else:
+        target_list = g.micro_goals
+
+    mg = next((m for m in target_list if m.name.lower() == name.lower()), None)
+    if not mg:
+        loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
+        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+        return
+
+    mg.name = new_name.strip()
+    if status:
+        mg.status = Status(status)
+
+    click.echo(f"[green]Updated micro-habit '{name}' -> '{new_name}'")
