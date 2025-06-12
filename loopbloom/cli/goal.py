@@ -125,6 +125,58 @@ def phase_add(
     click.echo(f"[green]Added phase '{phase_name}' to {goal_name}")
 
 
+@phase.command(name="rm")
+@click.argument("goal_name", required=False)
+@click.argument("phase_name", required=False)
+@click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
+@with_goals
+def phase_rm(
+    ctx: click.Context,
+    goal_name: Optional[str],
+    phase_name: Optional[str],
+    yes: bool,
+    goals: List[GoalArea],
+) -> None:
+    """Remove a phase from a goal."""
+    if goal_name is None:
+        names = [g.name for g in goals]
+        if not names:
+            click.echo("[red]No goals – use `loopbloom goal add`.")
+            return
+        click.echo("Select goal:")
+        goal_name = choose_from(names, "Enter number")
+        if goal_name is None:
+            return
+
+    g = _find_goal(goals, goal_name)
+    if not g:
+        goal_not_found(goal_name, [x.name for x in goals])
+        return
+
+    if phase_name is None:
+        options = [p.name for p in g.phases]
+        if not options:
+            click.echo("[red]No phases found for this goal.")
+            return
+        click.echo("Select phase to delete:")
+        phase_name = choose_from(options, "Enter number")
+        if phase_name is None:
+            return
+
+    p = _find_phase(g, phase_name)
+    if not p:
+        click.echo("[red]Phase not found.")
+        return
+
+    if not yes and not click.confirm(
+        f"Delete phase '{phase_name}' from {goal_name}?",
+        default=False,
+    ):
+        return
+    g.phases.remove(p)
+    click.echo(f"[green]Deleted phase '{phase_name}' from {goal_name}")
+
+
 # Micro commands
 @goal.group(name="micro", help="Micro-habit commands.")
 def micro() -> None:

@@ -120,3 +120,38 @@ def test_phase_add_missing_goal(tmp_path) -> None:
         env=env,
     )
     assert "[red]Goal not found" in res.output
+
+
+def test_phase_rm(tmp_path) -> None:
+    """Removing a phase deletes it from the goal."""
+    runner = CliRunner()
+    data_file = tmp_path / "data.json"
+    env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
+
+    os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
+
+    import importlib
+
+    import loopbloom.cli as cli_mod
+    import loopbloom.cli.goal as goal_mod
+    import loopbloom.storage.json_store as js_mod
+    from loopbloom import __main__ as main
+
+    importlib.reload(js_mod)
+    importlib.reload(cli_mod)
+    importlib.reload(goal_mod)
+    importlib.reload(main)
+    cli = main.cli
+
+    runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
+    runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Base"], env=env)
+
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "rm", "Exercise", "Base", "--yes"],
+        env=env,
+    )
+    assert "Deleted phase" in res.output
+
+    data = json.loads(data_file.read_text())
+    assert data[0]["phases"] == []

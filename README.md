@@ -138,7 +138,7 @@ loopbloom help                         # global help
 
 GOALS & MICRO-HABITS
   loopbloom goal  list|add|edit|rm                # manage goal areas
-  loopbloom phase list|add|edit|rm                # optional phases
+  loopbloom goal phase add|rm                    # manage phases
   loopbloom micro list|add|edit|rm|start|cancel   # micro-habit operations
   loopbloom tree                         # show goal hierarchy
 
