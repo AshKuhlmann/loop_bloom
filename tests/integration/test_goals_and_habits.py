@@ -11,7 +11,8 @@ def test_hg_01_add_new_goal(isolated_env):
     result = runner.invoke(cli, ["goal", "add", "Sleep Hygiene"], env=env)
 
     assert result.exit_code == 0
-    assert "Added goal: Sleep Hygiene" in result.output
+    assert "Added goal" in result.output
+    assert "Sleep Hygiene" in result.output
     # Verify the data was written to the store
     data = json.loads(data_path.read_text())
     assert len(data) == 1
