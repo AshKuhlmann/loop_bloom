@@ -199,7 +199,8 @@ def test_micro_add_missing_phase(
         ["goal", "micro", "add", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
-    assert "Phase 'P' not found" in res.output
+    assert "Created phase 'P'" in res.output
+    assert "Added micro-habit" in res.output
 
 
 def test_micro_cancel_missing(
