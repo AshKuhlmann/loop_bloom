@@ -14,3 +14,5 @@ def test_cli_help() -> None:
         text=True,
     )
     assert result.returncode == 0, result.stderr
+    assert "goal" in result.stdout
+    assert "summary" in result.stdout
