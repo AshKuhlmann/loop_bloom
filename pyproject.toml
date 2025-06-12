@@ -35,6 +35,7 @@ mypy = "*"
 beartype = "*"
 types-PyYAML = "*"
 tomli-w = "*"
+flake8 = "*"
 
 [tool.poetry.scripts]
 loopbloom = "loopbloom.__main__:cli"
