@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import importlib
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import click
 import pytest
@@ -92,7 +89,7 @@ def test_step_validation_error():
 
 
 def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Reload CLI modules with ``LOOPBLOOM_DATA_PATH`` pointing at ``tmp_path``."""
+    """Reload CLI modules with data path at ``tmp_path``."""
     import loopbloom.cli as cli_mod
     import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
@@ -104,7 +101,10 @@ def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return main.cli
 
 
-def test_goal_list_empty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_goal_list_empty(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """List goals when the store is empty."""
     from loopbloom.storage.json_store import JSONStore
 
@@ -112,9 +112,8 @@ def test_goal_list_empty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Non
     runner = CliRunner()
     # ensure file exists but empty
     JSONStore(path=tmp_path / "data.json").save([])
-    res = runner.invoke(
-        cli, ["goal", "list"], env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "list"], env=env)
     assert "No goals" in res.output
 
 
@@ -130,11 +129,8 @@ def test_goal_rm_requires_confirm(
     store.save([GoalArea(name="X")])
     monkeypatch.setattr(click, "confirm", lambda *a, **k: False)
     runner = CliRunner()
-    res = runner.invoke(
-        cli,
-        ["goal", "rm", "X"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "rm", "X"], env=env)
     assert "Deleted" not in res.output
 
 
@@ -147,11 +143,8 @@ def test_goal_rm_yes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     store = JSONStore(path=tmp_path / "data.json")
     store.save([GoalArea(name="X")])
     runner = CliRunner()
-    res = runner.invoke(
-        cli,
-        ["goal", "rm", "X", "--yes"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "rm", "X", "--yes"], env=env)
     assert "Deleted goal" in res.output
 
 
@@ -165,15 +158,15 @@ def test_micro_add_missing_phase(
     cli = _reload_cli(tmp_path, monkeypatch)
     JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
     runner = CliRunner()
-    res = runner.invoke(
-        cli,
-        ["goal", "micro", "add", "G", "P", "M"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["goal", "micro", "add", "G", "P", "M"], env=env)
     assert "Goal or phase not found" in res.output
 
 
-def test_micro_cancel_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_micro_cancel_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Canceling a missing micro-habit should print an error."""
     from loopbloom.core.models import GoalArea, Phase
     from loopbloom.storage.json_store import JSONStore
@@ -182,15 +175,19 @@ def test_micro_cancel_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     g = GoalArea(name="G", phases=[Phase(name="P", micro_goals=[])])
     JSONStore(path=tmp_path / "data.json").save([g])
     runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
         ["goal", "micro", "cancel", "G", "P", "M"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
+        env=env,
     )
     assert "Micro-habit not found" in res.output
 
 
-def test_micro_cancel_no_phase(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_micro_cancel_no_phase(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Canceling with a missing phase should notify the user."""
     from loopbloom.core.models import GoalArea
     from loopbloom.storage.json_store import JSONStore
@@ -198,65 +195,68 @@ def test_micro_cancel_no_phase(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) 
     cli = _reload_cli(tmp_path, monkeypatch)
     JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
     runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
         ["goal", "micro", "cancel", "G", "P", "M"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
+        env=env,
     )
     assert "Goal or phase not found" in res.output
 
 
-def test_checkin_errors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_checkin_errors(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Handle check-ins when goals or micro-habits are absent."""
     from loopbloom.core.models import GoalArea, MicroGoal, Phase
     from loopbloom.storage.json_store import JSONStore
 
     cli = _reload_cli(tmp_path, monkeypatch)
     runner = CliRunner()
-    res = runner.invoke(
-        cli, ["checkin", "G"], env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["checkin", "G"], env=env)
     assert "Goal not found" in res.output
     g = GoalArea(
         name="G",
-        phases=[Phase(name="P", micro_goals=[MicroGoal(name="M", status="complete")])],
+        phases=[
+            Phase(
+                name="P",
+                micro_goals=[MicroGoal(name="M", status="complete")],
+            )
+        ],
     )
     JSONStore(path=tmp_path / "data.json").save([g])
-    res = runner.invoke(
-        cli, ["checkin", "G"], env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    )
+    res = runner.invoke(cli, ["checkin", "G"], env=env)
     assert "No active micro" in res.output
 
 
-def test_summary_edge_cases(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_summary_edge_cases(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Summary command handles missing goal or active micro."""
     from loopbloom.core.models import GoalArea, Phase
     from loopbloom.storage.json_store import JSONStore
 
     cli = _reload_cli(tmp_path, monkeypatch)
     runner = CliRunner()
-    res = runner.invoke(
-        cli,
-        ["summary", "--goal", "G"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
-    )
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["summary", "--goal", "G"], env=env)
     assert "Goal not found" in res.output
     JSONStore(path=tmp_path / "data.json").save(
         [GoalArea(name="G", phases=[Phase(name="P")])]
     )
-    res = runner.invoke(
-        cli,
-        ["summary", "--goal", "G"],
-        env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")},
-    )
+    res = runner.invoke(cli, ["summary", "--goal", "G"], env=env)
     assert "No active micro" in res.output
-    res = runner.invoke(
-        cli, ["summary"], env={"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
-    )
+    res = runner.invoke(cli, ["summary"], env=env)
     assert "LoopBloom Progress" in res.output
 
 
-def test_config_branches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_config_branches(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Exercise ``config`` CLI paths and config module reloads."""
     import loopbloom.cli.config as config_mod
     import loopbloom.core.config as cfg_mod
