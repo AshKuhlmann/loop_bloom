@@ -1,5 +1,6 @@
 import json
 
+
 def test_hg_01_add_new_goal(isolated_env):
     """(HG-01) Verify a new goal can be added."""
     runner = isolated_env["runner"]
@@ -44,10 +45,17 @@ def test_hg_06_add_micro_habit(isolated_env):
     runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Cardio"], env=env)
 
     # Action: Add micro-habit
-    result = runner.invoke(cli, ["goal", "micro", "add", "Exercise", "Cardio", "Walk for 5 minutes"], env=env)
+    result = runner.invoke(
+        cli,
+        ["goal", "micro", "add", "Exercise", "Cardio", "Walk for 5 minutes"],
+        env=env,
+    )
 
     # Assertions
     assert result.exit_code == 0
     assert "Added micro-habit" in result.output
     data = json.loads(data_path.read_text())
-    assert data[0]["phases"][0]["micro_goals"][0]["name"] == "Walk for 5 minutes"
+    assert (
+        data[0]["phases"][0]["micro_goals"][0]["name"]
+        == "Walk for 5 minutes"
+    )

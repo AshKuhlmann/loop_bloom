@@ -1,7 +1,16 @@
 """Daily check-in command."""
 
-from typing import List, Optional
-
+@click.option(
+    "--goal",
+    "goal_opt",
+    help="Goal name (alternative to argument).",
+)
+@click.option(
+    "--success/--skip",
+    "success_flag",
+    default=True,
+    help="Mark success or skip.",
+)
 import click
 from rich import print
 

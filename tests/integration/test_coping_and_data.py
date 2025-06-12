@@ -1,4 +1,6 @@
 import csv
+from tests.integration.conftest import reload_modules
+
 
 def test_gc_02_run_interactive_coping_plan(isolated_env):
     """(GC-02) Verify an interactive coping plan runs correctly."""
@@ -9,13 +11,18 @@ def test_gc_02_run_interactive_coping_plan(isolated_env):
     # Action: Run the 'overwhelmed' plan and provide answers via input
     # The expected questions are based on the content of 'overwhelmed.yml'
     input_text = "My inbox\nReview 5 emails\n"
-    result = runner.invoke(cli, ["cope", "run", "overwhelmed"], input=input_text, env=env)
+    result = runner.invoke(
+        cli,
+        ["cope", "run", "overwhelmed"],
+        input=input_text,
+        env=env,
+    )
 
     # Assertions
     assert result.exit_code == 0
     assert "Identify the biggest stressor" in result.output
     assert "Pick one micro-action" in result.output
-    assert "action dispels anxiety" in result.output  # Final confirmation message
+    assert "action dispels anxiety" in result.output  # Final confirmation
 
 
 def test_de_01_export_data_to_csv(isolated_env):
@@ -27,11 +34,19 @@ def test_de_01_export_data_to_csv(isolated_env):
 
     # Setup: Create some data to export
     runner.invoke(cli, ["goal", "add", "CSV Test"], env=env)
-    runner.invoke(cli, ["checkin", "--goal", "CSV Test", "--status", "done"], env=env)
+    runner.invoke(
+        cli,
+        ["checkin", "--goal", "CSV Test", "--status", "done"],
+        env=env,
+    )
 
     # Action
     export_path = tmp_path / "progress.csv"
-    result = runner.invoke(cli, ["export", "--fmt", "csv", "--out", str(export_path)], env=env)
+    result = runner.invoke(
+        cli,
+        ["export", "--fmt", "csv", "--out", str(export_path)],
+        env=env,
+    )
 
     # Assertions
     assert result.exit_code == 0
@@ -56,7 +71,11 @@ def test_cf_02_switch_storage_backend(isolated_env):
     tmp_path = isolated_env["data_path"].parent
 
     # Action 1: Set config to use sqlite
-    result_config = runner.invoke(cli, ["config", "set", "storage", "sqlite"], env=env)
+    result_config = runner.invoke(
+        cli,
+        ["config", "set", "storage", "sqlite"],
+        env=env,
+    )
     assert result_config.exit_code == 0
 
     # Action 2: Add a goal, which should now go to the sqlite DB
