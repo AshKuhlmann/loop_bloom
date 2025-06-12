@@ -9,6 +9,8 @@ def test_readme_commands(tmp_path, monkeypatch):
     """Ensure README examples execute without error."""
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    # ensure STORE paths resolve to tmp files
+    monkeypatch.setenv("LOOPBLOOM_DATA_PATH", env["LOOPBLOOM_DATA_PATH"])
 
     # isolate config and sqlite paths
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
