@@ -102,7 +102,11 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
         progress = Group(bar, f" {successes}/{total}")
     else:
         progress = "\u2013"
-    console.print(f"Success rate last {window}\u00a0days: ", progress, f"  {flag}")
+    console.print(
+        f"Success rate last {window}\u00a0days: ",
+        progress,
+        f"  {flag}",
+    )
     # notify if eligible for advancement
     from loopbloom.services import notifier
 
