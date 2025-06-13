@@ -10,8 +10,9 @@ from loopbloom.cli.config import config  # NEW
 from loopbloom.cli.cope import cope  # NEW
 from loopbloom.cli.export import export  # NEW
 from loopbloom.cli.goal import goal
-from loopbloom.cli.tree import tree
+from loopbloom.cli.micro import micro
 from loopbloom.cli.summary import summary
+from loopbloom.cli.tree import tree
 
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
     pass
@@ -31,6 +32,7 @@ cli.add_command(cope)
 cli.add_command(config)
 cli.add_command(export)
 cli.add_command(tree)
+cli.add_command(micro)
 
 if __name__ == "__main__":
     cli()
