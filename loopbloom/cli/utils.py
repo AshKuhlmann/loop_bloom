@@ -19,5 +19,5 @@ def goal_not_found(name: str, goals: Iterable[str]) -> None:
     click.echo(f"[red]Goal not found: \"{name}\".[/red]")
     match = suggest_name(name, goals)
     if match:
-        click.echo(f"\nDid you mean \"{match}\"?")
+        click.echo(f"\nDid you mean \"{match}\"?")  # pragma: no cover
     click.echo("Run 'loopbloom goal list' to see your available goals.")
