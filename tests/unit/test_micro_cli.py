@@ -26,7 +26,10 @@ def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return main.cli
 
 
-def test_micro_complete(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_micro_complete(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Marking a micro-habit complete updates its status."""
     from loopbloom.core.models import GoalArea, MicroGoal
     from loopbloom.storage.json_store import JSONStore
