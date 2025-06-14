@@ -63,12 +63,12 @@ class GoalArea(BaseModel):
         """Find the active micro-goal within phases or direct goals."""
         for ph in self.phases:
             mg = next(
-                (m for m in ph.micro_goals if m.status == "active"),
+                (m for m in ph.micro_goals if m.status == Status.active),
                 None,
             )
             if mg:
                 return mg
         return next(
-            (m for m in self.micro_goals if m.status == "active"),
+            (m for m in self.micro_goals if m.status == Status.active),
             None,
         )
