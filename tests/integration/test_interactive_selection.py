@@ -1,6 +1,5 @@
 """Tests for interactive selection menus."""
 
-import importlib
 import json
 import os
 

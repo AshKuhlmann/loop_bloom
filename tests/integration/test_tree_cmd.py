@@ -1,6 +1,5 @@
 """Integration tests for the tree CLI command."""
 
-import importlib
 import os
 
 from click.testing import CliRunner

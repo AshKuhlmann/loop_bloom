@@ -144,8 +144,6 @@ def test_micro_add_creates_phase(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
     from loopbloom import __main__ as main
     cli = main.cli
 

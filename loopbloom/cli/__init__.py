@@ -1,12 +1,9 @@
 """CLI storage loader and saver for LoopBloom."""
 
 from functools import wraps
-from pathlib import Path  # noqa: F401
-from typing import Any, Callable, List
+from typing import Any, Callable
 
 import click
-
-from loopbloom.core.models import GoalArea
 
 
 def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
@@ -14,7 +11,7 @@ def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
 
     @wraps(f)
     @click.pass_context
-    def wrapper(ctx: click.Context, *args: Any, **kwargs: Any) -> Any:
+    def wrapper(ctx: click.Context, /, *args: Any, **kwargs: Any) -> Any:
         store = ctx.obj
         goals = store.load()
         result = f(*args, goals=goals, **kwargs)
