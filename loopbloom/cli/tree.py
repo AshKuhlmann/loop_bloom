@@ -14,7 +14,7 @@ console = Console()
 
 @click.command(name="tree", help="Show goal hierarchy as a tree.")
 @with_goals
-def tree(ctx: click.Context, goals: List[GoalArea]) -> None:
+def tree(goals: List[GoalArea]) -> None:
     """Display all goals, phases, and micro-habits in a tree view."""
     root = Tree("\U0001F333 LoopBloom Goals")
     for g in goals:

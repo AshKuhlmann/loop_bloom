@@ -1,26 +1,16 @@
 import json
 import os
-import importlib
 from click.testing import CliRunner
 
 
 def _reload_cli_modules():
-    """Helper to reload modules to pick up changes."""
+    """Return CLI instance."""
     import sys
     from pathlib import Path
     root = Path(__file__).resolve().parents[2]
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.cli.tree as tree_mod
-    import loopbloom.cli as cli_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(tree_mod)
-    importlib.reload(main)
     return main.cli
 
 
@@ -30,7 +20,7 @@ def test_direct_microgoal_workflow(tmp_path):
     data_file = tmp_path / "data.json"
     env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
 
-    # Ensure env var is set for reloads
+    # Ensure env var is set for CLI invocation
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
     cli = _reload_cli_modules()
 

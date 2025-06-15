@@ -21,7 +21,6 @@ from loopbloom.core.talks import TalkPool
 @click.option("--note", default="", help="Optional note.")
 @with_goals
 def checkin(
-    ctx: click.Context,
     goal_name: Optional[str],
     success: bool,
     note: str,

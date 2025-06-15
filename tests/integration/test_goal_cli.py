@@ -18,17 +18,7 @@ def test_goal_phase_micro_crud(tmp_path):
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     # Add a goal
@@ -95,17 +85,7 @@ def test_goal_rm_missing(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     res = runner.invoke(cli, ["goal", "rm", "Ghost", "--yes"], env=env)
@@ -120,17 +100,7 @@ def test_phase_add_missing_goal(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     res = runner.invoke(
@@ -149,17 +119,7 @@ def test_phase_rm(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
@@ -184,17 +144,7 @@ def test_micro_add_creates_phase(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
 
-    import importlib
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)

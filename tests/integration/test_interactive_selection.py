@@ -1,6 +1,5 @@
 """Tests for interactive selection menus."""
 
-import importlib
 import json
 import os
 
@@ -15,16 +14,6 @@ def test_checkin_prompts_for_goal(tmp_path) -> None:
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(tmp_path / "data.json")
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.checkin as checkin_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(checkin_mod)
-    importlib.reload(main)
     cli = main.cli
 
     # setup

@@ -44,7 +44,6 @@ def micro() -> None:
 )
 @with_goals
 def micro_complete(
-    ctx: click.Context,
     name: str,
     goal_name: str,
     phase_name: Optional[str],
@@ -92,7 +91,6 @@ def micro_complete(
 )
 @with_goals
 def micro_cancel(
-    ctx: click.Context,
     name: str,
     goal_name: str,
     phase_name: Optional[str],

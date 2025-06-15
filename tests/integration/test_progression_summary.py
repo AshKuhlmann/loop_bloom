@@ -21,20 +21,12 @@ def test_summary_shows_advance_prompt(tmp_path):
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
 
-    import importlib
     import os
 
     os.environ["LOOPBLOOM_DATA_PATH"] = env["LOOPBLOOM_DATA_PATH"]
 
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
 
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(main)
     cli = main.cli
 
     # Setup
