@@ -19,13 +19,8 @@ def test_switch_to_sqlite_and_notify(tmp_path, monkeypatch):
     importlib.reload(cfg_mod)
     runner.invoke(cli, ["config", "set", "storage", "sqlite"])
     import loopbloom.__main__ as main
-    import loopbloom.cli as cli_mod
-    import loopbloom.storage.sqlite_store as sql_mod
 
     importlib.reload(cfg_mod)
-    importlib.reload(sql_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(main)
     new_cli = main.cli
 
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "dummy.json")}

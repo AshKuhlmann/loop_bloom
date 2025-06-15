@@ -2,6 +2,9 @@
 
 from typing import TYPE_CHECKING, cast
 
+import os
+from pathlib import Path
+
 import click
 from click import Command
 
@@ -13,15 +16,32 @@ from loopbloom.cli.goal import goal
 from loopbloom.cli.micro import micro
 from loopbloom.cli.summary import summary
 from loopbloom.cli.tree import tree
+from loopbloom.core import config as cfg
+from loopbloom.storage.json_store import JSONStore, DEFAULT_PATH as JSON_DEFAULT_PATH
+from loopbloom.storage.sqlite_store import (
+    SQLiteStore,
+    DEFAULT_PATH as SQLITE_DEFAULT_PATH,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
     pass
 
 
 @click.group()
-def cli() -> None:
+@click.pass_context
+def cli(ctx: click.Context) -> None:
     """LoopBloom – tiny habits, big momentum."""
-    pass
+    config = cfg.load()
+    storage_type = config.get("storage", "json")
+
+    if storage_type == "sqlite":
+        path = os.getenv("LOOPBLOOM_SQLITE_PATH", str(SQLITE_DEFAULT_PATH))
+        store = SQLiteStore(path)
+    else:
+        path = os.getenv("LOOPBLOOM_DATA_PATH", str(JSON_DEFAULT_PATH))
+        store = JSONStore(path)
+
+    ctx.obj = store
 
 
 # Register sub-commands

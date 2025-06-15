@@ -32,7 +32,7 @@ WINDOW_DEFAULT = 14  # days
     help="Show detail for one goal.",
 )
 @with_goals
-def summary(ctx, goal_name: str | None, goals: List[GoalArea]):  # type: ignore
+def summary(goal_name: str | None, goals: List[GoalArea]):  # type: ignore
     """Display a progress overview or detail view for a specific goal."""
     if goal_name:
         _detail_view(goal_name, goals)

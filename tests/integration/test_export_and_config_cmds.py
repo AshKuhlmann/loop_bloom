@@ -24,19 +24,11 @@ def test_export_json_and_csv(tmp_path):
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
 
-    import importlib
     import os
 
-    import loopbloom.__main__ as main
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.export as export_mod
-    import loopbloom.storage.json_store as js_mod
+    from loopbloom import __main__ as main
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(tmp_path / "data.json")
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(export_mod)
-    importlib.reload(main)
 
     runner.invoke(main.cli, ["goal", "add", "Sleep"], env=env)
     runner.invoke(main.cli, ["goal", "phase", "add", "Sleep", "Base"], env=env)

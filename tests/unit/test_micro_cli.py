@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
 
 import pytest
@@ -10,19 +9,10 @@ from click.testing import CliRunner
 
 
 def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Reload CLI modules with custom data path."""
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.cli.micro as micro_mod
-    import loopbloom.storage.json_store as js_mod
+    """Return CLI with data path set to ``tmp_path``."""
     from loopbloom import __main__ as main
 
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(tmp_path / "data.json"))
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(micro_mod)
-    importlib.reload(main)
     return main.cli
 
 

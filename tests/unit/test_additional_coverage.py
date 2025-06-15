@@ -89,15 +89,10 @@ def test_step_validation_error():
 
 
 def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Reload CLI modules with data path at ``tmp_path``."""
-    import loopbloom.cli as cli_mod
-    import loopbloom.storage.json_store as js_mod
+    """Return CLI with data path at ``tmp_path``."""
     from loopbloom import __main__ as main
 
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(tmp_path / "data.json"))
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(main)
     return main.cli
 
 
@@ -362,9 +357,7 @@ def test_phase_add_interactive(
     recorded: list[str] = []
     monkeypatch.setattr(click, "echo", lambda m: recorded.append(m))
 
-    goal_mod.phase_add.callback.__wrapped__.__wrapped__(
-        None, None, "P", goals
-    )
+    goal_mod.phase_add.callback.__wrapped__(None, "P", goals)
 
     assert goals[0].phases[0].name == "P"
     assert any("Added phase 'P'" in m for m in recorded)

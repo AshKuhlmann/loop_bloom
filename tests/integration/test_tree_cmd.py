@@ -13,19 +13,7 @@ def test_tree_displays_hierarchy(tmp_path) -> None:
     env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
-
-    import loopbloom.cli as cli_mod
-    import loopbloom.cli.goal as goal_mod
-    import loopbloom.cli.tree as tree_mod
-    import loopbloom.storage.json_store as js_mod
     from loopbloom import __main__ as main
-
-    importlib.reload(js_mod)
-    importlib.reload(cli_mod)
-    importlib.reload(goal_mod)
-    importlib.reload(tree_mod)
-    importlib.reload(main)
-
     cli = main.cli
 
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)

@@ -32,7 +32,7 @@ def goal() -> None:
 @goal.command(name="add")
 @click.argument("name")
 @with_goals
-def goal_add(ctx: click.Context, name: str, goals: List[GoalArea]) -> None:
+def goal_add(name: str, goals: List[GoalArea]) -> None:
     """Add a new goal area."""
     if _find_goal(goals, name):
         click.echo("[yellow]Goal already exists.")
@@ -43,7 +43,7 @@ def goal_add(ctx: click.Context, name: str, goals: List[GoalArea]) -> None:
 
 @goal.command(name="list")
 @with_goals
-def goal_list(ctx: click.Context, goals: List[GoalArea]) -> None:
+def goal_list(goals: List[GoalArea]) -> None:
     """List all goal areas."""
     if not goals:
         click.echo("[italic]No goals – use `loopbloom goal add`.")
@@ -57,7 +57,6 @@ def goal_list(ctx: click.Context, goals: List[GoalArea]) -> None:
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
 def goal_rm(
-    ctx: click.Context,
     name: Optional[str],
     yes: bool,
     goals: List[GoalArea],
@@ -105,7 +104,6 @@ def phase() -> None:
 @click.argument("phase_name")
 @with_goals
 def phase_add(
-    ctx: click.Context,
     goal_name: Optional[str],
     phase_name: str,
     goals: List[GoalArea],
@@ -145,7 +143,6 @@ def phase_add(
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
 def phase_rm(
-    ctx: click.Context,
     goal_name: Optional[str],
     phase_name: Optional[str],
     yes: bool,
@@ -228,7 +225,6 @@ def micro() -> None:
 )
 @with_goals
 def micro_add(
-    ctx: click.Context,
     name: str,
     goal_name: str,
     phase_name: Optional[str],
@@ -279,7 +275,6 @@ def micro_add(
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
 def micro_rm(
-    ctx: click.Context,
     name: str,
     goal_name: str,
     phase_name: Optional[str],

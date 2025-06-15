@@ -6,17 +6,16 @@ from typing import List
 
 import click
 
-from loopbloom.storage.json_store import JSONStore
-
-STORE = JSONStore()
+from loopbloom.storage.base import Storage
 
 
 @click.command(name="export", help="Export data to CSV or JSON.")
 @click.option("--fmt", type=click.Choice(["csv", "json"]), required=True)
 @click.option("--out", "out_path", type=click.Path(), required=True)
-def export(fmt: str, out_path: str) -> None:
+@click.pass_obj
+def export(store: Storage, fmt: str, out_path: str) -> None:
     """Write all goal history to OUT_PATH in format FMT."""
-    goals = STORE.load()
+    goals = store.load()
 
     if fmt == "json":
         with open(out_path, "w", encoding="utf-8") as fp:
