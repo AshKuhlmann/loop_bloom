@@ -7,7 +7,7 @@ import click
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
-from loopbloom.core.models import GoalArea, MicroGoal, Phase
+from loopbloom.core.models import GoalArea, Phase
 
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
@@ -200,5 +200,3 @@ def phase_rm(
         return
     g.phases.remove(p)
     click.echo(f"[green]Deleted phase '{phase_name}' from {goal_name}")
-
-
