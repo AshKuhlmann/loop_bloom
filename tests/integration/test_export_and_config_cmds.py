@@ -35,7 +35,6 @@ def test_export_json_and_csv(tmp_path):
     runner.invoke(
         main.cli,
         [
-            "goal",
             "micro",
             "add",
             "Wake 8",

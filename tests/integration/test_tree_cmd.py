@@ -20,7 +20,6 @@ def test_tree_displays_hierarchy(tmp_path) -> None:
     runner.invoke(
         cli,
         [
-            "goal",
             "micro",
             "add",
             "Walk",

@@ -22,7 +22,6 @@ def test_checkin_prompts_for_goal(tmp_path) -> None:
     runner.invoke(
         cli,
         [
-            "goal",
             "micro",
             "add",
             "Lights",
