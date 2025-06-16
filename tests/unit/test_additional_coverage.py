@@ -191,7 +191,7 @@ def test_micro_add_missing_phase(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "add", "M", "--goal", "G", "--phase", "P"],
+        ["micro", "add", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
     assert "Created phase 'P'" in res.output
@@ -213,7 +213,7 @@ def test_micro_cancel_missing(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "rm", "M", "--goal", "G", "--phase", "P"],
+        ["micro", "rm", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
     assert "Micro-habit 'M' not found" in res.output
@@ -233,7 +233,7 @@ def test_micro_cancel_no_phase(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "rm", "M", "--goal", "G", "--phase", "P"],
+        ["micro", "rm", "M", "--goal", "G", "--phase", "P"],
         env=env,
     )
     assert "Phase 'P' not found" in res.output
@@ -400,7 +400,7 @@ def test_micro_rm_decline(
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(
         cli,
-        ["goal", "micro", "rm", "M", "--goal", "G"],
+        ["micro", "rm", "M", "--goal", "G"],
         env=env,
     )
     assert "Deleted" not in res.output
