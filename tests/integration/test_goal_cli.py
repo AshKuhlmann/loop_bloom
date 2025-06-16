@@ -41,7 +41,6 @@ def test_goal_phase_micro_crud(tmp_path):
     res = runner.invoke(
         cli,
         [
-            "goal",
             "micro",
             "add",
             "Walk 5 min",
@@ -58,7 +57,6 @@ def test_goal_phase_micro_crud(tmp_path):
     res = runner.invoke(
         cli,
         [
-            "goal",
             "micro",
             "rm",
             "Walk 5 min",
@@ -152,7 +150,6 @@ def test_micro_add_creates_phase(tmp_path) -> None:
     res = runner.invoke(
         cli,
         [
-            "goal",
             "micro",
             "add",
             "Walk",
