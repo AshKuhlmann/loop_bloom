@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from calendar import Calendar, month_name
 from datetime import date
-from typing import Iterable, List
+from typing import Iterable, Iterator, List
 
 import click
-from rich.console import Console, Group
+from rich.console import Console, Group, RenderableType
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
 from loopbloom.cli import with_goals
-from loopbloom.core.models import GoalArea
+from loopbloom.core.models import GoalArea, MicroGoal
 
 console = Console()
 
@@ -28,7 +28,7 @@ console = Console()
     help="Report type to display.",
 )
 @with_goals
-def report(mode: str, goals: List[GoalArea]) -> None:  # type: ignore
+def report(mode: str, goals: List[GoalArea]) -> None:
     """Display advanced reports based on ``mode``."""
     if mode == "success":
         _success_bars(goals)
@@ -36,7 +36,7 @@ def report(mode: str, goals: List[GoalArea]) -> None:  # type: ignore
         _calendar_heatmap(goals)
 
 
-def _gather_all_micro(goals: Iterable[GoalArea]):
+def _gather_all_micro(goals: Iterable[GoalArea]) -> Iterator[MicroGoal]:
     """Yield all micro-goals from ``goals``."""
     for g in goals:
         for ph in g.phases:
@@ -96,6 +96,7 @@ def _success_bars(goals: List[GoalArea]) -> None:
                 total += 1
                 if ci.success:
                     successes += 1
+        ratio: RenderableType
         if total:
             bar = ProgressBar(total=total, completed=successes, width=20)
             ratio = Group(bar, f" {successes}/{total}")
