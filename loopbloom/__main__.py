@@ -1,8 +1,7 @@
 """LoopBloom CLI entry point."""
 
-from typing import TYPE_CHECKING, cast
-
 import os
+from typing import TYPE_CHECKING, cast
 
 import click
 from click import Command
@@ -13,18 +12,23 @@ from loopbloom.cli.cope import cope  # NEW
 from loopbloom.cli.export import export  # NEW
 from loopbloom.cli.goal import goal
 from loopbloom.cli.micro import micro
+from loopbloom.cli.report import report
 from loopbloom.cli.summary import summary
 from loopbloom.cli.tree import tree
 from loopbloom.core import config as cfg
+from loopbloom.storage.base import Storage
+from loopbloom.storage.json_store import (
+    DEFAULT_PATH as JSON_DEFAULT_PATH,
+)
 from loopbloom.storage.json_store import (
     JSONStore,
-    DEFAULT_PATH as JSON_DEFAULT_PATH,
+)
+from loopbloom.storage.sqlite_store import (
+    DEFAULT_PATH as SQLITE_DEFAULT_PATH,
 )
 from loopbloom.storage.sqlite_store import (
     SQLiteStore,
-    DEFAULT_PATH as SQLITE_DEFAULT_PATH,
 )
-from loopbloom.storage.base import Storage
 
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
     pass
@@ -52,6 +56,7 @@ def cli(ctx: click.Context) -> None:
 cli.add_command(goal)
 cli.add_command(cast(Command, checkin))  # type: ignore[redundant-cast]  # NEW
 cli.add_command(summary)  # NEW
+cli.add_command(report)
 cli.add_command(cope)
 cli.add_command(config)
 cli.add_command(export)
