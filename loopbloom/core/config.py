@@ -17,7 +17,8 @@ APP_DIR = XDG_CONFIG_HOME / "loopbloom"
 # Ensure the directory exists so the rest of the module can freely write files.
 APP_DIR.mkdir(parents=True, exist_ok=True)
 # Users may override ``CONFIG_PATH`` for testing by setting this variable.
-# Full path to the TOML configuration file used by :func:`load` and :func:`save`.
+# Full path to the TOML configuration file.
+# Used by :func:`load` and :func:`save`.
 CONFIG_PATH = APP_DIR / "config.toml"
 
 # Built-in defaults used when ``config.toml`` does not exist or omits keys.

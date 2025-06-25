@@ -11,9 +11,10 @@ def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
 
     The decorated command function receives a mutable list of
     :class:`~loopbloom.core.models.GoalArea` objects via the ``goals`` keyword
-    argument. After the command completes, any modifications are persisted back
-    to the underlying storage backend. This keeps individual commands simple and
-    avoids repetitive load/save boilerplate across the CLI surface.
+    argument. After the command completes, any modifications are persisted
+    back to the underlying storage backend. This keeps individual commands
+    simple and avoids repetitive load/save boilerplate across the CLI
+    surface.
     """
 
     @wraps(f)

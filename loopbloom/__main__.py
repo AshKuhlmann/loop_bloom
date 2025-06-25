@@ -47,8 +47,8 @@ def cli(ctx: click.Context) -> None:
         path = os.getenv("LOOPBLOOM_SQLITE_PATH", str(SQLITE_DEFAULT_PATH))
         store = SQLiteStore(path)
     else:
-        # Default to a JSON file if no storage override is set. ``LOOPBLOOM_DATA_PATH``
-        # lets advanced users keep data elsewhere.
+        # Default to a JSON file if no storage override is set.
+        # ``LOOPBLOOM_DATA_PATH`` lets advanced users keep data elsewhere.
         path = os.getenv("LOOPBLOOM_DATA_PATH", str(JSON_DEFAULT_PATH))
         store = JSONStore(path)
 

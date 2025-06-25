@@ -71,4 +71,5 @@ def _new() -> None:
     path = COPING_DIR / f"{plan_id}.yml"
     dumped = yaml.safe_dump(content, sort_keys=False, allow_unicode=True)
     path.write_text(dumped)
-    click.echo(f"[green]Created plan:[/] {path}")  # Print full path for clarity
+    # Show full path so users know where the YAML file lives
+    click.echo(f"[green]Created plan:[/] {path}")

@@ -49,8 +49,8 @@ class JSONStore(Storage):
                 delete=False,
                 dir=self._path.parent,
             ) as tmp:
-                # Write to a temp file then rename for atomicity. ``delete=False``
-                # ensures Windows compatibility.
+                # Write to a temp file then rename for atomicity.
+                # ``delete=False`` ensures Windows compatibility.
                 json.dump(goals, tmp, default=pydantic_encoder, indent=2)
                 tmp_path = Path(tmp.name)
             tmp_path.replace(self._path)
