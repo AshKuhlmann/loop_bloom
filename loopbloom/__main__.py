@@ -43,16 +43,22 @@ def cli(ctx: click.Context) -> None:
 
     store: Storage
     if storage_type == "sqlite":
+        # Allow ``LOOPBLOOM_SQLITE_PATH`` to override the on-disk location.
         path = os.getenv("LOOPBLOOM_SQLITE_PATH", str(SQLITE_DEFAULT_PATH))
         store = SQLiteStore(path)
     else:
+        # Default to a JSON file if no storage override is set.
+        # ``LOOPBLOOM_DATA_PATH`` lets advanced users keep data elsewhere.
         path = os.getenv("LOOPBLOOM_DATA_PATH", str(JSON_DEFAULT_PATH))
         store = JSONStore(path)
 
+    # Expose the store instance to subcommands via Click's context object.
     ctx.obj = store
 
 
-# Register sub-commands
+# Register sub-commands so ``loopbloom`` becomes a multi-command CLI.
+# Individual commands are kept in separate modules for clarity and to
+# encourage contribution. Order here controls help output ordering.
 cli.add_command(goal)
 cli.add_command(cast(Command, checkin))  # type: ignore[redundant-cast]  # NEW
 cli.add_command(summary)  # NEW

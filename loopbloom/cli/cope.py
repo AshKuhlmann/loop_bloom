@@ -14,6 +14,7 @@ def cope() -> None:
 
 @cope.command(name="list", help="Show available coping plans.")
 def _list() -> None:
+    # Show all YAML plans bundled or created by the user.
     plans = PlanRepository.list_plans()
     for p in plans:
         click.echo(f"\u2022 {p.id} \u2013 {p.title}")
@@ -22,6 +23,7 @@ def _list() -> None:
 @cope.command(name="run", help="Run a coping plan by ID.")
 @click.argument("plan_id")
 def _run(plan_id: str) -> None:
+    # Load the requested plan from disk.
     plan = PlanRepository.get(plan_id)
     if not plan:
         click.echo("[red]Plan not found. Use `loopbloom cope list`.")
@@ -38,6 +40,7 @@ def _new() -> None:
         click.echo("[red]Plan already exists.")
         return
     title = click.prompt("Plan title").strip()
+    # Inform the user how to add interactive steps to the plan.
     msg = "Add steps. Type 'p' for prompt, 'm' for message, 'q' to finish."
     click.echo(msg)
     steps = []
@@ -68,4 +71,5 @@ def _new() -> None:
     path = COPING_DIR / f"{plan_id}.yml"
     dumped = yaml.safe_dump(content, sort_keys=False, allow_unicode=True)
     path.write_text(dumped)
+    # Show full path so users know where the YAML file lives
     click.echo(f"[green]Created plan:[/] {path}")

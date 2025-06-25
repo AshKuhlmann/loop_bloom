@@ -28,10 +28,13 @@ from loopbloom.core.config import APP_DIR
 DEFAULT_PATH = Path(
     os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db")
 )
+# Ensure parent directory exists for the database file.
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 metadata = MetaData()
 
+# We store all data as a single JSON payload for simplicity. This keeps the
+# schema trivial and avoids joins while the project is young.
 raw_table = Table(
     "raw_json",
     metadata,
@@ -46,6 +49,7 @@ class SQLiteStore(Storage):
     def __init__(self, path: Path | str = DEFAULT_PATH):
         """Initialise the SQLite store."""
         self._engine: Engine = create_engine(f"sqlite:///{path}", future=True)
+        # Create table schema if the DB file didn't exist yet.
         metadata.create_all(self._engine)
 
     def load(self) -> List[GoalArea]:
@@ -56,7 +60,7 @@ class SQLiteStore(Storage):
                 rows = conn.execute(query).scalars().all()
             if not rows:
                 return []
-            # assume single row
+            # Only one row is ever stored; deserialize its JSON payload.
             data = json.loads(rows[0])
             return [GoalArea.model_validate(obj) for obj in data]
         except SQLAlchemyError as exc:  # pragma: no cover
@@ -67,6 +71,7 @@ class SQLiteStore(Storage):
         payload = json.dumps([g.model_dump(mode="json") for g in goals])
         try:
             with self._engine.begin() as conn:
+                # Replace the single row with the new payload.
                 conn.execute(delete(raw_table))
                 conn.execute(insert(raw_table).values(payload=payload))
         except SQLAlchemyError as exc:  # pragma: no cover

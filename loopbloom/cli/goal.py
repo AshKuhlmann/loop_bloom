@@ -11,12 +11,12 @@ from loopbloom.core.models import GoalArea, Phase
 
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
-    """Return the goal matching ``name`` if present."""
+    """Return the goal matching ``name`` if present (case-insensitive)."""
     return next((g for g in goals if g.name.lower() == name.lower()), None)
 
 
 def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
-    """Return phase from ``goal`` matching ``name`` if found."""
+    """Return the phase within ``goal`` whose name matches ``name``."""
     return next(
         (p for p in goal.phases if p.name.lower() == name.lower()),
         None,
@@ -26,6 +26,8 @@ def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
 @click.group(name="goal", help="Manage goals, phases, and micro-habits.")
 def goal() -> None:
     """Goal-level commands."""
+    # Acts solely as a container for subcommands like ``goal add`` and
+    # ``goal rm``.
     pass
 
 
@@ -62,6 +64,7 @@ def goal_rm(
     goals: List[GoalArea],
 ) -> None:
     """Remove a goal area."""
+    # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
             click.echo(
@@ -83,6 +86,7 @@ def goal_rm(
     if not g:
         goal_not_found(name, [g.name for g in goals])
         return
+    # Confirm destructive operation unless --yes was supplied.
     if not yes and not click.confirm(
         f"Delete goal '{name}'?",
         default=False,
@@ -96,6 +100,8 @@ def goal_rm(
 @goal.group(name="phase", help="Phase-level commands.")
 def phase() -> None:
     """Phase-level subcommands."""
+    # Like :func:`goal`, this group merely groups related actions and does not
+    # run any code itself.
     pass
 
 
@@ -109,6 +115,7 @@ def phase_add(
     goals: List[GoalArea],
 ) -> None:
     """Add a new phase under a goal."""
+    # Prompt for the goal when not provided on the command line.
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
@@ -130,6 +137,7 @@ def phase_add(
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
+    # Avoid duplicates when the phase already exists.
     if _find_phase(g, phase_name):
         click.echo("[yellow]Phase exists.")
         return
@@ -149,6 +157,7 @@ def phase_rm(
     goals: List[GoalArea],
 ) -> None:
     """Remove a phase from a goal."""
+    # Ask which goal to operate on if not provided.
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
@@ -171,6 +180,7 @@ def phase_rm(
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
+    # When no phase is specified, offer a menu of existing ones.
     if phase_name is None:
         options = [p.name for p in g.phases]
         if not options:
@@ -188,6 +198,7 @@ def phase_rm(
         if phase_name is None:
             return  # pragma: no cover
 
+    # Locate the phase object for deletion.
     p = _find_phase(g, phase_name)
     if not p:
         click.echo("[red]Phase not found.")  # pragma: no cover

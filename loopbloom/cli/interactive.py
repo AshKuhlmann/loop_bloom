@@ -6,11 +6,13 @@ from typing import Iterable, List, Optional, TypeVar
 
 import click
 
+# Generic type variable used by :func:`choose_from`.
 T = TypeVar("T")
 
 
 def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
     """Show numbered menu of ``options`` and return the chosen item."""
+    # Convert to a list so we can index user selections.
     items: List[T] = list(options)
     if not items:
         return None

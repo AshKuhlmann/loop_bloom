@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 
 import yaml
 
+# Directory containing YAML coping plans bundled with the package.
 COPING_DIR = Path(__file__).resolve().parent.parent / "data" / "coping"
 
 
@@ -19,8 +20,12 @@ class Step:
 
     def __init__(self, raw: Dict[str, Any]):
         """Initialize from a raw dictionary."""
+        # ``prompt`` means the plan expects user input at this step.
         self.prompt = raw.get("prompt")
+        # ``message`` is printed verbatim, optionally using stored values.
         self.message = raw.get("message")
+        # ``store_as`` names the variable to capture prompt answers under. It
+        # can later be referenced as ``{store_as}`` in subsequent messages.
         self.store_as = raw.get("store_as")
         if not (self.prompt or self.message):
             raise CopingPlanError("Step must have prompt or message")
@@ -30,7 +35,7 @@ class CopingPlan:
     """Parsed coping plan from YAML."""
 
     def __init__(self, path: Path):
-        """Load plan from ``path``."""
+        """Load plan metadata and steps from a YAML file."""
         content = yaml.safe_load(path.read_text())
         self.id = content["id"]
         self.title = content["title"]
@@ -42,12 +47,12 @@ class PlanRepository:
 
     @staticmethod
     def list_plans() -> List[CopingPlan]:
-        """Return all available plans."""
+        """Return all available plans found in :data:`COPING_DIR`."""
         return [CopingPlan(p) for p in COPING_DIR.glob("*.yml")]
 
     @staticmethod
     def get(plan_id: str) -> CopingPlan | None:
-        """Return plan matching ``plan_id`` or ``None``."""
+        """Return plan matching ``plan_id`` or ``None`` if not found."""
         for p in COPING_DIR.glob("*.yml"):
             if p.stem == plan_id:
                 return CopingPlan(p)
@@ -56,6 +61,8 @@ class PlanRepository:
 
 def run_plan(plan: CopingPlan) -> None:
     """Interactively walk through ``plan`` via standard input/output."""
+    # Collected answers referenced by later steps. Step ``message`` templates
+    # use ``str.format`` with this dictionary to inject previous responses.
     ctx: Dict[str, str] = {}
     for s in plan.steps:
         if s.prompt:
