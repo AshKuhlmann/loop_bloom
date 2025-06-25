@@ -15,6 +15,7 @@ from loopbloom.storage.base import Storage
 @click.pass_obj
 def export(store: Storage, fmt: str, out_path: str) -> None:
     """Write all goal history to OUT_PATH in format FMT."""
+    # Load all goals from the configured storage backend.
     goals = store.load()
 
     if fmt == "json":
@@ -23,6 +24,7 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         click.echo(f"[green]Exported JSON → {out_path}")
         return
 
+    # Header row for the CSV output
     rows: List[List[str]] = [
         [
             "date",
@@ -37,6 +39,7 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         for ph in g.phases:
             for m in ph.micro_goals:
                 for ci in m.checkins:
+                    # Flatten nested objects into a simple row per check-in.
                     rows.append(
                         [
                             str(ci.date),

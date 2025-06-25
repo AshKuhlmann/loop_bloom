@@ -12,11 +12,14 @@ from typing import List
 from loopbloom.core import config as cfg
 from loopbloom.core.models import Checkin, MicroGoal
 
-WINDOW_DEFAULT = 14  # days
-THRESHOLD_DEFAULT = 0.80  # 80 %
+# Default history window and success rate threshold for progression logic.
+WINDOW_DEFAULT = 14  # days to consider
+THRESHOLD_DEFAULT = 0.80  # 80 % success required
 
 
 def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
+    """Return check-ins occurring within the last ``window`` days."""
+    # ``window`` is inclusive of today, so a 7-day window looks back 6 days.
     cutoff = date.today() - timedelta(days=window - 1)
     return [ci for ci in checkins if ci.date >= cutoff]
 
@@ -34,14 +37,19 @@ def should_advance(
     ``advance.threshold``).
     """
     if window is None or threshold is None:
+        # Pull defaults from the user's config so behaviour can be tuned
+        # without modifying library code.
         conf = cfg.load().get("advance", {})
         if window is None:
             window = int(conf.get("window", WINDOW_DEFAULT))
         if threshold is None:
             threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
 
+    # Filter check-ins down to just those within the relevant window.
     recent = _recent_checkins(micro.checkins, window)
     if len(recent) < window:  # need full window
+        # Not enough data yet to make a decision.
         return False
     success_ratio = sum(ci.success for ci in recent) / window
+    # True when the user's streak meets or exceeds the threshold.
     return success_ratio >= threshold

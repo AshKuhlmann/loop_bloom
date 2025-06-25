@@ -7,7 +7,9 @@ import random
 from pathlib import Path
 from typing import Dict, List
 
+# Directory containing bundled data files such as the default pep talks.
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# JSON file with two lists of pep-talk snippets keyed by mood (success/skip).
 TALKS_PATH = DATA_DIR / "default_talks.json"
 
 
@@ -18,6 +20,7 @@ class TalkPool:
 
     @classmethod
     def _load(cls) -> Dict[str, List[str]]:
+        # Lazily read and parse the bundled pep talk file only once per run.
         if cls._cache is None:
             cls._cache = json.loads(TALKS_PATH.read_text())
         return cls._cache
@@ -25,7 +28,11 @@ class TalkPool:
     @classmethod
     def random(cls, mood: str = "success") -> str:  # mood: success | skip
         """Return a random pep talk for the given ``mood``."""
+        # Retrieve the list for the requested mood, falling back to an
+        # empty list if the mood doesn't exist in the JSON file.
         pool = cls._load().get(mood, [])
         if not pool:
+            # Default message when no templates are available.
             return "Great job!"
+        # ``random.choice`` provides an even distribution across messages.
         return random.choice(pool)

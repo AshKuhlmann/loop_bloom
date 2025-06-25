@@ -38,6 +38,8 @@ def report(mode: str, goals: List[GoalArea]) -> None:
 
 def _gather_all_micro(goals: Iterable[GoalArea]) -> Iterator[MicroGoal]:
     """Yield all micro-goals from ``goals``."""
+    # Flatten the nested goal/phase structure so reporting code can
+    # iterate over every micro-habit uniformly.
     for g in goals:
         for ph in g.phases:
             for m in ph.micro_goals:
@@ -51,6 +53,7 @@ def _calendar_heatmap(goals: List[GoalArea]) -> None:
     today = date.today()
     cal = Calendar()
     # Build map of day -> (successes, total)
+    # Map day -> (number of successes, total check-ins)
     stats: dict[int, tuple[int, int]] = {}
     for m in _gather_all_micro(goals):
         for ci in m.checkins:
@@ -91,6 +94,7 @@ def _success_bars(goals: List[GoalArea]) -> None:
     for g in goals:
         successes = 0
         total = 0
+        # Aggregate all check-ins for this goal across phases.
         for m in _gather_all_micro([g]):
             for ci in m.checkins:
                 total += 1

@@ -7,6 +7,7 @@ from typing import Literal
 try:
     from plyer import notification
 except ImportError:  # pragma: no cover
+    # ``plyer`` is optional; fall back to terminal notifications if missing.
     notification = None
 
 NotifyMode = Literal["terminal", "desktop", "none"]
@@ -16,6 +17,8 @@ def send(
     title: str, message: str, *, mode: NotifyMode = "terminal"
 ) -> None:  # noqa: D401
     """Send a desktop or terminal notification."""
+    # ``mode`` controls the delivery mechanism. ``desktop`` uses plyer,
+    # ``terminal`` prints to stdout, and ``none`` disables notifications.
     if mode == "none":
         return
     if mode == "desktop":
@@ -34,4 +37,5 @@ def send(
                 # pragma: no cover - plyer may fail without backend
                 print("Desktop notify failed; falling back to terminal")
     # terminal fallback
+    # Display a simple message when desktop notifications aren't available.
     print(f"\n🔔  {title}: {message}\n")

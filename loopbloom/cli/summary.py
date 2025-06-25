@@ -41,6 +41,7 @@ def summary(goal_name: str | None, goals: List[GoalArea]):  # type: ignore
 
 
 def _overview(goals: List[GoalArea]) -> None:
+    # Use configured window length when calculating streaks.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     table = Table(title=f"LoopBloom Progress (last {window}\u00a0days)")
     table.add_column("Goal")
@@ -51,6 +52,7 @@ def _overview(goals: List[GoalArea]) -> None:
     for g in goals:
         successes = 0
         total = 0
+        # Collect all check-ins across phases and direct micro-goals.
         all_checkins = []
         # Aggregate checkins from phases
         for ph in g.phases:
@@ -67,6 +69,7 @@ def _overview(goals: List[GoalArea]) -> None:
                     successes += 1
         ratio: Group | str
         if total:
+            # Visual progress bar along with numeric ratio.
             bar = ProgressBar(total=total, completed=successes)
             ratio = Group(bar, f" {successes}/{total}")
         else:
@@ -80,7 +83,9 @@ def _overview(goals: List[GoalArea]) -> None:
 
 
 def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
+    # Use configured window for the success calculation.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
+    # Find the matching goal object from the list.
     g = next((x for x in goals if x.name.lower() == goal_name.lower()), None)
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])

@@ -17,6 +17,7 @@ from loopbloom.storage.base import Storage, StorageError
 DEFAULT_PATH = Path(
     os.getenv("LOOPBLOOM_DATA_PATH", APP_DIR / "data.json")
 )
+# Ensure the data directory exists before any read/write operations.
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
@@ -30,6 +31,7 @@ class JSONStore(Storage):
     def load(self) -> List[GoalArea]:  # noqa: D401
         """Return all goal areas from the backing JSON file."""
         if not self._path.exists():
+            # First run or missing data file -> treat as empty.
             return []
         try:
             with self._path.open("r", encoding="utf-8") as fp:
@@ -47,6 +49,8 @@ class JSONStore(Storage):
                 delete=False,
                 dir=self._path.parent,
             ) as tmp:
+                # Write to a temp file then rename for atomicity. ``delete=False``
+                # ensures Windows compatibility.
                 json.dump(goals, tmp, default=pydantic_encoder, indent=2)
                 tmp_path = Path(tmp.name)
             tmp_path.replace(self._path)
@@ -57,5 +61,5 @@ class JSONStore(Storage):
     def lock(self) -> ContextManager[None]:
         """Return a no-op context manager for compatibility."""
         from contextlib import nullcontext
-
+        # JSON files don't need locking in single-user mode.
         return nullcontext()

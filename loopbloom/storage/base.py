@@ -31,5 +31,7 @@ class Storage(Protocol):
     def lock(self) -> ContextManager[None]:  # noqa: D401
         """Return an optional advisory lock (no-op by default)."""
         from contextlib import nullcontext
-
+        # Single-user mode doesn't require locking, so we return a context
+        # manager that does nothing. Back-ends dealing with concurrent writes
+        # can override this to provide real locking semantics.
         return nullcontext()

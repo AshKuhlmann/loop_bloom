@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class Status(str, Enum):
-    """Lifecycle of a MicroGoal."""
+    """Lifecycle stages for a :class:`MicroGoal`."""
 
     active = "active"
     cancelled = "cancelled"
@@ -21,29 +21,37 @@ class Status(str, Enum):
 class Checkin(BaseModel):
     """A single daily micro-goal check-in."""
 
+    # Date when the check-in occurred (defaults to today).
     date: dt_date = Field(default_factory=dt_date.today)
     success: bool
     note: str | None = None
+    # Optional pep-talk chosen at check-in time.
     self_talk_generated: str | None = None
 
 
 class MicroGoal(BaseModel):
     """A very small behavioural target the user wants to track."""
 
+    # Unique identifier for referencing this micro-habit.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     status: Status = Status.active
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    # History of successes/failures for this micro-habit.
     checkins: list[Checkin] = Field(default_factory=list)
 
     @field_validator("name")
     def _strip(cls, v: str) -> str:  # noqa: D401
+        """Normalize whitespace around the name."""
+        # Validators in Pydantic V2 must be class methods; we simply strip
+        # leading/trailing whitespace when models are parsed or created.
         return v.strip()
 
 
 class Phase(BaseModel):
     """A collection of micro-goals grouped under a named phase."""
 
+    # Unique ID to allow stable references even if names change.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     micro_goals: list[MicroGoal] = Field(default_factory=list)
@@ -53,6 +61,7 @@ class Phase(BaseModel):
 class GoalArea(BaseModel):
     """Top-level goal area containing multiple phases."""
 
+    # Unique ID for this goal area.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     phases: list[Phase] = Field(default_factory=list)
@@ -61,6 +70,7 @@ class GoalArea(BaseModel):
 
     def get_active_micro_goal(self) -> MicroGoal | None:
         """Find the active micro-goal within phases or direct goals."""
+        # Search phases first to match the user's hierarchical structure.
         for ph in self.phases:
             mg = next(
                 (m for m in ph.micro_goals if m.status == Status.active),
@@ -68,6 +78,8 @@ class GoalArea(BaseModel):
             )
             if mg:
                 return mg
+        # Fall back to any active micro-goals attached directly to the goal.
+        # ``None`` is returned if nothing is active anywhere.
         return next(
             (m for m in self.micro_goals if m.status == Status.active),
             None,

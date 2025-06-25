@@ -9,31 +9,51 @@ from typing import Any, Dict
 import tomli_w
 import tomllib
 
+# Resolve the user's configuration directory (e.g. ``~/.config`` on Linux).
+# Honour the ``XDG_CONFIG_HOME`` environment variable with a sensible default.
 XDG_CONFIG_HOME = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
+# Application-specific directory where LoopBloom stores its settings.
 APP_DIR = XDG_CONFIG_HOME / "loopbloom"
+# Ensure the directory exists so the rest of the module can freely write files.
 APP_DIR.mkdir(parents=True, exist_ok=True)
+# Users may override ``CONFIG_PATH`` for testing by setting this variable.
+# Full path to the TOML configuration file used by :func:`load` and :func:`save`.
 CONFIG_PATH = APP_DIR / "config.toml"
 
+# Built-in defaults used when ``config.toml`` does not exist or omits keys.
+# New keys should be added here with sensible values so older configs remain
+# valid after upgrades.
 DEFAULTS: Dict[str, Any] = {
+    # Persistence back-end. 'json' keeps everything in a file while 'sqlite'
+    # stores data in a lightweight database.
     "storage": "json",  # json | sqlite
+    # How progress notifications are delivered.
     "notify": "terminal",  # terminal | desktop | none
+    # Parameters for the auto-progression engine.
     "advance": {"threshold": 0.80, "window": 14},
 }
 
 
 def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
-    """Recursively merge dict ``b`` into ``a`` and return result."""
+    """Recursively merge dict ``b`` into ``a`` and return the result."""
+    # ``b`` wins when keys collide, mirroring how ``dict.update`` works but
+    # recursively for nested mappings.
+    # We make a copy of ``a`` so callers keep their original unchanged.
     res = a.copy()
     for k, v in b.items():
         if isinstance(v, dict) and isinstance(res.get(k), dict):
+            # Merge nested dictionaries rather than overwriting them.
             res[k] = _deep_merge(res[k], v)
         else:
+            # Non-dict values replace what's in ``a``.
             res[k] = v
     return res
 
 
 def load() -> Dict[str, Any]:
-    """Return config merged with defaults."""
+    """Return config file contents merged with :data:`DEFAULTS`."""
+    # Missing files are treated as empty configs so first-run works without
+    # requiring any setup from the user.
     if not CONFIG_PATH.exists():
         return DEFAULTS.copy()
     with CONFIG_PATH.open("rb") as fp:
@@ -42,7 +62,9 @@ def load() -> Dict[str, Any]:
 
 
 def save(new_cfg: Dict[str, Any]) -> None:
-    """Persist NEW_CFG merged with defaults."""
+    """Persist ``new_cfg`` on disk after merging with defaults."""
+    # ``_deep_merge`` ensures partial configs don't drop missing defaults.
+    # This makes ``config set`` operations idempotent.
     merged = _deep_merge(DEFAULTS, new_cfg)
     with CONFIG_PATH.open("wb") as fp:
         tomli_w.dump(merged, fp)
