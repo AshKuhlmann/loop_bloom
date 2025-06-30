@@ -40,16 +40,24 @@ def cli(ctx: click.Context) -> None:
     """LoopBloom – tiny habits, big momentum."""
     config = cfg.load()
     storage_type = config.get("storage", "json")
+    cfg_path = str(config.get("data_path") or "")
 
     store: Storage
     if storage_type == "sqlite":
-        # Allow ``LOOPBLOOM_SQLITE_PATH`` to override the on-disk location.
-        path = os.getenv("LOOPBLOOM_SQLITE_PATH", str(SQLITE_DEFAULT_PATH))
+        # Environment variable overrides config which overrides the default.
+        path = (
+            os.getenv("LOOPBLOOM_SQLITE_PATH")
+            or cfg_path
+            or str(SQLITE_DEFAULT_PATH)
+        )
         store = SQLiteStore(path)
     else:
-        # Default to a JSON file if no storage override is set.
-        # ``LOOPBLOOM_DATA_PATH`` lets advanced users keep data elsewhere.
-        path = os.getenv("LOOPBLOOM_DATA_PATH", str(JSON_DEFAULT_PATH))
+        # ``LOOPBLOOM_DATA_PATH`` or config ``data_path`` may override.
+        path = (
+            os.getenv("LOOPBLOOM_DATA_PATH")
+            or cfg_path
+            or str(JSON_DEFAULT_PATH)
+        )
         store = JSONStore(path)
 
     # Expose the store instance to subcommands via Click's context object.
