@@ -164,6 +164,7 @@ Settings live in `~/.config/loopbloom/config.toml` (XDG). Example:
 
 ```toml
 storage = "json"            # json | sqlite
+data_path = ""              # optional override for data file
 notify  = "terminal"        # terminal | desktop | none
 advance.threshold = 0.80    # float (0-1)
 advance.window    = 14       # days
@@ -181,6 +182,7 @@ CLI shortcut: `loopbloom config set storage sqlite`.
 | **SQLite**                                                           | `~/.config/loopbloom/data.db`   | Large histories, multi-tool queries. |
 | Custom stores implement the `Storage` protocol in `storage/base.py`. |                          |                                      |
 
+Set `data_path` in `config.toml` or use `LOOPBLOOM_DATA_PATH`/`LOOPBLOOM_SQLITE_PATH` to keep data elsewhere.
 <a id="coping"></a>
 
 ## 9  Coping Plans

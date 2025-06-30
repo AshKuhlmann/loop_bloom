@@ -28,6 +28,9 @@ DEFAULTS: Dict[str, Any] = {
     # Persistence back-end. 'json' keeps everything in a file while 'sqlite'
     # stores data in a lightweight database.
     "storage": "json",  # json | sqlite
+    # Optional path override for the selected storage back-end.
+    # When empty, defaults described in README are used.
+    "data_path": "",
     # How progress notifications are delivered.
     "notify": "terminal",  # terminal | desktop | none
     # Parameters for the auto-progression engine.
