@@ -56,7 +56,11 @@ def test_multi_goal_progression(tmp_path):
     # complete first subgoal and verify the next becomes active
     for idx, g in enumerate(goals):
         first = subgoals[idx][0]
-        res = runner.invoke(cli, ["micro", "complete", first, "--goal", g], env=env)
+        res = runner.invoke(
+            cli,
+            ["micro", "complete", first, "--goal", g],
+            env=env,
+        )
         assert res.exit_code == 0
         assert "Marked micro-habit" in res.output
 
