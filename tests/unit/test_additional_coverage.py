@@ -357,7 +357,7 @@ def test_phase_add_interactive(
     recorded: list[str] = []
     monkeypatch.setattr(click, "echo", lambda m: recorded.append(m))
 
-    goal_mod.phase_add.callback.__wrapped__(None, "P", goals)
+    goal_mod.phase_add.callback.__wrapped__(None, "P", "", goals)
 
     assert goals[0].phases[0].name == "P"
     assert any("Added phase 'P'" in m for m in recorded)
