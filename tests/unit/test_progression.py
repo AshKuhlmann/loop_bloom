@@ -37,3 +37,21 @@ def test_should_advance_respects_config(monkeypatch) -> None:
         lambda: {"advance": {"threshold": 0.5, "window": 2}},
     )
     assert should_advance(mg)
+
+
+def test_microgoal_custom_criteria(monkeypatch) -> None:
+    """Per-micro-goal settings override global config."""
+    mg = MicroGoal(
+        name="Custom",
+        advancement_window=3,
+        advancement_threshold=0.6,
+    )
+    for i in range(3):
+        day = TODAY - timedelta(days=i)
+        mg.checkins.append(Checkin(date=day, success=i != 1))
+    # Global config would fail this streak, but custom criteria should pass.
+    monkeypatch.setattr(
+        "loopbloom.core.config.load",
+        lambda: {"advance": {"threshold": 0.99, "window": 14}},
+    )
+    assert should_advance(mg)
