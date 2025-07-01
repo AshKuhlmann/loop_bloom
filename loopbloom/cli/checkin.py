@@ -54,6 +54,8 @@ def checkin(
     if mg is None:
         click.echo("[red]No active micro-goal found for this goal.")
         return
+    # Inform the user which micro-habit is being checked in
+    click.echo(f"Checking in for: [bold]{mg.name}[/bold]")
     # Create check-in object and attach to the micro-goal.
     talk = TalkPool.random("success" if success else "skip")
     if success and "\u2713" not in talk:
