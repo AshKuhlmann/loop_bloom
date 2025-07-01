@@ -34,9 +34,9 @@ def should_advance(
 
     If ``window`` or ``threshold`` are omitted, values are looked up on the
     ``micro`` object first (``advancement_window`` and
-    ``advancement_threshold``).  When those aren't defined, global defaults from
-    :mod:`loopbloom.core.config` are used (keys ``advance.window`` and
-    ``advance.threshold``).
+    ``advancement_threshold``). When those aren't defined, global
+    defaults from :mod:`loopbloom.core.config` are used (keys
+    ``advance.window`` and ``advance.threshold``).
     """
     if window is None:
         window = micro.advancement_window
