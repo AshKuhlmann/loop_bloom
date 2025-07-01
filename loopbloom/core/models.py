@@ -39,6 +39,9 @@ class MicroGoal(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     # History of successes/failures for this micro-habit.
     checkins: list[Checkin] = Field(default_factory=list)
+    # Optional progression overrides for this specific micro-habit.
+    advancement_window: int | None = None
+    advancement_threshold: float | None = None
 
     @field_validator("name")
     def _strip(cls, v: str) -> str:  # noqa: D401

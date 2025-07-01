@@ -32,10 +32,16 @@ def should_advance(
 ) -> bool:
     """Return True if micro-habit qualifies for advancement.
 
-    If ``window`` or ``threshold`` are omitted, values are read from
-    ``loopbloom.core.config`` (keys ``advance.window`` and
+    If ``window`` or ``threshold`` are omitted, values are looked up on the
+    ``micro`` object first (``advancement_window`` and
+    ``advancement_threshold``).  When those aren't defined, global defaults from
+    :mod:`loopbloom.core.config` are used (keys ``advance.window`` and
     ``advance.threshold``).
     """
+    if window is None:
+        window = micro.advancement_window
+    if threshold is None:
+        threshold = micro.advancement_threshold
     if window is None or threshold is None:
         # Pull defaults from the user's config so behaviour can be tuned
         # without modifying library code.
