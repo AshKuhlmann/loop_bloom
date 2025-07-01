@@ -165,3 +165,50 @@ def test_micro_add_creates_phase(tmp_path) -> None:
     data = json.loads(data_file.read_text())
     assert len(data[0]["phases"]) == 1
     assert data[0]["phases"][0]["micro_goals"][0]["name"] == "Walk"
+
+
+def test_goal_and_phase_notes(tmp_path) -> None:
+    """Notes can be added and viewed for goals and phases."""
+    runner = CliRunner()
+    data_file = tmp_path / "data.json"
+    env = {"LOOPBLOOM_DATA_PATH": str(data_file)}
+
+    os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
+    from loopbloom import __main__ as main
+    cli = main.cli
+
+    # Goal notes
+    runner.invoke(
+        cli,
+        ["goal", "add", "Exercise", "--notes", "start"],
+        env=env,
+    )
+    res = runner.invoke(cli, ["goal", "notes", "Exercise"], env=env)
+    assert "start" in res.output
+    runner.invoke(cli, ["goal", "notes", "Exercise", "updated"], env=env)
+    res = runner.invoke(cli, ["goal", "notes", "Exercise"], env=env)
+    assert "updated" in res.output
+
+    # Phase notes
+    runner.invoke(
+        cli,
+        ["goal", "phase", "add", "Exercise", "Base", "--notes", "plan"],
+        env=env,
+    )
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "notes", "Exercise", "Base"],
+        env=env,
+    )
+    assert "plan" in res.output
+    runner.invoke(
+        cli,
+        ["goal", "phase", "notes", "Exercise", "Base", "do it"],
+        env=env,
+    )
+    res = runner.invoke(
+        cli,
+        ["goal", "phase", "notes", "Exercise", "Base"],
+        env=env,
+    )
+    assert "do it" in res.output

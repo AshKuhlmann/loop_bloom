@@ -54,6 +54,7 @@ class Phase(BaseModel):
     # Unique ID to allow stable references even if names change.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
+    notes: str | None = None
     micro_goals: list[MicroGoal] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -64,6 +65,7 @@ class GoalArea(BaseModel):
     # Unique ID for this goal area.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
+    notes: str | None = None
     phases: list[Phase] = Field(default_factory=list)
     micro_goals: list[MicroGoal] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
