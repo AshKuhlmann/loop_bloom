@@ -25,7 +25,8 @@ def test_successful_checkin(tmp_path) -> None:
     res = runner.invoke(cli, ["checkin", "Goal Name", "--success"], env=env)
 
     assert res.exit_code == 0
-    assert any(k in res.output for k in ("\u2713", "Great", "Amazing", "Awesome"))
+    expected_phrases = ("\u2713", "Great", "Amazing", "Awesome")
+    assert any(k in res.output for k in expected_phrases)
 
     data = json.loads((tmp_path / "data.json").read_text())
     assert data[0]["micro_goals"][0]["checkins"][0]["success"] is True
