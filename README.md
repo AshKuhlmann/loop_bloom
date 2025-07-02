@@ -232,7 +232,7 @@ loopbloom export --fmt csv --out ~/Desktop/loopbloom_progress.csv
 
 ## 14  Testing & CI
 
-100 % unit & integration coverage enforced in CI.
+CI enforces a minimum of 80 % unit and integration test coverage.
 
 <a id="contrib"></a>
 
