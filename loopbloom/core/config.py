@@ -39,6 +39,9 @@ DEFAULTS: Dict[str, Any] = {
     "notify": "terminal",  # terminal | desktop | none
     # Parameters for the auto-progression engine.
     "advance": {"threshold": 0.80, "window": 14},
+    # Notification pause settings
+    "pause_until": "",  # ISO date string when global pause expires
+    "goal_pauses": {},  # Mapping of goal name -> ISO date
 }
 
 

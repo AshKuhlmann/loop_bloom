@@ -127,4 +127,5 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
             "LoopBloom",
             f"Consider advancing '{mg.name}'",
             mode=cfg.load().get("notify", "terminal"),
+            goal=g.name,
         )
