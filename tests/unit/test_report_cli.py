@@ -2,7 +2,11 @@
 
 from datetime import date
 
-from loopbloom.cli.report import _calendar_heatmap, _success_bars
+from loopbloom.cli.report import (
+    _calendar_heatmap,
+    _line_chart,
+    _success_bars,
+)
 from loopbloom.core.models import Checkin, GoalArea, MicroGoal
 
 
@@ -17,3 +21,6 @@ def test_report_helpers(capsys) -> None:  # noqa: D103
     _success_bars([goal])
     out2 = capsys.readouterr().out
     assert "Success Rates per Goal" in out2
+    _line_chart([goal])
+    out3 = capsys.readouterr().out
+    assert "Success Rate" in out3

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from calendar import Calendar, month_name
-from datetime import date
+from datetime import date, timedelta
 from typing import Iterable, Iterator, List
 
 import click
@@ -23,7 +23,7 @@ console = Console()
 )
 @click.option(
     "--mode",
-    type=click.Choice(["calendar", "success"], case_sensitive=False),
+    type=click.Choice(["calendar", "success", "line"], case_sensitive=False),
     default="calendar",
     help="Report type to display.",
 )
@@ -32,6 +32,8 @@ def report(mode: str, goals: List[GoalArea]) -> None:
     """Display advanced reports based on ``mode``."""
     if mode == "success":
         _success_bars(goals)
+    elif mode == "line":
+        _line_chart(goals)
     else:
         _calendar_heatmap(goals)
 
@@ -108,3 +110,34 @@ def _success_bars(goals: List[GoalArea]) -> None:
             ratio = "–"
         table.add_row(g.name, ratio)
     console.print(table)
+
+
+def _line_chart(goals: List[GoalArea]) -> None:
+    """Show a line chart of daily success rates over the last 30 days."""
+    import plotext as plt
+
+    today = date.today()
+    start = today - timedelta(days=29)
+
+    rates: list[float] = []
+    for i in range(30):
+        day = start + timedelta(days=i)
+        successes = 0
+        total = 0
+        for m in _gather_all_micro(goals):
+            for ci in m.checkins:
+                if ci.date == day:
+                    total += 1
+                    if ci.success:
+                        successes += 1
+        rate = (successes / total) * 100 if total else 0
+        rates.append(rate)
+
+    x = list(range(30))
+    plt.clear_data()
+    plt.clear_figure()
+    plt.plot(x, rates)
+    plt.title("Success Rate (Last 30 Days)")
+    plt.ylim(0, 100)
+    plt.yticks([0, 25, 50, 75, 100])
+    plt.show()
