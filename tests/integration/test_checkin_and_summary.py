@@ -47,7 +47,11 @@ def test_goal_specific_progress(tmp_path) -> None:
 
     # Create goal and micro-habit
     runner.invoke(cli, ["goal", "add", "Focus"], env=env)
-    runner.invoke(cli, ["micro", "add", "Meditate", "--goal", "Focus"], env=env)
+    runner.invoke(
+        cli,
+        ["micro", "add", "Meditate", "--goal", "Focus"],
+        env=env,
+    )
 
     # Log multiple check-ins
     for _ in range(3):
