@@ -1,9 +1,5 @@
 import importlib
-from pathlib import Path
-
 from click.testing import CliRunner
-
-from loopbloom.__main__ import cli
 
 
 def test_pause_global(tmp_path, monkeypatch):

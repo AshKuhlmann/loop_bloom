@@ -13,7 +13,7 @@ def _parse_duration(text: str) -> timedelta | None:
     if not text:
         return None
     num = "".join(ch for ch in text if ch.isdigit())
-    unit = text[len(num) :]
+    unit = text[len(num):]
     if not num or unit not in {"d", "w"}:
         return None
     days = int(num) * (7 if unit == "w" else 1)
@@ -22,7 +22,12 @@ def _parse_duration(text: str) -> timedelta | None:
 
 @click.command(name="pause", help=_DEF_HELP)
 @click.option("--goal", "goal_name", default=None, help="Pause a single goal.")
-@click.option("--for", "duration", required=True, help="Length of pause e.g. 1w, 3d")
+@click.option(
+    "--for",
+    "duration",
+    required=True,
+    help="Pause length (1w or 3d)",
+)
 def pause(goal_name: str | None, duration: str) -> None:
     """Pause notifications for ``duration`` days or weeks."""
     delta = _parse_duration(duration)
