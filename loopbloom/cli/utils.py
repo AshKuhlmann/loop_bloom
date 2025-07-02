@@ -6,6 +6,7 @@ from difflib import get_close_matches
 from typing import Iterable
 
 import click
+import logging
 
 
 def suggest_name(name: str, options: Iterable[str]) -> str | None:
@@ -17,6 +18,8 @@ def suggest_name(name: str, options: Iterable[str]) -> str | None:
 
 def goal_not_found(name: str, goals: Iterable[str]) -> None:
     """Print helpful message when a goal is missing."""
+    logger = logging.getLogger(__name__)
+    logger.error("Goal not found: %s", name)
     click.echo(f"[red]Goal not found: \"{name}\".[/red]")
     # Suggest the closest existing goal to reduce user confusion.
     match = suggest_name(name, goals)

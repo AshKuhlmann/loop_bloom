@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from typing import List
 
 import click
+import logging
 from rich.console import Console, Group
 from rich.table import Table
 from rich.progress_bar import ProgressBar
@@ -22,6 +23,8 @@ from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
 
 console = Console()
+
+logger = logging.getLogger(__name__)
 
 WINDOW_DEFAULT = 14  # days
 
@@ -101,6 +104,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
     mg = g.get_active_micro_goal()
 
     if mg is None:
+        logger.info("No active micro-goal for %s", goal_name)
         click.echo("[yellow]No active micro-goal.")
         return
     successes = sum(ci.success for ci in mg.checkins[-window:])

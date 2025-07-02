@@ -3,11 +3,14 @@
 from typing import List, Optional
 
 import click
+import logging
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import GoalArea, MicroGoal, Phase
+
+logger = logging.getLogger(__name__)
 
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
@@ -40,9 +43,11 @@ def goal() -> None:
 def goal_add(name: str, notes: str, goals: List[GoalArea]) -> None:
     """Add a new goal area."""
     if _find_goal(goals, name):
+        logger.error("Goal already exists: %s", name)
         click.echo("[yellow]Goal already exists.")
         return
     goals.append(GoalArea(name=name.strip(), notes=notes or None))
+    logger.info("Added goal %s", name)
     click.echo(f"[green]Added goal:[/] {name}")
 
 
@@ -51,6 +56,7 @@ def goal_add(name: str, notes: str, goals: List[GoalArea]) -> None:
 def goal_list(goals: List[GoalArea]) -> None:
     """List all goal areas."""
     if not goals:
+        logger.info("No goals to list")
         click.echo("[italic]No goals – use `loopbloom goal add`.")
         return
     for g in goals:
@@ -75,6 +81,7 @@ def goal_rm(
     # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
+            logger.info("No goals to remove")
             click.echo(
                 "[italic]No goals – nothing to remove."
             )  # pragma: no cover
@@ -90,6 +97,7 @@ def goal_rm(
 
     g = _find_goal(goals, name)
     if not g:
+        logger.error("Goal not found for deletion: %s", name)
         goal_not_found(name, [g.name for g in goals])
         return
     # Confirm destructive operation unless --yes was supplied.
@@ -99,6 +107,7 @@ def goal_rm(
     ):
         return
     goals.remove(g)
+    logger.info("Deleted goal %s", name)
     click.echo(f"[green]Deleted goal:[/] {name}")
 
 
@@ -110,12 +119,14 @@ def goal_notes(name: str, text: Optional[str], goals: List[GoalArea]) -> None:
     """Display or update notes for ``name``."""
     g = _find_goal(goals, name)
     if not g:
+        logger.error("Goal not found for notes: %s", name)
         goal_not_found(name, [x.name for x in goals])
         return
     if text is None:
         click.echo(g.notes or "")
     else:
         g.notes = text.strip() or None
+        logger.info("Saved notes for goal %s", name)
         click.echo(f"[green]Saved notes for '{name}'.")
 
 
@@ -148,6 +159,7 @@ def phase_add(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
+            logger.error("No goals for phase addition")
             click.echo(
                 "[red]No goals – use `loopbloom goal add`."
             )  # pragma: no cover
@@ -166,9 +178,11 @@ def phase_add(
         return  # pragma: no cover
     # Avoid duplicates when the phase already exists.
     if _find_phase(g, phase_name):
+        logger.error("Phase already exists: %s/%s", goal_name, phase_name)
         click.echo("[yellow]Phase exists.")
         return
     g.phases.append(Phase(name=phase_name.strip(), notes=notes or None))
+    logger.info("Added phase %s under %s", phase_name, goal_name)
     click.echo(f"[green]Added phase '{phase_name}' to {goal_name}")
 
 
@@ -192,6 +206,7 @@ def phase_rm(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
+            logger.error("No goals for phase removal")
             click.echo(
                 "[red]No goals – use `loopbloom goal add`."
             )  # pragma: no cover
@@ -206,6 +221,7 @@ def phase_rm(
 
     g = _find_goal(goals, goal_name)
     if not g:
+        logger.error("Goal not found for phase removal: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
@@ -213,6 +229,7 @@ def phase_rm(
     if phase_name is None:
         options = [p.name for p in g.phases]
         if not options:
+            logger.error("No phases in goal %s", goal_name)
             click.echo(
                 "[red]No phases found for this goal."
             )  # pragma: no cover
@@ -228,6 +245,7 @@ def phase_rm(
     # Locate the phase object for deletion.
     p = _find_phase(g, phase_name)
     if not p:
+        logger.error("Phase not found: %s/%s", goal_name, phase_name)
         click.echo("[red]Phase not found.")  # pragma: no cover
         return  # pragma: no cover
 
@@ -237,6 +255,7 @@ def phase_rm(
     ):
         return
     g.phases.remove(p)
+    logger.info("Deleted phase %s from %s", phase_name, goal_name)
     click.echo(f"[green]Deleted phase '{phase_name}' from {goal_name}")
 
 
@@ -254,16 +273,19 @@ def phase_notes(
     """Display or update notes for a phase."""
     g = _find_goal(goals, goal_name)
     if not g:
+        logger.error("Goal not found for phase notes: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])
         return
     p = _find_phase(g, phase_name)
     if not p:
+        logger.error("Phase not found for notes: %s/%s", goal_name, phase_name)
         click.echo("[red]Phase not found.")
         return
     if text is None:
         click.echo(p.notes or "")
     else:
         p.notes = text.strip() or None
+        logger.info("Saved notes for phase %s under %s", phase_name, goal_name)
         click.echo(
             f"[green]Saved notes for phase '{phase_name}' under {goal_name}."
         )
@@ -276,9 +298,11 @@ def phase_notes(
 @with_goals
 def goal_wizard(goals: List[GoalArea]) -> None:
     """Guide user through creating a full goal hierarchy."""
+    logger.info("Starting goal wizard")
     click.echo("Let's set up your first goal!")
     goal_name = click.prompt("Goal name").strip()
     if _find_goal(goals, goal_name):
+        logger.error("Goal already exists during wizard: %s", goal_name)
         click.echo("[red]Goal already exists.")
         return
     phase_name = click.prompt("First phase name").strip()
@@ -289,6 +313,9 @@ def goal_wizard(goals: List[GoalArea]) -> None:
     new_phase.micro_goals.append(MicroGoal(name=micro_name))
     new_goal.phases.append(new_phase)
     goals.append(new_goal)
+    logger.info(
+        "Created goal %s with phase %s and micro %s", goal_name, phase_name, micro_name
+    )
 
     msg = (
         f"[green]Created goal '{goal_name}' "
