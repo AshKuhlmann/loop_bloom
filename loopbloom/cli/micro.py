@@ -5,6 +5,7 @@ from typing import List, Optional
 import click
 
 from loopbloom.cli import with_goals
+from loopbloom.cli.interactive import choose_from
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 
@@ -138,7 +139,8 @@ def micro_cancel(
 @click.option(
     "--goal",
     "goal_name",
-    required=True,
+    required=False,
+    default=None,
     help="The goal to add this to.",
 )
 @click.option(
@@ -150,15 +152,27 @@ def micro_cancel(
 @with_goals
 def micro_add(
     name: str,
-    goal_name: str,
+    goal_name: Optional[str],
     phase_name: Optional[str],
     goals: List[GoalArea],
 ) -> None:
     """Add a new micro-habit to a goal or phase.
 
+    If ``goal_name`` is omitted, the user is prompted to select one.
     If ``phase_name`` is provided but doesn't exist, a new phase will be
     created automatically.
     """
+    # If no goal specified, prompt interactively for one.
+    if goal_name is None:
+        names = [g.name for g in goals]
+        if not names:
+            click.echo("[red]No goals – use `loopbloom goal add`.")
+            return
+        click.echo("Select goal for new micro-habit:")
+        goal_name = choose_from(names, "Enter number")
+        if goal_name is None:
+            return
+
     # Ensure the referenced goal exists.
     g = _find_goal(goals, goal_name)
     if not g:
@@ -176,14 +190,10 @@ def micro_add(
     if not p:
         p = Phase(name=phase_name.strip())
         g.phases.append(p)
-        click.echo(
-            f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
-        )
+        click.echo(f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'.")
     # Finally add the micro-habit under that phase.
     p.micro_goals.append(MicroGoal(name=name.strip()))
-    click.echo(
-        f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}"
-    )
+    click.echo(f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}")
 
 
 @micro.command(name="rm")
@@ -234,9 +244,7 @@ def micro_rm(
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
 
-    if not yes and not click.confirm(
-        f"Permanently delete '{name}'?", default=False
-    ):
+    if not yes and not click.confirm(f"Permanently delete '{name}'?", default=False):
         return
 
     target_list.remove(mg)
