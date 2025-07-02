@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, cast
 import click
 from click import Command
 
+from loopbloom.cli.backup import backup  # NEW
 from loopbloom.cli.checkin import checkin
 from loopbloom.cli.config import config  # NEW
 from loopbloom.cli.cope import cope  # NEW
@@ -46,18 +47,12 @@ def cli(ctx: click.Context) -> None:
     if storage_type == "sqlite":
         # Environment variable overrides config which overrides the default.
         path = (
-            os.getenv("LOOPBLOOM_SQLITE_PATH")
-            or cfg_path
-            or str(SQLITE_DEFAULT_PATH)
+            os.getenv("LOOPBLOOM_SQLITE_PATH") or cfg_path or str(SQLITE_DEFAULT_PATH)
         )
         store = SQLiteStore(path)
     else:
         # ``LOOPBLOOM_DATA_PATH`` or config ``data_path`` may override.
-        path = (
-            os.getenv("LOOPBLOOM_DATA_PATH")
-            or cfg_path
-            or str(JSON_DEFAULT_PATH)
-        )
+        path = os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or str(JSON_DEFAULT_PATH)
         store = JSONStore(path)
 
     # Expose the store instance to subcommands via Click's context object.
@@ -74,6 +69,7 @@ cli.add_command(report)
 cli.add_command(cope)
 cli.add_command(config)
 cli.add_command(export)
+cli.add_command(backup)
 cli.add_command(tree)
 cli.add_command(micro)
 
