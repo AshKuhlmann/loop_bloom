@@ -67,7 +67,10 @@ def _calendar_heatmap(goals: List[GoalArea]) -> None:
                 stats[ci.date.day] = (succ, tot)
 
     weeks = cal.monthdayscalendar(today.year, today.month)
-    title = "LoopBloom Check-in Heatmap – " f"{month_name[today.month]} {today.year}"
+    title = (
+        "LoopBloom Check-in Heatmap – "
+        f"{month_name[today.month]} {today.year}"
+    )
     console.print(f"[bold]{title}[/bold]")
     for week in weeks:
         line = ""
