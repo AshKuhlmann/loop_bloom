@@ -11,12 +11,15 @@ import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import ContextManager, List
+import logging
 
 from pydantic.json import pydantic_encoder
 
 from loopbloom.core.models import GoalArea
 from loopbloom.core.config import APP_DIR
 from loopbloom.storage.base import Storage, StorageError
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_PATH = Path(
     os.getenv("LOOPBLOOM_DATA_PATH", APP_DIR / "data.json")
@@ -36,18 +39,24 @@ class JSONStore(Storage):
 
     def load(self) -> List[GoalArea]:  # noqa: D401
         """Return all goal areas from the backing JSON file."""
+        logger.debug("Loading goals from %s", self._path)
         if not self._path.exists():
+            logger.debug("Data file not found; returning empty list")
             # First run or missing data file -> treat as empty.
             return []
         try:
             with self._path.open("r", encoding="utf-8") as fp:
                 raw = json.load(fp)
-            return [GoalArea.model_validate(obj) for obj in raw]
+            goals = [GoalArea.model_validate(obj) for obj in raw]
+            logger.debug("Loaded %d goal areas", len(goals))
+            return goals
         except Exception as exc:  # pragma: no cover
+            logger.error("Error loading %s: %s", self._path, exc)
             raise StorageError(str(exc)) from exc
 
     def save(self, goals: List[GoalArea]) -> None:  # noqa: D401
         """Persist the entire goal graph atomically."""
+        logger.debug("Saving %d goals to %s", len(goals), self._path)
         tmp_path: Path
         try:
             with NamedTemporaryFile(
@@ -60,7 +69,9 @@ class JSONStore(Storage):
                 json.dump(goals, tmp, default=pydantic_encoder, indent=2)
                 tmp_path = Path(tmp.name)
             tmp_path.replace(self._path)
+            logger.debug("Save successful")
         except Exception as exc:  # pragma: no cover
+            logger.error("Error saving %s: %s", self._path, exc)
             raise StorageError(str(exc)) from exc
 
     # Advisory lock not required for single-process Phase 1

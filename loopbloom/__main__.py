@@ -5,10 +5,13 @@ storage backend based on the user's configuration.
 """
 
 import os
+import logging
 from typing import TYPE_CHECKING, cast
 
 import click
 from click import Command
+
+from loopbloom.logging import setup_logging
 
 from loopbloom.cli.backup import backup  # NEW
 from loopbloom.cli.checkin import checkin
@@ -43,10 +46,13 @@ if TYPE_CHECKING:  # pragma: no cover - hints for mypy
 
 
 @click.group()
+@click.option("--verbose", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(ctx: click.Context) -> None:
+def cli(ctx: click.Context, verbose: bool) -> None:
     """LoopBloom – tiny habits, big momentum."""
     # Load user configuration to determine which storage backend to use.
+    setup_logging(level=logging.DEBUG if verbose else logging.INFO)
+
     config = cfg.load()
     storage_type = config.get("storage", "json")
     cfg_path = str(config.get("data_path") or "")

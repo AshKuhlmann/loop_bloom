@@ -8,12 +8,15 @@ from typing import List, Optional
 
 import click
 from rich import print
+import logging
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
+
+logger = logging.getLogger(__name__)
 
 
 @click.command(
@@ -51,9 +54,11 @@ def checkin(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
+            logger.error("No goals available for check-in")
             click.echo("[red]No goals – use `loopbloom goal add`.")
             return
         click.echo("Which goal do you want to check in for?")
+        logger.info("Prompting for goal selection")
         goal_name = choose_from(names, "Enter number")
         if goal_name is None:
             return
@@ -64,15 +69,18 @@ def checkin(
         None,
     )
     if not goal:
+        logger.error("Goal not found: %s", goal_name)
         goal_not_found(goal_name, [g.name for g in goals])
         return
     # Find the active micro-goal
     mg = goal.get_active_micro_goal()
 
     if mg is None:
+        logger.error("No active micro-goal in goal %s", goal.name)
         click.echo("[red]No active micro-goal found for this goal.")
         return
     # Inform the user which micro-habit is being checked in
+    logger.info("Checking in for %s", mg.name)
     click.echo(f"Checking in for: [bold]{mg.name}[/bold]")
     # Create check-in object and attach to the micro-goal.
     talk = TalkPool.random("success" if success else "skip")
@@ -82,6 +90,7 @@ def checkin(
     mg.checkins.append(ci)
 
     # Output pep-talk so the user gets immediate encouragement.
+    logger.info("Pep talk: %s", talk)
     print(talk)
     from loopbloom.core import config as cfg
     from loopbloom.services import notifier

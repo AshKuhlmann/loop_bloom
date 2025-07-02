@@ -9,8 +9,11 @@ import json
 from typing import Any
 
 import click
+import logging
 
 from loopbloom.core import config as cfg
+
+logger = logging.getLogger(__name__)
 
 
 @click.group(name="config", help="View or change LoopBloom settings.")
@@ -26,6 +29,7 @@ def config() -> None:
 def _view() -> None:
     """Print the entire configuration as JSON."""
     # ``json.dumps`` makes the output easier to pipe into other tools.
+    logger.info("Viewing config")
     click.echo(json.dumps(cfg.load(), indent=2))
 
 
@@ -40,9 +44,11 @@ def _get(key: str) -> None:
     for part in key.split("."):
         val = val.get(part) if isinstance(val, dict) else None
     if val is None:
+        logger.error("Config key not found: %s", key)
         click.echo("[red]Key not found.")
         click.echo("Run 'loopbloom config view' to inspect available keys.")
     else:
+        logger.info("Config get %s -> %s", key, val)
         click.echo(val)
 
 
@@ -73,4 +79,5 @@ def _set(key: str, value: str) -> None:
     # Assign the converted value and persist.
     d[parts[-1]] = cast
     cfg.save(conf)
+    logger.info("Config set %s", key)
     click.echo("[green]Saved.")

@@ -7,8 +7,11 @@ own customised coping strategies.
 
 import click
 import yaml
+import logging
 
 from loopbloom.core.coping import COPING_DIR, PlanRepository, run_plan
+
+logger = logging.getLogger(__name__)
 
 
 @click.group(name="cope", help="Guided coping workflows.")
@@ -21,6 +24,7 @@ def cope() -> None:
 def _list() -> None:
     # Show all YAML plans bundled or created by the user.
     plans = PlanRepository.list_plans()
+    logger.info("Listing coping plans")
     for p in plans:
         click.echo(f"\u2022 {p.id} \u2013 {p.title}")
 
@@ -31,8 +35,10 @@ def _run(plan_id: str) -> None:
     # Load the requested plan from disk.
     plan = PlanRepository.get(plan_id)
     if not plan:
+        logger.error("Plan not found: %s", plan_id)
         click.echo("[red]Plan not found. Use `loopbloom cope list`.")
         return
+    logger.info("Running plan %s", plan_id)
     click.echo(f"[cyan]{plan.title}[/cyan]")
     run_plan(plan)
 
@@ -42,6 +48,7 @@ def _new() -> None:
     """Prompt the user for plan details and save a YAML file."""
     plan_id = click.prompt("Plan ID (no spaces)").strip()
     if PlanRepository.get(plan_id):
+        logger.error("Plan already exists: %s", plan_id)
         click.echo("[red]Plan already exists.")
         return
     title = click.prompt("Plan title").strip()
@@ -71,6 +78,7 @@ def _new() -> None:
         else:
             click.echo("Use 'p', 'm', or 'q'.")
     if not steps:
+        logger.error("No steps defined for new plan")
         click.echo("[red]No steps defined; aborting.")
         return
     content = {"id": plan_id, "title": title, "steps": steps}
@@ -79,4 +87,5 @@ def _new() -> None:
     path.write_text(dumped)
     # Show full path so users know where the YAML file lives
     # and can edit it manually if desired.
+    logger.info("Created plan %s", path)
     click.echo(f"[green]Created plan:[/] {path}")

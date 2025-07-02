@@ -10,8 +10,11 @@ import json
 from typing import List
 
 import click
+import logging
 
 from loopbloom.storage.base import Storage
+
+logger = logging.getLogger(__name__)
 
 
 @click.command(name="export", help="Export data to CSV or JSON.")
@@ -35,11 +38,13 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
     Usage: ``loopbloom export --fmt csv --out progress.csv``
     """
     # Load all goals from the configured storage backend.
+    logger.info("Exporting data to %s as %s", out_path, fmt)
     goals = store.load()
 
     if fmt == "json":
         with open(out_path, "w", encoding="utf-8") as fp:
             json.dump([g.model_dump(mode="json") for g in goals], fp, indent=2)
+        logger.info("JSON export complete")
         click.echo(f"[green]Exported JSON → {out_path}")
         return
 
@@ -73,4 +78,5 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
     with open(out_path, "w", newline="", encoding="utf-8") as fp:
         writer = csv.writer(fp)
         writer.writerows(rows)
+    logger.info("CSV export complete")
     click.echo(f"[green]Exported CSV → {out_path}")
