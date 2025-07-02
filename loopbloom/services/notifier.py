@@ -7,7 +7,10 @@ platform.
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Literal
+
+from loopbloom.core import config as cfg
 
 try:
     from plyer import notification
@@ -19,11 +22,33 @@ NotifyMode = Literal["terminal", "desktop", "none"]
 
 
 def send(
-    title: str, message: str, *, mode: NotifyMode = "terminal"
+    title: str,
+    message: str,
+    *,
+    mode: NotifyMode = "terminal",
+    goal: str | None = None,
 ) -> None:  # noqa: D401
     """Send a desktop or terminal notification."""
     # ``mode`` controls the delivery mechanism. ``desktop`` uses plyer,
     # ``terminal`` prints to stdout, and ``none`` disables notifications.
+    config = cfg.load()
+    pause_until = config.get("pause_until")
+    if pause_until:
+        try:
+            if date.today() <= date.fromisoformat(pause_until):
+                return
+        except ValueError:
+            pass
+    if goal:
+        gp = config.get("goal_pauses", {})
+        until = gp.get(goal)
+        if until:
+            try:
+                if date.today() <= date.fromisoformat(until):
+                    return
+            except ValueError:
+                pass
+
     if mode == "none":
         return
     if mode == "desktop":

@@ -22,6 +22,7 @@ from loopbloom.cli.summary import summary
 from loopbloom.cli.tree import tree
 from loopbloom.cli.journal import journal
 from loopbloom.cli.review import review
+from loopbloom.cli.pause import pause
 from loopbloom.core import config as cfg
 from loopbloom.storage.base import Storage
 from loopbloom.storage.json_store import (
@@ -81,6 +82,7 @@ cli.add_command(tree)
 cli.add_command(micro)
 cli.add_command(journal)
 cli.add_command(review)
+cli.add_command(pause)
 
 if __name__ == "__main__":
     cli()

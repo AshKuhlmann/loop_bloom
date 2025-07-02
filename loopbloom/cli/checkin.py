@@ -88,4 +88,4 @@ def checkin(
 
     # Notification style (desktop or terminal) comes from user config.
     notify_mode = cfg.load().get("notify", "terminal")
-    notifier.send("LoopBloom Check-in", talk, mode=notify_mode)
+    notifier.send("LoopBloom Check-in", talk, mode=notify_mode, goal=goal.name)
