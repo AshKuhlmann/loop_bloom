@@ -1,4 +1,9 @@
-"""Export goal history to CSV or JSON."""
+"""Export goal history to CSV or JSON.
+
+The exported format is intentionally simple so the data can be analysed in
+spreadsheets or external tools without knowing the internal model
+structure.
+"""
 
 import csv
 import json
@@ -38,7 +43,8 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         click.echo(f"[green]Exported JSON → {out_path}")
         return
 
-    # Header row for the CSV output
+    # CSV export produces a flat table where each row represents a single
+    # check-in. The first row is the header matching the column order below.
     rows: List[List[str]] = [
         [
             "date",

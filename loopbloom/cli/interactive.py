@@ -1,4 +1,4 @@
-"""Interactive CLI helpers."""
+"""Interactive CLI helpers used across multiple commands."""
 
 from __future__ import annotations
 
@@ -18,5 +18,6 @@ def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
         return None
     for i, opt in enumerate(items, 1):
         click.echo(f"{i}. {opt}")
+    # Use ``click.IntRange`` to validate the choice automatically.
     idx: int = click.prompt(prompt, type=click.IntRange(1, len(items)))
     return items[idx - 1]

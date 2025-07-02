@@ -21,6 +21,7 @@ def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
     """Return check-ins occurring within the last ``window`` days."""
     # ``window`` is inclusive of today, so a 7-day window looks back 6 days.
     cutoff = date.today() - timedelta(days=window - 1)
+    # Return only the check-ins that fall within the calculated window.
     return [ci for ci in checkins if ci.date >= cutoff]
 
 
@@ -38,6 +39,8 @@ def should_advance(
     defaults from :mod:`loopbloom.core.config` are used (keys
     ``advance.window`` and ``advance.threshold``).
     """
+    # ``window`` and ``threshold`` may be specified per micro-habit or fall
+    # back to the user configuration.
     if window is None:
         window = micro.advancement_window
     if threshold is None:

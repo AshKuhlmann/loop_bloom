@@ -12,11 +12,13 @@ from loopbloom.core.models import GoalArea, Phase
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
     """Return the goal matching ``name`` if present (case-insensitive)."""
+    # We keep goals in a list, so this helper does a simple linear search.
     return next((g for g in goals if g.name.lower() == name.lower()), None)
 
 
 def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
     """Return the phase within ``goal`` whose name matches ``name``."""
+    # Phases are looked up by name only since IDs are internal.
     return next(
         (p for p in goal.phases if p.name.lower() == name.lower()),
         None,

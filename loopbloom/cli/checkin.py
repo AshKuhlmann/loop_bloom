@@ -1,4 +1,8 @@
-"""Daily check-in command."""
+"""Daily check-in command.
+
+This subcommand records progress for the active micro-habit under a goal
+and offers a small pep talk to keep momentum going.
+"""
 
 from typing import List, Optional
 
@@ -44,7 +48,7 @@ def checkin(
         if goal_name is None:
             return
 
-    # Locate goal
+    # Locate the goal by name (case-insensitive) from the loaded list.
     goal = next(
         (g for g in goals if g.name.lower() == goal_name.lower()),
         None,

@@ -1,4 +1,9 @@
-"""Cross-platform desktop notifications via plyer."""
+"""Cross-platform desktop notifications via plyer.
+
+The :func:`send` helper abstracts away optional dependencies so the rest
+of the codebase can request a notification without worrying about the
+platform.
+"""
 
 from __future__ import annotations
 

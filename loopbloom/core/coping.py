@@ -1,4 +1,9 @@
-"""YAML-driven coping-plan engine."""
+"""YAML-driven coping-plan engine.
+
+Each coping plan consists of a series of prompts/messages stored in a
+YAML file. This module loads those files and provides minimal runtime
+logic to execute the steps.
+"""
 
 from __future__ import annotations
 
@@ -70,4 +75,6 @@ def run_plan(plan: CopingPlan) -> None:
             if s.store_as:
                 ctx[s.store_as] = answer
         elif s.message:
+            # ``message`` may contain placeholders referencing earlier answers
+            # which we substitute using ``str.format``.
             print(s.message.format(**ctx))

@@ -1,4 +1,9 @@
-"""`loopbloom config` command for viewing or changing settings."""
+"""`loopbloom config` command for viewing or changing settings.
+
+This module exposes a small configuration editor for the CLI.  Settings
+are stored in a user-specific TOML file and control things like the
+storage backend and notification style.
+"""
 
 import json
 from typing import Any
@@ -28,6 +33,8 @@ def _view() -> None:
 @click.argument("key")
 def _get(key: str) -> None:
     """Retrieve a specific key via dot-notation."""
+    # ``key`` may refer to nested values like ``advance.window`` which maps
+    # to ``{"advance": {"window": ...}}`` in the TOML file.
     val: Any = cfg.load()
     # Walk the nested dictionaries using ``.`` as a separator.
     for part in key.split("."):
@@ -47,7 +54,7 @@ def _set(key: str, value: str) -> None:
     conf = cfg.load()
     parts = key.split(".")
     d = conf
-    # Traverse/construct nested dictionaries until the final segment.
+    # Walk down the hierarchy, creating intermediate dictionaries as needed
     for p in parts[:-1]:
         d = d.setdefault(p, {})
     # Convert the string to int/float/bool when possible so numbers are not

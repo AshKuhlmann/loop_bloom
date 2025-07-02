@@ -1,4 +1,9 @@
-"""Summary banner with optional per-goal view."""
+"""Display a progress summary banner.
+
+When called without ``--goal`` a table showing recent success ratios is
+printed. Passing ``--goal`` focuses the output on a single micro-habit and
+checks whether it should be advanced.
+"""
 
 from __future__ import annotations
 
@@ -41,6 +46,7 @@ def summary(goal_name: str | None, goals: List[GoalArea]):  # type: ignore
 
 
 def _overview(goals: List[GoalArea]) -> None:
+    # Display one row per goal summarising recent success.
     # Use configured window length when calculating streaks.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     table = Table(title=f"LoopBloom Progress (last {window}\u00a0days)")
@@ -83,6 +89,7 @@ def _overview(goals: List[GoalArea]) -> None:
 
 
 def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
+    # Detailed statistics for a single goal/micro-habit.
     # Use configured window for the success calculation.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     # Find the matching goal object from the list.

@@ -18,7 +18,7 @@ def suggest_name(name: str, options: Iterable[str]) -> str | None:
 def goal_not_found(name: str, goals: Iterable[str]) -> None:
     """Print helpful message when a goal is missing."""
     click.echo(f"[red]Goal not found: \"{name}\".[/red]")
-    # Offer the closest existing goal to reduce user confusion.
+    # Suggest the closest existing goal to reduce user confusion.
     match = suggest_name(name, goals)
     if match:
         click.echo(f"\nDid you mean \"{match}\"?")  # pragma: no cover
