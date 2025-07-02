@@ -198,6 +198,25 @@ def test_micro_add_missing_phase(
     assert "Added micro-habit" in res.output
 
 
+def test_micro_add_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Prompt for goal when adding a micro-habit without ``--goal``."""
+    import loopbloom.cli.micro as micro_mod
+    from loopbloom.core.models import GoalArea
+
+    goals = [GoalArea(name="G")]
+    monkeypatch.setattr(micro_mod, "choose_from", lambda *_, **__: "G")
+    recorded: list[str] = []
+    monkeypatch.setattr(click, "echo", lambda m: recorded.append(m))
+
+    micro_mod.micro_add.callback.__wrapped__("M", None, None, goals)
+
+    assert goals[0].micro_goals[0].name == "M"
+    assert any("Added micro-habit" in m for m in recorded)
+
+
 def test_micro_cancel_missing(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -327,12 +346,13 @@ def test_choose_from_empty_list() -> None:
 
 
 def test_goal_rm_interactive(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Deleting without a name should prompt for a goal."""
+    import loopbloom.cli.goal as goal_mod
     from loopbloom.core.models import GoalArea
     from loopbloom.storage.json_store import JSONStore
-    import loopbloom.cli.goal as goal_mod
 
     cli = _reload_cli(tmp_path, monkeypatch)
     store = JSONStore(path=tmp_path / "data.json")
@@ -346,11 +366,12 @@ def test_goal_rm_interactive(
 
 
 def test_phase_add_interactive(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Prompt for goal when adding a phase without ``goal_name``."""
-    from loopbloom.core.models import GoalArea
     import loopbloom.cli.goal as goal_mod
+    from loopbloom.core.models import GoalArea
 
     goals = [GoalArea(name="G")]
     monkeypatch.setattr(goal_mod, "choose_from", lambda *_, **__: "G")
@@ -364,12 +385,13 @@ def test_phase_add_interactive(
 
 
 def test_phase_rm_interactive(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Prompt for goal and phase when removing without args."""
+    import loopbloom.cli.goal as goal_mod
     from loopbloom.core.models import GoalArea, Phase
     from loopbloom.storage.json_store import JSONStore
-    import loopbloom.cli.goal as goal_mod
 
     cli = _reload_cli(tmp_path, monkeypatch)
     JSONStore(path=tmp_path / "data.json").save(
@@ -385,7 +407,8 @@ def test_phase_rm_interactive(
 
 
 def test_micro_rm_decline(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """User declining confirmation should abort micro removal."""
     from loopbloom.core.models import GoalArea, MicroGoal
@@ -407,7 +430,8 @@ def test_micro_rm_decline(
 
 
 def test_checkin_no_goals(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Running checkin with no goals prints a helpful message."""
     cli = _reload_cli(tmp_path, monkeypatch)
@@ -418,12 +442,13 @@ def test_checkin_no_goals(
 
 
 def test_checkin_cancel(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Canceling goal selection exits early."""
+    import loopbloom.cli.checkin as checkin_mod
     from loopbloom.core.models import GoalArea
     from loopbloom.storage.json_store import JSONStore
-    import loopbloom.cli.checkin as checkin_mod
 
     cli = _reload_cli(tmp_path, monkeypatch)
     JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
@@ -435,12 +460,14 @@ def test_checkin_cancel(
 
 
 def test_cope_new_existing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Creating a new plan with an existing ID warns and exits."""
     import loopbloom.cli.cope as cope_mod
     import loopbloom.core.coping as cp_mod
     from loopbloom import __main__ as main
+
     monkeypatch.setattr(cp_mod, "COPING_DIR", tmp_path)
     monkeypatch.setattr(cp_mod.PlanRepository, "get", lambda *_: True)
     monkeypatch.setattr(click, "prompt", lambda *_, **__: "X")
@@ -453,7 +480,8 @@ def test_cope_new_existing(
 
 
 def test_cope_new_invalid(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Invalid step input and no steps defined triggers warnings."""
     import loopbloom.cli.cope as cope_mod
