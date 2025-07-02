@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 )
 def journal(text: str, goal_name: str | None) -> None:
     """Save ``text`` as a journal entry optionally linked to ``goal_name``."""
-    logger.info("Adding journal entry%s", f" for {goal_name}" if goal_name else "")
+    logger.info(
+        "Adding journal entry%s",
+        f" for {goal_name}" if goal_name else "",
+    )
     jr.add_entry(text, goal_name)
     click.echo("[green]Entry saved.")

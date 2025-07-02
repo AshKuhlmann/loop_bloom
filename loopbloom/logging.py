@@ -19,7 +19,9 @@ def setup_logging(level: int = logging.INFO) -> None:
 
     root_logger = logging.getLogger()
     # Avoid adding duplicate handlers if called multiple times
-    if not any(isinstance(h, RotatingFileHandler) and Path(h.baseFilename) == log_file for h in root_logger.handlers):
+    if not any(
+        isinstance(h, RotatingFileHandler) and Path(h.baseFilename) == log_file
+        for h in root_logger.handlers
+    ):
         root_logger.addHandler(handler)
     root_logger.setLevel(level)
-

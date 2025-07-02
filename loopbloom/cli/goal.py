@@ -314,7 +314,10 @@ def goal_wizard(goals: List[GoalArea]) -> None:
     new_goal.phases.append(new_phase)
     goals.append(new_goal)
     logger.info(
-        "Created goal %s with phase %s and micro %s", goal_name, phase_name, micro_name
+        "Created goal %s with phase %s and micro %s",
+        goal_name,
+        phase_name,
+        micro_name,
     )
 
     msg = (

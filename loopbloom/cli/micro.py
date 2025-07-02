@@ -71,7 +71,11 @@ def micro_complete(
         # When a phase is provided we search within it.
         p = _find_phase(g, phase_name)
         if not p:
-            logger.error("Phase not found for micro complete: %s/%s", goal_name, phase_name)
+            logger.error(
+                "Phase not found for micro complete: %s/%s",
+                goal_name,
+                phase_name,
+            )
             click.echo(f"[red]Phase '{phase_name}' not found.")
             return
         target_list = p.micro_goals
@@ -127,7 +131,11 @@ def micro_cancel(
         # Search within the specified phase when provided.
         p = _find_phase(g, phase_name)
         if not p:
-            logger.error("Phase not found for micro cancel: %s/%s", goal_name, phase_name)
+            logger.error(
+                "Phase not found for micro cancel: %s/%s",
+                goal_name,
+                phase_name,
+            )
             click.echo(f"[red]Phase '{phase_name}' not found.")
             return
         target_list = p.micro_goals
@@ -255,7 +263,11 @@ def micro_rm(
         # Narrow search to a specific phase when supplied.
         p = _find_phase(g, phase_name)
         if not p:
-            logger.error("Phase not found for micro rm: %s/%s", goal_name, phase_name)
+            logger.error(
+                "Phase not found for micro rm: %s/%s",
+                goal_name,
+                phase_name,
+            )
             click.echo(f"[red]Phase '{phase_name}' not found.")
             return
         target_list = p.micro_goals
