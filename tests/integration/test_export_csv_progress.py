@@ -12,7 +12,11 @@ def test_export_to_csv(tmp_path):
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
 
     runner.invoke(main.cli, ["goal", "add", "Exercise"], env=env)
-    runner.invoke(main.cli, ["goal", "phase", "add", "Exercise", "Start"], env=env)
+    runner.invoke(
+        main.cli,
+        ["goal", "phase", "add", "Exercise", "Start"],
+        env=env,
+    )
     runner.invoke(
         main.cli,
         ["micro", "add", "Walk", "--goal", "Exercise", "--phase", "Start"],
