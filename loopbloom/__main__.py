@@ -20,6 +20,7 @@ from loopbloom.cli.micro import micro
 from loopbloom.cli.report import report
 from loopbloom.cli.summary import summary
 from loopbloom.cli.tree import tree
+from loopbloom.cli.journal import journal
 from loopbloom.core import config as cfg
 from loopbloom.storage.base import Storage
 from loopbloom.storage.json_store import (
@@ -77,6 +78,7 @@ cli.add_command(export)
 cli.add_command(backup)
 cli.add_command(tree)
 cli.add_command(micro)
+cli.add_command(journal)
 
 if __name__ == "__main__":
     cli()
