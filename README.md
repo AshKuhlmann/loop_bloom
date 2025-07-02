@@ -226,7 +226,7 @@ loopbloom export --fmt csv --out ~/Desktop/loopbloom_progress.csv
 
 ## 13  Developer Guide (Brief)
 
-*Thin CLI → Service → Core → Storage* layered architecture; see `USER_GUIDE.md` for full docs.
+*Thin CLI → Service → Core → Storage* layered architecture; see [USER_GUIDE.md](USER_GUIDE.md) for full docs.
 
 <a id="testing"></a>
 
