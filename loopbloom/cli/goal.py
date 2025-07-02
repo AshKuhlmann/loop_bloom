@@ -7,7 +7,7 @@ import click
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
-from loopbloom.core.models import GoalArea, Phase
+from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
@@ -75,13 +75,9 @@ def goal_rm(
     # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
-            click.echo(
-                "[italic]No goals – nothing to remove."
-            )  # pragma: no cover
+            click.echo("[italic]No goals – nothing to remove.")  # pragma: no cover
             return  # pragma: no cover
-        click.echo(
-            "Which goal do you want to delete?"
-        )  # pragma: no cover
+        click.echo("Which goal do you want to delete?")  # pragma: no cover
         selected = choose_from(
             [g.name for g in goals],
             "Enter number",
@@ -150,13 +146,9 @@ def phase_add(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
             return  # pragma: no cover
-        click.echo(
-            "Select goal for new phase:"
-        )  # pragma: no cover
+        click.echo("Select goal for new phase:")  # pragma: no cover
         goal_name = choose_from(
             names,
             "Enter number",
@@ -196,13 +188,9 @@ def phase_rm(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
             return  # pragma: no cover
-        click.echo(
-            "Select goal:"
-        )  # pragma: no cover
+        click.echo("Select goal:")  # pragma: no cover
         goal_name = choose_from(
             names,
             "Enter number",
@@ -219,13 +207,9 @@ def phase_rm(
     if phase_name is None:
         options = [p.name for p in g.phases]
         if not options:
-            click.echo(
-                "[red]No phases found for this goal."
-            )  # pragma: no cover
+            click.echo("[red]No phases found for this goal.")  # pragma: no cover
             return  # pragma: no cover
-        click.echo(
-            "Select phase to delete:"
-        )  # pragma: no cover
+        click.echo("Select phase to delete:")  # pragma: no cover
         phase_name = choose_from(
             options,
             "Enter number",
@@ -272,6 +256,32 @@ def phase_notes(
         click.echo(p.notes or "")
     else:
         p.notes = text.strip() or None
-        click.echo(
-            f"[green]Saved notes for phase '{phase_name}' under {goal_name}."
-        )
+        click.echo(f"[green]Saved notes for phase '{phase_name}' under {goal_name}.")
+
+
+@goal.command(
+    name="wizard",
+    help="Interactive wizard to create goal, phase, and micro-habit.",
+)
+@with_goals
+def goal_wizard(goals: List[GoalArea]) -> None:
+    """Guide user through creating a full goal hierarchy."""
+    click.echo("Let's set up your first goal!")
+    goal_name = click.prompt("Goal name").strip()
+    if _find_goal(goals, goal_name):
+        click.echo("[red]Goal already exists.")
+        return
+    phase_name = click.prompt("First phase name").strip()
+    micro_name = click.prompt("First micro-habit name").strip()
+
+    new_goal = GoalArea(name=goal_name)
+    new_phase = Phase(name=phase_name)
+    new_phase.micro_goals.append(MicroGoal(name=micro_name))
+    new_goal.phases.append(new_phase)
+    goals.append(new_goal)
+
+    msg = (
+        f"[green]Created goal '{goal_name}' "
+        f"with phase '{phase_name}' and micro '{micro_name}'."
+    )
+    click.echo(msg)
