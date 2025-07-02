@@ -145,6 +145,7 @@ GOALS & MICRO-HABITS
 CHECK-INS & FEEDBACK
   loopbloom checkin   [--goal <name>] [--status done|skip] [--note ..]
   loopbloom summary   [--goal <name>]   # streak banner, next steps
+  loopbloom review    [--period day|week]   # reflect on progress
 
 COPING & SUPPORT
   loopbloom cope list           # view plan names
