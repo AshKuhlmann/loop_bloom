@@ -10,11 +10,25 @@ from loopbloom.storage.base import Storage
 
 
 @click.command(name="export", help="Export data to CSV or JSON.")
-@click.option("--fmt", type=click.Choice(["csv", "json"]), required=True)
-@click.option("--out", "out_path", type=click.Path(), required=True)
+@click.option(
+    "--fmt",
+    type=click.Choice(["csv", "json"]),
+    required=True,
+    help="Output format (csv or json).",
+)
+@click.option(
+    "--out",
+    "out_path",
+    type=click.Path(),
+    required=True,
+    help="File to write exported data to.",
+)
 @click.pass_obj
 def export(store: Storage, fmt: str, out_path: str) -> None:
-    """Write all goal history to OUT_PATH in format FMT."""
+    """Write all goal history to OUT_PATH in format FMT.
+
+    Usage: ``loopbloom export --fmt csv --out progress.csv``
+    """
     # Load all goals from the configured storage backend.
     goals = store.load()
 
