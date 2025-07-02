@@ -60,7 +60,11 @@ def test_remove_goal(tmp_path) -> None:
     assert res.exit_code == 0
 
     # Remove the goal
-    res = runner.invoke(cli, ["goal", "rm", "Goal to Remove", "--yes"], env=env)
+    res = runner.invoke(
+        cli,
+        ["goal", "rm", "Goal to Remove", "--yes"],
+        env=env,
+    )
     assert res.exit_code == 0
     assert "Deleted goal" in res.output
 
