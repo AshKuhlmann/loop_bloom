@@ -190,10 +190,12 @@ def micro_add(
     if not p:
         p = Phase(name=phase_name.strip())
         g.phases.append(p)
-        click.echo(f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'.")
+        msg = f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
+        click.echo(msg)
     # Finally add the micro-habit under that phase.
     p.micro_goals.append(MicroGoal(name=name.strip()))
-    click.echo(f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}")
+    msg = f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}"
+    click.echo(msg)
 
 
 @micro.command(name="rm")
@@ -244,7 +246,10 @@ def micro_rm(
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
 
-    if not yes and not click.confirm(f"Permanently delete '{name}'?", default=False):
+    if not yes and not click.confirm(
+        f"Permanently delete '{name}'?",
+        default=False,
+    ):
         return
 
     target_list.remove(mg)

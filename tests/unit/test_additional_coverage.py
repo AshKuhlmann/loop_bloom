@@ -198,7 +198,10 @@ def test_micro_add_missing_phase(
     assert "Added micro-habit" in res.output
 
 
-def test_micro_add_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_micro_add_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Prompt for goal when adding a micro-habit without ``--goal``."""
     import loopbloom.cli.micro as micro_mod
     from loopbloom.core.models import GoalArea
@@ -342,7 +345,10 @@ def test_choose_from_empty_list() -> None:
     assert choose_from([], "Pick") is None
 
 
-def test_goal_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_goal_rm_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Deleting without a name should prompt for a goal."""
     import loopbloom.cli.goal as goal_mod
     from loopbloom.core.models import GoalArea
@@ -359,7 +365,10 @@ def test_goal_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     assert "Deleted goal" in res.output
 
 
-def test_phase_add_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_phase_add_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Prompt for goal when adding a phase without ``goal_name``."""
     import loopbloom.cli.goal as goal_mod
     from loopbloom.core.models import GoalArea
@@ -375,7 +384,10 @@ def test_phase_add_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) 
     assert any("Added phase 'P'" in m for m in recorded)
 
 
-def test_phase_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_phase_rm_interactive(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Prompt for goal and phase when removing without args."""
     import loopbloom.cli.goal as goal_mod
     from loopbloom.core.models import GoalArea, Phase
@@ -394,7 +406,10 @@ def test_phase_rm_interactive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     assert "Deleted phase" in res.output
 
 
-def test_micro_rm_decline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_micro_rm_decline(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """User declining confirmation should abort micro removal."""
     from loopbloom.core.models import GoalArea, MicroGoal
     from loopbloom.storage.json_store import JSONStore
@@ -414,7 +429,10 @@ def test_micro_rm_decline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> No
     assert "Deleted" not in res.output
 
 
-def test_checkin_no_goals(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_checkin_no_goals(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Running checkin with no goals prints a helpful message."""
     cli = _reload_cli(tmp_path, monkeypatch)
     runner = CliRunner()
@@ -423,7 +441,10 @@ def test_checkin_no_goals(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> No
     assert "No goals" in res.output
 
 
-def test_checkin_cancel(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_checkin_cancel(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Canceling goal selection exits early."""
     import loopbloom.cli.checkin as checkin_mod
     from loopbloom.core.models import GoalArea
@@ -438,7 +459,10 @@ def test_checkin_cancel(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
     assert res.exit_code == 0
 
 
-def test_cope_new_existing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_cope_new_existing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Creating a new plan with an existing ID warns and exits."""
     import loopbloom.cli.cope as cope_mod
     import loopbloom.core.coping as cp_mod
@@ -455,7 +479,10 @@ def test_cope_new_existing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
     assert "Plan already exists" in res.output
 
 
-def test_cope_new_invalid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_cope_new_invalid(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Invalid step input and no steps defined triggers warnings."""
     import loopbloom.cli.cope as cope_mod
     import loopbloom.core.coping as cp_mod
