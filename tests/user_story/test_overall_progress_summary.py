@@ -20,10 +20,12 @@ def test_overall_progress_summary(tmp_path) -> None:
     goals = ["G1", "G2", "G3"]
     for g in goals:
         assert runner.invoke(cli, ["goal", "add", g], env=env).exit_code == 0
-        assert (
-            runner.invoke(cli, ["micro", "add", "Task", "--goal", g], env=env).exit_code
-            == 0
+        result = runner.invoke(
+            cli,
+            ["micro", "add", "Task", "--goal", g],
+            env=env,
         )
+        assert result.exit_code == 0
 
     store = JSONStore(path=data_file)
     data = store.load()
