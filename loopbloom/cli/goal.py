@@ -75,7 +75,9 @@ def goal_rm(
     # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
-            click.echo("[italic]No goals – nothing to remove.")  # pragma: no cover
+            click.echo(
+                "[italic]No goals – nothing to remove."
+            )  # pragma: no cover
             return  # pragma: no cover
         click.echo("Which goal do you want to delete?")  # pragma: no cover
         selected = choose_from(
@@ -146,7 +148,9 @@ def phase_add(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
-            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
+            click.echo(
+                "[red]No goals – use `loopbloom goal add`."
+            )  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal for new phase:")  # pragma: no cover
         goal_name = choose_from(
@@ -188,7 +192,9 @@ def phase_rm(
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
-            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
+            click.echo(
+                "[red]No goals – use `loopbloom goal add`."
+            )  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal:")  # pragma: no cover
         goal_name = choose_from(
@@ -207,7 +213,9 @@ def phase_rm(
     if phase_name is None:
         options = [p.name for p in g.phases]
         if not options:
-            click.echo("[red]No phases found for this goal.")  # pragma: no cover
+            click.echo(
+                "[red]No phases found for this goal."
+            )  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select phase to delete:")  # pragma: no cover
         phase_name = choose_from(
@@ -256,7 +264,9 @@ def phase_notes(
         click.echo(p.notes or "")
     else:
         p.notes = text.strip() or None
-        click.echo(f"[green]Saved notes for phase '{phase_name}' under {goal_name}.")
+        click.echo(
+            f"[green]Saved notes for phase '{phase_name}' under {goal_name}."
+        )
 
 
 @goal.command(
