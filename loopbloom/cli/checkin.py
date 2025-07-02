@@ -18,15 +18,22 @@ from loopbloom.core.talks import TalkPool
 
 @click.command(
     name="checkin",
-    help="Record today’s success or skip for a goal.",
+    help="Record today’s success, skip, or failure for a goal.",
 )
 @click.argument("goal_name", required=False)
 @click.option("--success/--skip", default=True, help="Mark success or skip.")
+@click.option(
+    "--fail",
+    is_flag=True,
+    default=False,
+    help="Alias for --skip to record a failed check-in.",
+)
 @click.option("--note", default="", help="Optional note.")
 @with_goals
 def checkin(
     goal_name: Optional[str],
     success: bool,
+    fail: bool,
     note: str,
     goals: List[GoalArea],
 ) -> None:
@@ -36,7 +43,10 @@ def checkin(
     goal to check in for.
     """
     # ``success`` determines which pep-talk pool we draw from. ``note`` is an
-    # optional free-form comment stored alongside the check-in.
+    # optional free-form comment stored alongside the check-in. ``fail`` is an
+    # alias for ``--skip`` and overrides ``success`` when provided.
+    if fail:
+        success = False
     # If the user did not specify which goal to log, prompt with a list.
     if goal_name is None:
         names = [g.name for g in goals]
