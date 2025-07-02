@@ -29,11 +29,11 @@ def backup() -> None:
     cfg_path = str(config.get("data_path") or "")
 
     if storage == "sqlite":
-        path = (
-            os.getenv("LOOPBLOOM_SQLITE_PATH") or cfg_path or str(SQLITE_DEFAULT_PATH)
-        )
+        sqlite_env = os.getenv("LOOPBLOOM_SQLITE_PATH")
+        path = sqlite_env or cfg_path or str(SQLITE_DEFAULT_PATH)
     else:
-        path = os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or str(JSON_DEFAULT_PATH)
+        data_env = os.getenv("LOOPBLOOM_DATA_PATH")
+        path = data_env or cfg_path or str(JSON_DEFAULT_PATH)
 
     src = Path(path)
     if not src.exists():

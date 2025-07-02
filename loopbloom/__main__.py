@@ -46,13 +46,13 @@ def cli(ctx: click.Context) -> None:
     store: Storage
     if storage_type == "sqlite":
         # Environment variable overrides config which overrides the default.
-        path = (
-            os.getenv("LOOPBLOOM_SQLITE_PATH") or cfg_path or str(SQLITE_DEFAULT_PATH)
-        )
+        sqlite_env = os.getenv("LOOPBLOOM_SQLITE_PATH")
+        path = sqlite_env or cfg_path or str(SQLITE_DEFAULT_PATH)
         store = SQLiteStore(path)
     else:
         # ``LOOPBLOOM_DATA_PATH`` or config ``data_path`` may override.
-        path = os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or str(JSON_DEFAULT_PATH)
+        data_env = os.getenv("LOOPBLOOM_DATA_PATH")
+        path = data_env or cfg_path or str(JSON_DEFAULT_PATH)
         store = JSONStore(path)
 
     # Expose the store instance to subcommands via Click's context object.
