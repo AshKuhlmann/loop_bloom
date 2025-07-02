@@ -1,4 +1,5 @@
-"""SQLite implementation of Storage using SQLAlchemy Core."""
+"""SQLite implementation of :class:`~loopbloom.storage.base.Storage` using
+SQLAlchemy Core for lightweight database access."""
 
 from __future__ import annotations
 
@@ -29,6 +30,7 @@ DEFAULT_PATH = Path(
     os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db")
 )
 # Ensure parent directory exists for the database file.
+# ``LOOPBLOOM_SQLITE_PATH`` can relocate the DB for testing or advanced usage.
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 metadata = MetaData()
@@ -48,6 +50,8 @@ class SQLiteStore(Storage):
 
     def __init__(self, path: Path | str = DEFAULT_PATH):
         """Initialise the SQLite store."""
+        # ``future=True`` enables SQLAlchemy 2.0 style usage while remaining
+        # compatible with older versions.
         self._engine: Engine = create_engine(f"sqlite:///{path}", future=True)
         # Create table schema if the DB file didn't exist yet.
         metadata.create_all(self._engine)

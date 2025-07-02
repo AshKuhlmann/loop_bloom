@@ -1,4 +1,8 @@
-"""LoopBloom CLI entry point."""
+"""LoopBloom CLI entry point.
+
+This module wires together all subcommands and selects the appropriate
+storage backend based on the user's configuration.
+"""
 
 import os
 from typing import TYPE_CHECKING, cast
@@ -39,6 +43,7 @@ if TYPE_CHECKING:  # pragma: no cover - hints for mypy
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """LoopBloom – tiny habits, big momentum."""
+    # Load user configuration to determine which storage backend to use.
     config = cfg.load()
     storage_type = config.get("storage", "json")
     cfg_path = str(config.get("data_path") or "")

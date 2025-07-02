@@ -1,4 +1,8 @@
-"""JSON-file implementation of Storage."""
+"""JSON-file implementation of :class:`~loopbloom.storage.base.Storage`.
+
+Goals are serialized to a single JSON document on disk making this backend
+easy to inspect and backup.
+"""
 
 from __future__ import annotations
 
@@ -18,6 +22,8 @@ DEFAULT_PATH = Path(
     os.getenv("LOOPBLOOM_DATA_PATH", APP_DIR / "data.json")
 )
 # Ensure the data directory exists before any read/write operations.
+# Users may override this path via the ``LOOPBLOOM_DATA_PATH`` environment
+# variable for ad-hoc experiments or testing.
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 

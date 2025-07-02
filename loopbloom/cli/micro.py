@@ -12,11 +12,14 @@ from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 
 def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
     """Return the goal with ``name`` if present (case-insensitive)."""
+    # ``GoalArea`` objects are stored in a simple list so we do a linear
+    # search. The number of goals is expected to be small.
     return next((g for g in goals if g.name.lower() == name.lower()), None)
 
 
 def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
     """Return phase from ``goal`` matching ``name`` if found."""
+    # Phases are also stored sequentially on the goal.
     return next(
         (p for p in goal.phases if p.name.lower() == name.lower()),
         None,
@@ -185,7 +188,8 @@ def micro_add(
         click.echo(f"[green]Added micro-habit '{name}' to goal '{goal_name}'")
         return
 
-    # Phase provided: create or locate the phase first.
+    # Phase provided: create or locate the phase first. This lets users add
+    # micro-habits to a new phase in a single command.
     p = _find_phase(g, phase_name)
     if not p:
         p = Phase(name=phase_name.strip())

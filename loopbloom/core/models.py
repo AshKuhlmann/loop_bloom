@@ -1,4 +1,8 @@
-"""Pydantic data models for Loop Bloom."""
+"""Pydantic data models for Loop Bloom.
+
+These classes define the goal → phase → micro-habit hierarchy and are
+persisted via the storage backends.
+"""
 
 from __future__ import annotations
 
@@ -83,7 +87,8 @@ class GoalArea(BaseModel):
             )
             if mg:
                 return mg
-        # Fall back to any active micro-goals attached directly to the goal.
+        # Fall back to any active micro-goals attached directly to the goal
+        # if none are active within phases.
         # ``None`` is returned if nothing is active anywhere.
         return next(
             (m for m in self.micro_goals if m.status == Status.active),

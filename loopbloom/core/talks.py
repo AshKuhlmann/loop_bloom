@@ -1,4 +1,8 @@
-"""Pep-talk template library + weighted random selector."""
+"""Pep-talk template library + weighted random selector.
+
+Short motivational messages are stored in a JSON file and loaded lazily on
+first use.
+"""
 
 from __future__ import annotations
 
@@ -21,6 +25,8 @@ class TalkPool:
     @classmethod
     def _load(cls) -> Dict[str, List[str]]:
         # Lazily read and parse the bundled pep talk file only once per run.
+        # Caching avoids unnecessary disk I/O when multiple pep talks are
+        # requested in a single invocation.
         if cls._cache is None:
             cls._cache = json.loads(TALKS_PATH.read_text())
         return cls._cache

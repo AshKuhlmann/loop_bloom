@@ -1,4 +1,8 @@
-"""Advanced reports for LoopBloom."""
+"""Advanced reports for LoopBloom.
+
+Depending on the selected ``--mode`` this command can render a calendar
+heatmap, bar chart or simple line graph to visualise progress.
+"""
 
 from __future__ import annotations
 
@@ -114,6 +118,9 @@ def _success_bars(goals: List[GoalArea]) -> None:
 
 def _line_chart(goals: List[GoalArea]) -> None:
     """Show a line chart of daily success rates over the last 30 days."""
+    # ``plotext`` is a lightweight plotting library used only for this view.
+    # It's an optional dependency so ``report --mode line`` can be skipped if
+    # the library isn't installed.
     import plotext as plt
 
     today = date.today()

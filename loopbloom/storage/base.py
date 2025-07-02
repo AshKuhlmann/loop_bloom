@@ -1,7 +1,8 @@
-"""Storage abstraction.
+"""Storage abstraction shared across persistence backends.
 
-CLI, services, and core modules depend *only* on this protocol.
-Concrete IO implementations should never leak into higher layers.
+CLI, services and core modules depend solely on this small protocol to
+keep the rest of the codebase decoupled from the underlying storage
+mechanism.
 """
 
 from __future__ import annotations

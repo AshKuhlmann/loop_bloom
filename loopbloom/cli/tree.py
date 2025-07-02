@@ -1,4 +1,8 @@
-"""Goal hierarchy tree command."""
+"""Goal hierarchy tree command.
+
+Renders all goals, phases and micro-habits in a nested tree using Rich's
+``Tree`` class for a pleasant overview.
+"""
 
 from typing import List
 
@@ -16,7 +20,8 @@ console = Console()
 @with_goals
 def tree(goals: List[GoalArea]) -> None:
     """Display all goals, phases, and micro-habits in a tree view."""
-    # Root node representing the entire goal collection.
+    # Root node representing the entire goal collection. The tree emoji makes
+    # it easy to spot this view in terminal scrollback.
     root = Tree("\U0001F333 LoopBloom Goals")
     for g in goals:
         g_branch = root.add(g.name)

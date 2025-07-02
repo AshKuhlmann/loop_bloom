@@ -1,4 +1,8 @@
-"""Simple TOML-based user configuration."""
+"""Simple TOML-based user configuration.
+
+Configuration files live under ``~/.config/loopbloom`` (or the directory
+specified by ``XDG_CONFIG_HOME``) so multiple tools can share settings.
+"""
 
 from __future__ import annotations
 
@@ -62,6 +66,7 @@ def load() -> Dict[str, Any]:
         return DEFAULTS.copy()
     with CONFIG_PATH.open("rb") as fp:
         data = tomllib.load(fp)
+    # Merge user values over the built-in defaults.
     return _deep_merge(DEFAULTS, data)
 
 
