@@ -21,7 +21,11 @@ def _reload_cli(tmp_path: Path, monkeypatch) -> any:
 def test_journal_creates_entry(tmp_path: Path, monkeypatch) -> None:
     cli = _reload_cli(tmp_path, monkeypatch)
     runner = CliRunner()
-    res = runner.invoke(cli, ["journal", "test entry", "--goal", "Sleep"], env={})
+    res = runner.invoke(
+        cli,
+        ["journal", "test entry", "--goal", "Sleep"],
+        env={},
+    )
     assert "Entry saved" in res.output
     journal_file = Path(tmp_path) / "loopbloom" / "journal.json"
     data = json.loads(journal_file.read_text())
