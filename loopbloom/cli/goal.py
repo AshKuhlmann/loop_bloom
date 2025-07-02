@@ -65,7 +65,7 @@ def goal_rm(
     yes: bool,
     goals: List[GoalArea],
 ) -> None:
-    """Remove a goal area."""
+    """Remove a goal area. Use ``--yes`` to skip the confirmation prompt."""
     # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
