@@ -1,17 +1,9 @@
-
-[project]
-name = "loopbloom-cli"
-version = "0.0.1"
-description = "ADHD Habit Stacking Tool"
-readme = "README.md"
-authors = [{name = "Your Name", email = "you@example.com"}]
-requires-python = ">=3.8"
-
-
 [tool.poetry]
 name = "loopbloom-cli"
-version = "0.0.0"
+version = "0.0.1"
 description = "Compassion-first micro-habit tracker for the terminal."
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
 packages = [{ include = "loopbloom" }]
 
 [tool.poetry.dependencies]
