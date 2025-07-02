@@ -209,7 +209,10 @@ def micro_rm(
     yes: bool,
     goals: List[GoalArea],
 ) -> None:
-    """Remove a micro-habit by its name. Use ``--yes`` to skip the confirmation prompt."""
+    """Remove a micro-habit by name.
+
+    Use ``--yes`` to skip the confirmation prompt.
+    """
     # Validate and locate the target goal.
     g = _find_goal(goals, goal_name)
     if not g:
