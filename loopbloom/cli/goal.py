@@ -65,7 +65,11 @@ def goal_rm(
     yes: bool,
     goals: List[GoalArea],
 ) -> None:
-    """Remove a goal area."""
+    """Remove a goal area.
+
+    If ``name`` is omitted, the command interactively asks which goal to
+    delete.
+    """
     # Prompt interactively when no goal name is provided.
     if name is None:
         if not goals:
@@ -135,7 +139,11 @@ def phase_add(
     notes: str,
     goals: List[GoalArea],
 ) -> None:
-    """Add a new phase under a goal."""
+    """Add a new phase under a goal.
+
+    If ``goal_name`` is omitted, the command interactively prompts you to
+    select the goal.
+    """
     # Prompt for the goal when not provided on the command line.
     if goal_name is None:
         names = [g.name for g in goals]
@@ -177,7 +185,11 @@ def phase_rm(
     yes: bool,
     goals: List[GoalArea],
 ) -> None:
-    """Remove a phase from a goal."""
+    """Remove a phase from a goal.
+
+    If ``goal_name`` or ``phase_name`` is omitted, the command
+    interactively asks you to choose the missing value.
+    """
     # Ask which goal to operate on if not provided.
     if goal_name is None:
         names = [g.name for g in goals]
