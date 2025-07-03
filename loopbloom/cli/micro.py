@@ -1,6 +1,6 @@
 """CLI commands for micro-habit lifecycle management."""
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 import logging
@@ -9,8 +9,74 @@ from loopbloom.cli import with_goals
 from loopbloom.cli.interactive import choose_from
 from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
+from loopbloom.storage.base import Storage as DataStore
 
 logger = logging.getLogger(__name__)
+
+
+def _get_or_select_phase(
+    storage: DataStore, goal_name: str, phase_name: Optional[str]
+) -> Optional[Phase]:
+    """Return the desired phase, prompting when needed."""
+    goals = storage.load()
+    goal = find_goal(goals, goal_name)
+    if not goal:
+        goal_not_found(goal_name, [g.name for g in goals])
+        return None
+    if phase_name:
+        return find_phase(goal, phase_name)
+    if not goal.phases:
+        return None
+    click.echo("Select phase:")
+    choice = choose_from([p.name for p in goal.phases], "Enter number")
+    if choice is None:
+        return None
+    return find_phase(goal, choice)
+
+
+def _prompt_for_new_micro_goal() -> str:
+    """Ask user for a micro-habit name."""
+    return click.prompt("Micro-habit name").strip()
+
+
+def _get_or_select_micro_goal(
+    storage: DataStore,
+    goal_name: str,
+    phase_name: Optional[str],
+    micro_goal_name: Optional[str],
+) -> Optional[Tuple[Phase, MicroGoal]]:
+    """Locate a micro-goal, asking the user when needed."""
+    phase = _get_or_select_phase(storage, goal_name, phase_name)
+    if phase is None:
+        if phase_name:
+            return None
+        goals = storage.load()
+        goal = find_goal(goals, goal_name)
+        if not goal:
+            return None
+        target_list = goal.micro_goals
+    else:
+        target_list = phase.micro_goals
+    if micro_goal_name:
+        mg = next(
+            (m for m in target_list if m.name.lower() == micro_goal_name.lower()),
+            None,
+        )
+    else:
+        options = [m.name for m in target_list]
+        if not options:
+            return None
+        click.echo("Select micro-habit:")
+        choice = choose_from(options, "Enter number")
+        if choice is None:
+            return None
+        mg = next((m for m in target_list if m.name == choice), None)
+    if mg is None:
+        return None
+    if phase is None:
+        phase = Phase(name="")
+        phase.micro_goals = target_list
+    return phase, mg
 
 
 @click.group(name="micro", help="Micro-habit operations.")
@@ -141,7 +207,7 @@ def micro_cancel(
 
 
 @micro.command(name="add")
-@click.argument("name")
+@click.argument("name", required=False)
 @click.option(
     "--goal",
     "goal_name",
@@ -157,7 +223,7 @@ def micro_cancel(
 )
 @with_goals
 def micro_add(
-    name: str,
+    name: Optional[str],
     goal_name: Optional[str],
     phase_name: Optional[str],
     goals: List[GoalArea],
@@ -188,31 +254,39 @@ def micro_add(
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
-    if phase_name is None:
-        # Attach the new micro-habit directly to the goal.
-        g.micro_goals.append(MicroGoal(name=name.strip()))
-        logger.info("Added micro-habit %s to goal %s", name, goal_name)
-        click.echo(f"[green]Added micro-habit '{name}' to goal '{goal_name}'")
-        return
+    if name is None:
+        name = _prompt_for_new_micro_goal()
+    else:
+        name = name.strip()
 
-    # Phase provided: create or locate the phase first. This lets users add
-    # micro-habits to a new phase in a single command.
-    p = find_phase(g, phase_name)
-    if not p:
-        p = Phase(name=phase_name.strip())
-        g.phases.append(p)
-        logger.info("Created phase %s under %s", phase_name, goal_name)
-        msg = f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
-        click.echo(msg)
-    # Finally add the micro-habit under that phase.
-    p.micro_goals.append(MicroGoal(name=name.strip()))
-    msg = f"[green]Added micro-habit '{name}' to {goal_name}/{phase_name}"
-    logger.info("Added micro-habit %s to %s/%s", name, goal_name, phase_name)
-    click.echo(msg)
+    if phase_name is None:
+        target_phase = None
+    else:
+        target_phase = find_phase(g, phase_name)
+        if not target_phase:
+            target_phase = Phase(name=phase_name.strip())
+            g.phases.append(target_phase)
+            logger.info("Created phase %s under %s", phase_name, goal_name)
+            click.echo(
+                f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
+            )
+
+    if target_phase is None:
+        g.micro_goals.append(MicroGoal(name=name))
+        click.echo(f"[green]Added micro-habit '{name}' to goal '{goal_name}'")
+    else:
+        target_phase.micro_goals.append(MicroGoal(name=name))
+        click.echo(
+            f"[green]Added micro-habit '{name}' to {goal_name}/{target_phase.name}"
+        )
+
+    store = click.get_current_context().obj
+    store.save_goal_area(g)
+    logger.info("Added micro-habit %s", name)
 
 
 @micro.command(name="rm")
-@click.argument("name")
+@click.argument("name", required=False)
 @click.option(
     "--goal",
     "goal_name",
@@ -228,7 +302,7 @@ def micro_add(
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
 @with_goals
 def micro_rm(
-    name: str,
+    name: Optional[str],
     goal_name: str,
     phase_name: Optional[str],
     yes: bool,
@@ -242,36 +316,38 @@ def micro_rm(
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
-    target_list: Optional[List[MicroGoal]] = None
-    if phase_name:
-        # Narrow search to a specific phase when supplied.
-        p = find_phase(g, phase_name)
-        if not p:
-            logger.error(
-                "Phase not found for micro rm: %s/%s",
-                goal_name,
-                phase_name,
-            )
-            click.echo(f"[red]Phase '{phase_name}' not found.")
-            return
-        target_list = p.micro_goals
-    else:
-        # Otherwise look among the goal's direct micro-habits.
-        target_list = g.micro_goals
-
-    mg = next((m for m in target_list if m.name.lower() == name.lower()), None)
-    if not mg:
-        loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
-        logger.error("Micro-habit not found for rm: %s in %s", name, loc)
-        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+    if phase_name and not find_phase(g, phase_name):
+        click.echo(f"[red]Phase '{phase_name}' not found.")
         return
 
+    result = _get_or_select_micro_goal(click.get_current_context().obj, goal_name, phase_name, name)
+    if not result:
+        loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
+        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+        return
+    p, mg = result
+
     if not yes and not click.confirm(
-        f"Permanently delete '{name}'?",
+        f"Permanently delete '{mg.name}'?",
         default=False,
     ):
         return
 
-    target_list.remove(mg)
-    logger.info("Deleted micro-habit %s", name)
-    click.echo(f"[green]Deleted micro-habit:[/] {name}")
+    if phase_name:
+        tgt_phase = find_phase(g, p.name) or p
+        target_list = tgt_phase.micro_goals
+    else:
+        target_list = g.micro_goals
+    mg_actual = next(
+        (m for m in target_list if m.name.lower() == mg.name.lower()),
+        None,
+    )
+    if mg_actual is None:
+        click.echo(f"[red]Micro-habit '{mg.name}' not found in {goal_name}.")
+        return
+
+    target_list.remove(mg_actual)
+    store = click.get_current_context().obj
+    store.save_goal_area(g)
+    logger.info("Deleted micro-habit %s", mg.name)
+    click.echo(f"[green]Deleted micro-habit:[/] {mg.name}")

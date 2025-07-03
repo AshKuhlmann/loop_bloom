@@ -205,15 +205,21 @@ def test_micro_add_interactive(
     """Prompt for goal when adding a micro-habit without ``--goal``."""
     import loopbloom.cli.micro as micro_mod
     from loopbloom.core.models import GoalArea
+    from loopbloom.storage.json_store import JSONStore
 
-    goals = [GoalArea(name="G")]
     monkeypatch.setattr(micro_mod, "choose_from", lambda *_, **__: "G")
     recorded: list[str] = []
     monkeypatch.setattr(click, "echo", lambda m: recorded.append(m))
 
-    micro_mod.micro_add.callback.__wrapped__("M", None, None, goals)
+    cli = _reload_cli(tmp_path, monkeypatch)
+    JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+    res = runner.invoke(cli, ["micro", "add", "M"], env=env)
 
-    assert goals[0].micro_goals[0].name == "M"
+    assert res.exit_code == 0
+    data = JSONStore(path=tmp_path / "data.json").load()
+    assert data[0].micro_goals[0].name == "M"
     assert any("Added micro-habit" in m for m in recorded)
 
 

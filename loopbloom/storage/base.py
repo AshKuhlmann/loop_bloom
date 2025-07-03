@@ -29,6 +29,9 @@ class Storage(Protocol):
     def save(self, goals: List[GoalArea]) -> None:  # noqa: D401
         """Persist full graph atomically."""
 
+    def save_goal_area(self, goal: GoalArea) -> None:
+        """Persist a single goal area."""
+
     def lock(self) -> ContextManager[None]:  # noqa: D401
         """Return an optional advisory lock (no-op by default)."""
         from contextlib import nullcontext

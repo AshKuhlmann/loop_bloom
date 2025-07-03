@@ -80,3 +80,14 @@ class SQLiteStore(Storage):
                 conn.execute(insert(raw_table).values(payload=payload))
         except SQLAlchemyError as exc:  # pragma: no cover
             raise StorageError(str(exc)) from exc
+
+    def save_goal_area(self, goal: GoalArea) -> None:
+        """Persist a single goal area back to the database."""
+        goals = self.load()
+        for i, g in enumerate(goals):
+            if g.id == goal.id or g.name == goal.name:
+                goals[i] = goal
+                break
+        else:
+            goals.append(goal)
+        self.save(goals)
