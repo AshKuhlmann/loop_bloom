@@ -7,26 +7,10 @@ import logging
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.interactive import choose_from
-from loopbloom.cli.utils import goal_not_found
+from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 
 logger = logging.getLogger(__name__)
-
-
-def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
-    """Return the goal with ``name`` if present (case-insensitive)."""
-    # ``GoalArea`` objects are stored in a simple list so we do a linear
-    # search. The number of goals is expected to be small.
-    return next((g for g in goals if g.name.lower() == name.lower()), None)
-
-
-def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
-    """Return phase from ``goal`` matching ``name`` if found."""
-    # Phases are also stored sequentially on the goal.
-    return next(
-        (p for p in goal.phases if p.name.lower() == name.lower()),
-        None,
-    )
 
 
 @click.group(name="micro", help="Micro-habit operations.")
@@ -60,7 +44,7 @@ def micro_complete(
 ) -> None:
     """Mark a micro-habit as complete."""
     # Locate the parent goal first.
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro complete: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])
@@ -69,7 +53,7 @@ def micro_complete(
     target_list: List[MicroGoal]
     if phase_name:
         # When a phase is provided we search within it.
-        p = _find_phase(g, phase_name)
+        p = find_phase(g, phase_name)
         if not p:
             logger.error(
                 "Phase not found for micro complete: %s/%s",
@@ -120,7 +104,7 @@ def micro_cancel(
 ) -> None:
     """Cancel a micro-habit without deleting it."""
     # Locate the goal that owns this micro-habit.
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro cancel: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])
@@ -129,7 +113,7 @@ def micro_cancel(
     target_list: List[MicroGoal]
     if phase_name:
         # Search within the specified phase when provided.
-        p = _find_phase(g, phase_name)
+        p = find_phase(g, phase_name)
         if not p:
             logger.error(
                 "Phase not found for micro cancel: %s/%s",
@@ -198,7 +182,7 @@ def micro_add(
             return
 
     # Ensure the referenced goal exists.
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro add: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
@@ -213,7 +197,7 @@ def micro_add(
 
     # Phase provided: create or locate the phase first. This lets users add
     # micro-habits to a new phase in a single command.
-    p = _find_phase(g, phase_name)
+    p = find_phase(g, phase_name)
     if not p:
         p = Phase(name=phase_name.strip())
         g.phases.append(p)
@@ -252,7 +236,7 @@ def micro_rm(
 ) -> None:
     """Remove a micro-habit by its name."""
     # Validate and locate the target goal.
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro rm: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
@@ -261,7 +245,7 @@ def micro_rm(
     target_list: Optional[List[MicroGoal]] = None
     if phase_name:
         # Narrow search to a specific phase when supplied.
-        p = _find_phase(g, phase_name)
+        p = find_phase(g, phase_name)
         if not p:
             logger.error(
                 "Phase not found for micro rm: %s/%s",

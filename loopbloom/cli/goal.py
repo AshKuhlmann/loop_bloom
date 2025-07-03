@@ -6,26 +6,11 @@ import click
 import logging
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.utils import goal_not_found
+from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 logger = logging.getLogger(__name__)
-
-
-def _find_goal(goals: List[GoalArea], name: str) -> Optional[GoalArea]:
-    """Return the goal matching ``name`` if present (case-insensitive)."""
-    # We keep goals in a list, so this helper does a simple linear search.
-    return next((g for g in goals if g.name.lower() == name.lower()), None)
-
-
-def _find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
-    """Return the phase within ``goal`` whose name matches ``name``."""
-    # Phases are looked up by name only since IDs are internal.
-    return next(
-        (p for p in goal.phases if p.name.lower() == name.lower()),
-        None,
-    )
 
 
 @click.group(name="goal", help="Manage goals, phases, and micro-habits.")
@@ -42,7 +27,7 @@ def goal() -> None:
 @with_goals
 def goal_add(name: str, notes: str, goals: List[GoalArea]) -> None:
     """Add a new goal area."""
-    if _find_goal(goals, name):
+    if find_goal(goals, name):
         logger.error("Goal already exists: %s", name)
         click.echo("[yellow]Goal already exists.")
         return
@@ -95,7 +80,7 @@ def goal_rm(
             return  # pragma: no cover
         name = selected
 
-    g = _find_goal(goals, name)
+    g = find_goal(goals, name)
     if not g:
         logger.error("Goal not found for deletion: %s", name)
         goal_not_found(name, [g.name for g in goals])
@@ -117,7 +102,7 @@ def goal_rm(
 @with_goals
 def goal_notes(name: str, text: Optional[str], goals: List[GoalArea]) -> None:
     """Display or update notes for ``name``."""
-    g = _find_goal(goals, name)
+    g = find_goal(goals, name)
     if not g:
         logger.error("Goal not found for notes: %s", name)
         goal_not_found(name, [x.name for x in goals])
@@ -172,12 +157,12 @@ def phase_add(
         if goal_name is None:
             return  # pragma: no cover
 
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
     # Avoid duplicates when the phase already exists.
-    if _find_phase(g, phase_name):
+    if find_phase(g, phase_name):
         logger.error("Phase already exists: %s/%s", goal_name, phase_name)
         click.echo("[yellow]Phase exists.")
         return
@@ -219,7 +204,7 @@ def phase_rm(
         if goal_name is None:
             return  # pragma: no cover
 
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for phase removal: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
@@ -243,7 +228,7 @@ def phase_rm(
             return  # pragma: no cover
 
     # Locate the phase object for deletion.
-    p = _find_phase(g, phase_name)
+    p = find_phase(g, phase_name)
     if not p:
         logger.error("Phase not found: %s/%s", goal_name, phase_name)
         click.echo("[red]Phase not found.")  # pragma: no cover
@@ -271,12 +256,12 @@ def phase_notes(
     goals: List[GoalArea],
 ) -> None:
     """Display or update notes for a phase."""
-    g = _find_goal(goals, goal_name)
+    g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for phase notes: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])
         return
-    p = _find_phase(g, phase_name)
+    p = find_phase(g, phase_name)
     if not p:
         logger.error("Phase not found for notes: %s/%s", goal_name, phase_name)
         click.echo("[red]Phase not found.")
@@ -301,7 +286,7 @@ def goal_wizard(goals: List[GoalArea]) -> None:
     logger.info("Starting goal wizard")
     click.echo("Let's set up your first goal!")
     goal_name = click.prompt("Goal name").strip()
-    if _find_goal(goals, goal_name):
+    if find_goal(goals, goal_name):
         logger.error("Goal already exists during wizard: %s", goal_name)
         click.echo("[red]Goal already exists.")
         return
