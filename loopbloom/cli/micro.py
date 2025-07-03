@@ -36,7 +36,11 @@ def _get_or_select_phase(
 
 def _prompt_for_new_micro_goal() -> str:
     """Ask user for a micro-habit name."""
-    return click.prompt("Micro-habit name").strip()
+    # ``click.prompt`` returns ``Any`` due to loose typing, so cast to ``str``
+    # before stripping whitespace for strict type checking.
+    from typing import cast
+
+    return cast(str, click.prompt("Micro-habit name")).strip()
 
 
 def _get_or_select_micro_goal(
