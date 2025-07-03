@@ -74,6 +74,17 @@ class JSONStore(Storage):
             logger.error("Error saving %s: %s", self._path, exc)
             raise StorageError(str(exc)) from exc
 
+    def save_goal_area(self, goal: GoalArea) -> None:
+        """Update or append a single goal area."""
+        goals = self.load()
+        for i, g in enumerate(goals):
+            if g.id == goal.id or g.name == goal.name:
+                goals[i] = goal
+                break
+        else:
+            goals.append(goal)
+        self.save(goals)
+
     # Advisory lock not required for single-process Phase 1
     def lock(self) -> ContextManager[None]:
         """Return a no-op context manager for compatibility."""
