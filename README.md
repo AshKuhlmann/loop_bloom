@@ -201,7 +201,7 @@ save a YAML file you can edit later.
 flowchart TD
     Checkin -- emits --> EventBus
     EventBus --> Progression[progression.eval()]
-    Progression -->|≥ 80 % / 14d| AdvanceBanner
+    Progression -->|>= 80% / 14d| AdvanceBanner
     Progression -->|otherwise| CompassionateNudge
 ```
 
