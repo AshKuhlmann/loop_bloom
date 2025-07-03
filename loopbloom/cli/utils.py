@@ -37,5 +37,7 @@ def find_goal(goals: Iterable[GoalArea], name: str) -> Optional[GoalArea]:
 
 def find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
     """Return the phase within ``goal`` whose name matches ``name``."""
-    return next((p for p in goal.phases if p.name.lower() == name.lower()), None)
-
+    return next(
+        (p for p in goal.phases if p.name.lower() == name.lower()),
+        None,
+    )

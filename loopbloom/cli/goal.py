@@ -13,8 +13,6 @@ from loopbloom.core.models import GoalArea, MicroGoal, Phase
 logger = logging.getLogger(__name__)
 
 
-
-
 @click.group(name="goal", help="Manage goals, phases, and micro-habits.")
 def goal() -> None:
     """Goal-level commands."""
