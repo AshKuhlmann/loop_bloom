@@ -59,7 +59,10 @@ def _get_or_select_micro_goal(
         target_list = phase.micro_goals
     if micro_goal_name:
         mg = next(
-            (m for m in target_list if m.name.lower() == micro_goal_name.lower()),
+            (
+                m for m in target_list
+                if m.name.lower() == micro_goal_name.lower()
+            ),
             None,
         )
     else:
@@ -268,7 +271,10 @@ def micro_add(
             g.phases.append(target_phase)
             logger.info("Created phase %s under %s", phase_name, goal_name)
             click.echo(
-                f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'."
+                (
+                    f"[yellow]Created phase '{phase_name}' "
+                    f"under goal '{goal_name}'."
+                )
             )
 
     if target_phase is None:
@@ -277,7 +283,10 @@ def micro_add(
     else:
         target_phase.micro_goals.append(MicroGoal(name=name))
         click.echo(
-            f"[green]Added micro-habit '{name}' to {goal_name}/{target_phase.name}"
+            (
+                f"[green]Added micro-habit '{name}' to {goal_name}/"
+                f"{target_phase.name}"
+            )
         )
 
     store = click.get_current_context().obj
@@ -320,7 +329,12 @@ def micro_rm(
         click.echo(f"[red]Phase '{phase_name}' not found.")
         return
 
-    result = _get_or_select_micro_goal(click.get_current_context().obj, goal_name, phase_name, name)
+    result = _get_or_select_micro_goal(
+        click.get_current_context().obj,
+        goal_name,
+        phase_name,
+        name,
+    )
     if not result:
         loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
