@@ -9,12 +9,9 @@ from __future__ import annotations
 from datetime import date, timedelta
 from typing import List
 
+from loopbloom.constants import THRESHOLD_DEFAULT, WINDOW_DEFAULT
 from loopbloom.core import config as cfg
 from loopbloom.core.models import Checkin, MicroGoal
-
-# Default history window and success rate threshold for progression logic.
-WINDOW_DEFAULT = 14  # days to consider
-THRESHOLD_DEFAULT = 0.80  # 80 % success required
 
 
 def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:

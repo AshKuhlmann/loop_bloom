@@ -16,6 +16,7 @@ from rich.progress_bar import ProgressBar
 from rich.table import Table
 
 from loopbloom.cli import with_goals
+from loopbloom.constants import DEFAULT_TIMEFRAME
 from loopbloom.core.models import GoalArea, MicroGoal
 
 console = Console()
@@ -71,10 +72,7 @@ def _calendar_heatmap(goals: List[GoalArea]) -> None:
                 stats[ci.date.day] = (succ, tot)
 
     weeks = cal.monthdayscalendar(today.year, today.month)
-    title = (
-        "LoopBloom Check-in Heatmap – "
-        f"{month_name[today.month]} {today.year}"
-    )
+    title = "LoopBloom Check-in Heatmap – " f"{month_name[today.month]} {today.year}"
     console.print(f"[bold]{title}[/bold]")
     for week in weeks:
         line = ""
@@ -117,17 +115,20 @@ def _success_bars(goals: List[GoalArea]) -> None:
 
 
 def _line_chart(goals: List[GoalArea]) -> None:
-    """Show a line chart of daily success rates over the last 30 days."""
+    """Show a line chart of daily success rates.
+
+    The chart spans the last ``DEFAULT_TIMEFRAME`` days.
+    """
     # ``plotext`` is a lightweight plotting library used only for this view.
     # It's an optional dependency so ``report --mode line`` can be skipped if
     # the library isn't installed.
     import plotext as plt
 
     today = date.today()
-    start = today - timedelta(days=29)
+    start = today - timedelta(days=DEFAULT_TIMEFRAME - 1)
 
     rates: list[float] = []
-    for i in range(30):
+    for i in range(DEFAULT_TIMEFRAME):
         day = start + timedelta(days=i)
         successes = 0
         total = 0
@@ -140,11 +141,11 @@ def _line_chart(goals: List[GoalArea]) -> None:
         rate = (successes / total) * 100 if total else 0
         rates.append(rate)
 
-    x = list(range(30))
+    x = list(range(DEFAULT_TIMEFRAME))
     plt.clear_data()
     plt.clear_figure()
     plt.plot(x, rates)
-    plt.title("Success Rate (Last 30 Days)")
+    plt.title(f"Success Rate (Last {DEFAULT_TIMEFRAME} Days)")
     plt.ylim(0, 100)
     plt.yticks([0, 25, 50, 75, 100])
     plt.show()

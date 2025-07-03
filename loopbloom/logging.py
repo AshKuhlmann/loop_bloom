@@ -1,3 +1,5 @@
+"""Logging configuration helpers."""
+
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -12,9 +14,7 @@ def setup_logging(level: int = logging.INFO) -> None:
     log_file = log_dir / "loopbloom.log"
 
     handler = RotatingFileHandler(log_file, maxBytes=1_000_000, backupCount=3)
-    formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
     handler.setFormatter(formatter)
 
     root_logger = logging.getLogger()

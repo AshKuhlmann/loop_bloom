@@ -1,16 +1,15 @@
+"""User reflection entry storage."""
+
 from __future__ import annotations
 
-from datetime import datetime
 import json
+from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel, Field
 from pydantic.json import pydantic_encoder
 
-from loopbloom.core.config import APP_DIR
-
-REVIEW_PATH = APP_DIR / "reviews.json"
-REVIEW_PATH.parent.mkdir(parents=True, exist_ok=True)
+from loopbloom.constants import REVIEW_PATH
 
 
 class ReviewEntry(BaseModel):

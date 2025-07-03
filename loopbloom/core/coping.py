@@ -12,8 +12,7 @@ from typing import Any, Dict, List
 
 import yaml
 
-# Directory containing YAML coping plans bundled with the package.
-COPING_DIR = Path(__file__).resolve().parent.parent / "data" / "coping"
+from loopbloom.constants import COPING_DIR
 
 
 class CopingPlanError(RuntimeError):

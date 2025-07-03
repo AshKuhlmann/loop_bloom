@@ -6,17 +6,16 @@ always mirror the user's active configuration.
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-import logging
 
 import click
 
+from loopbloom.constants import JSON_DEFAULT_PATH, SQLITE_DEFAULT_PATH
 from loopbloom.core import config as cfg
-from loopbloom.storage.json_store import DEFAULT_PATH as JSON_DEFAULT_PATH
-from loopbloom.storage.sqlite_store import DEFAULT_PATH as SQLITE_DEFAULT_PATH
 
 logger = logging.getLogger(__name__)
 

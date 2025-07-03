@@ -1,3 +1,5 @@
+"""Capture brief reflections on progress."""
+
 from __future__ import annotations
 
 import click

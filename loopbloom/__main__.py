@@ -4,14 +4,12 @@ This module wires together all subcommands and selects the appropriate
 storage backend based on the user's configuration.
 """
 
-import os
 import logging
+import os
 from typing import TYPE_CHECKING, cast
 
 import click
 from click import Command
-
-from loopbloom.logging import setup_logging
 
 from loopbloom.cli.backup import backup  # NEW
 from loopbloom.cli.checkin import checkin
@@ -19,27 +17,19 @@ from loopbloom.cli.config import config  # NEW
 from loopbloom.cli.cope import cope  # NEW
 from loopbloom.cli.export import export  # NEW
 from loopbloom.cli.goal import goal
+from loopbloom.cli.journal import journal
 from loopbloom.cli.micro import micro
+from loopbloom.cli.pause import pause
 from loopbloom.cli.report import report
+from loopbloom.cli.review import review
 from loopbloom.cli.summary import summary
 from loopbloom.cli.tree import tree
-from loopbloom.cli.journal import journal
-from loopbloom.cli.review import review
-from loopbloom.cli.pause import pause
+from loopbloom.constants import JSON_DEFAULT_PATH, SQLITE_DEFAULT_PATH
 from loopbloom.core import config as cfg
+from loopbloom.logging import setup_logging
 from loopbloom.storage.base import Storage
-from loopbloom.storage.json_store import (
-    DEFAULT_PATH as JSON_DEFAULT_PATH,
-)
-from loopbloom.storage.json_store import (
-    JSONStore,
-)
-from loopbloom.storage.sqlite_store import (
-    DEFAULT_PATH as SQLITE_DEFAULT_PATH,
-)
-from loopbloom.storage.sqlite_store import (
-    SQLiteStore,
-)
+from loopbloom.storage.json_store import JSONStore
+from loopbloom.storage.sqlite_store import SQLiteStore
 
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
     pass
