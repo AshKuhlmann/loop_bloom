@@ -62,3 +62,35 @@ def should_advance(
     success_ratio = sum(ci.success for ci in recent) / window
     # True when the user's streak meets or exceeds the threshold.
     return success_ratio >= threshold
+
+
+def get_progression_reasons(
+    micro: MicroGoal,
+    *,
+    window: int | None = None,
+    threshold: float | None = None,
+) -> list[str]:
+    """Return reasons explaining the progression decision."""
+    if window is None:
+        window = micro.advancement_window
+    if threshold is None:
+        threshold = micro.advancement_threshold
+    if window is None or threshold is None:
+        conf = cfg.load().get("advance", {})
+        if window is None:
+            window = int(conf.get("window", WINDOW_DEFAULT))
+        if threshold is None:
+            threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
+
+    recent = _recent_checkins(micro.checkins, window)
+    successes = sum(ci.success for ci in recent)
+    reasons: list[str] = []
+    reasons.append(
+        f"{successes} successes in last {len(recent)}/{window} days"
+    )
+    if len(recent) < window:
+        remaining = window - len(recent)
+        reasons.append(f"{remaining} more day(s) needed for full window")
+    ratio = successes / window if window else 0
+    reasons.append(f"Success rate {ratio:.0%} (threshold {threshold:.0%})")
+    return reasons

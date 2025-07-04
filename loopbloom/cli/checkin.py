@@ -15,6 +15,7 @@ from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
+from loopbloom.services.progression import ProgressionService
 
 logger = logging.getLogger(__name__)
 
@@ -98,3 +99,21 @@ def checkin(
     # Notification style (desktop or terminal) comes from user config.
     notify_mode = cfg.load().get("notify", "terminal")
     notifier.send("LoopBloom Check-in", talk, mode=notify_mode, goal=goal.name)
+
+    progression_service = ProgressionService()
+    should_progress, reasons = progression_service.check_progression(goal)
+
+    if should_progress:
+        print(
+            "\n[bold green]Congratulations! You've made enough progress to "
+            "advance to the next phase.[/bold green]"
+        )
+        for reason in reasons:
+            print(f"- {reason}")
+    else:
+        print(
+            "\n[bold]Keep up the great work! You're making steady "
+            "progress.[/bold]"
+        )
+        for reason in reasons:
+            print(f"- {reason}")
