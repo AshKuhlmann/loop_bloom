@@ -1,13 +1,13 @@
 """CLI commands for micro-habit lifecycle management."""
 
+import logging
 from typing import List, Optional, Tuple
 
 import click
-import logging
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.interactive import choose_from
-from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
+from loopbloom.cli.utils import find_goal, find_phase, goal_not_found
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
 from loopbloom.storage.base import Storage as DataStore
 
@@ -63,10 +63,7 @@ def _get_or_select_micro_goal(
         target_list = phase.micro_goals
     if micro_goal_name:
         mg = next(
-            (
-                m for m in target_list
-                if m.name.lower() == micro_goal_name.lower()
-            ),
+            (m for m in target_list if m.name.lower() == micro_goal_name.lower()),
             None,
         )
     else:
@@ -275,10 +272,7 @@ def micro_add(
             g.phases.append(target_phase)
             logger.info("Created phase %s under %s", phase_name, goal_name)
             click.echo(
-                (
-                    f"[yellow]Created phase '{phase_name}' "
-                    f"under goal '{goal_name}'."
-                )
+                (f"[yellow]Created phase '{phase_name}' " f"under goal '{goal_name}'.")
             )
 
     if target_phase is None:

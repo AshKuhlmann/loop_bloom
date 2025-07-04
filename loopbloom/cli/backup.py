@@ -6,11 +6,11 @@ always mirror the user's active configuration.
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-import logging
 
 import click
 
