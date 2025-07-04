@@ -112,8 +112,7 @@ def checkin(
             print(f"- {reason}")
     else:
         print(
-            "\n[bold]Keep up the great work! You're making steady "
-            "progress.[/bold]"
+            "\n[bold]Keep up the great work! You're making steady " "progress.[/bold]"
         )
         for reason in reasons:
             print(f"- {reason}")
