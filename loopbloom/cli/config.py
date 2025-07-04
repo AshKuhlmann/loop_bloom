@@ -12,6 +12,7 @@ import click
 import logging
 
 from loopbloom.core import config as cfg
+from loopbloom.core.config import ProgressionStrategy
 
 logger = logging.getLogger(__name__)
 
@@ -63,19 +64,25 @@ def _set(key: str, value: str) -> None:
     # Walk down the hierarchy, creating intermediate dictionaries as needed
     for p in parts[:-1]:
         d = d.setdefault(p, {})
-    # Convert the string to int/float/bool when possible so numbers are not
-    # stored as strings in the config file.
-    if value.isdigit():
-        cast: Any = int(value)
+    cast: Any
+    if key == "advance.strategy":
+        lower = value.lower()
+        if lower not in [s.value for s in ProgressionStrategy]:
+            click.echo("[red]Invalid progression strategy.")
+            return
+        cast = lower
     else:
-        try:
-            cast = float(value)
-        except ValueError:
-            lower = value.lower()
-            if lower in ("true", "false"):
-                cast = lower == "true"
-            else:
-                cast = value
+        if value.isdigit():
+            cast = int(value)
+        else:
+            try:
+                cast = float(value)
+            except ValueError:
+                lower = value.lower()
+                if lower in ("true", "false"):
+                    cast = lower == "true"
+                else:
+                    cast = value
     # Assign the converted value and persist.
     d[parts[-1]] = cast
     cfg.save(conf)

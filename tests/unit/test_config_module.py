@@ -61,3 +61,23 @@ def test_cli_get_missing_key(tmp_path, monkeypatch) -> None:
     runner = CliRunner()
     result = runner.invoke(cli_cfg._get, ["nonexistent.key"])
     assert "[red]Key not found." in result.output
+
+
+def test_cli_set_progression_strategy(tmp_path, monkeypatch) -> None:
+    """Setting progression strategy validates allowed values."""
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+
+    import importlib
+    import loopbloom.core.config as cfg_mod
+    import loopbloom.cli.config as cli_cfg
+
+    importlib.reload(cfg_mod)
+    importlib.reload(cli_cfg)
+
+    runner = CliRunner()
+    res = runner.invoke(cli_cfg._set, ["advance.strategy", "streak"])
+    assert "Saved." in res.output
+    assert cfg_mod.load()["advance"]["strategy"] == "streak"
+
+    bad = runner.invoke(cli_cfg._set, ["advance.strategy", "bogus"])
+    assert "Invalid progression strategy" in bad.output

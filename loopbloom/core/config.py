@@ -9,6 +9,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Any, Dict
+from enum import Enum
+from pydantic import BaseModel
 
 import tomli_w
 import tomllib
@@ -38,11 +40,38 @@ DEFAULTS: Dict[str, Any] = {
     # How progress notifications are delivered.
     "notify": "terminal",  # terminal | desktop | none
     # Parameters for the auto-progression engine.
-    "advance": {"threshold": 0.80, "window": 14},
+    "advance": {
+        "threshold": 0.80,
+        "window": 14,
+        "strategy": "ratio",
+        "streak_to_advance": 10,
+    },
     # Notification pause settings
     "pause_until": "",  # ISO date string when global pause expires
     "goal_pauses": {},  # Mapping of goal name -> ISO date
 }
+
+
+class ProgressionStrategy(str, Enum):
+    """Supported progression algorithms."""
+
+    RATIO = "ratio"
+    STREAK = "streak"
+
+
+class ProgressionConfig(BaseModel):
+    """Typed configuration for progression behaviour."""
+
+    window: int = 14
+    threshold: float = 0.80
+    strategy: ProgressionStrategy = ProgressionStrategy.RATIO
+    streak_to_advance: int = 10
+
+
+def load_progression_config() -> ProgressionConfig:
+    """Return progression settings as a :class:`ProgressionConfig`."""
+    data = load().get("advance", {})
+    return ProgressionConfig(**data)
 
 
 def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:

@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from typing import List
 
 from loopbloom.core import config as cfg
+from loopbloom.core.config import ProgressionStrategy
 from loopbloom.core.models import Checkin, MicroGoal
 
 # Default history window and success rate threshold for progression logic.
@@ -25,11 +26,30 @@ def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
     return [ci for ci in checkins if ci.date >= cutoff]
 
 
+def _current_streak(checkins: List[Checkin]) -> int:
+    """Return length of the current success streak."""
+    if not checkins:
+        return 0
+    ordered = sorted(checkins, key=lambda c: c.date, reverse=True)
+    streak = 0
+    last_date: date | None = None
+    for ci in ordered:
+        if last_date is not None and (last_date - ci.date).days > 1:
+            break
+        if not ci.success:
+            break
+        streak += 1
+        last_date = ci.date
+    return streak
+
+
 def should_advance(
     micro: MicroGoal,
     *,
     window: int | None = None,
     threshold: float | None = None,
+    strategy: ProgressionStrategy | None = None,
+    streak_to_advance: int | None = None,
 ) -> bool:
     """Return True if micro-habit qualifies for advancement.
 
@@ -45,7 +65,15 @@ def should_advance(
         window = micro.advancement_window
     if threshold is None:
         threshold = micro.advancement_threshold
-    if window is None or threshold is None:
+    if (
+        window is None
+        or threshold is None
+        or strategy is None
+        or (
+            strategy == ProgressionStrategy.STREAK
+            and streak_to_advance is None
+        )
+    ):
         # Pull defaults from the user's config so behaviour can be tuned
         # without modifying library code.
         conf = cfg.load().get("advance", {})
@@ -53,14 +81,21 @@ def should_advance(
             window = int(conf.get("window", WINDOW_DEFAULT))
         if threshold is None:
             threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
+        if strategy is None:
+            strategy = ProgressionStrategy(conf.get("strategy", "ratio"))
+        if streak_to_advance is None:
+            streak_to_advance = int(conf.get("streak_to_advance", 10))
 
-    # Filter check-ins down to just those within the relevant window.
+    if strategy == ProgressionStrategy.STREAK:
+        streak = _current_streak(micro.checkins)
+        assert streak_to_advance is not None
+        return streak >= streak_to_advance
+
+    # Ratio strategy
     recent = _recent_checkins(micro.checkins, window)
-    if len(recent) < window:  # need full window
-        # Not enough data yet to make a decision.
+    if len(recent) < window:
         return False
     success_ratio = sum(ci.success for ci in recent) / window
-    # True when the user's streak meets or exceeds the threshold.
     return success_ratio >= threshold
 
 
@@ -69,22 +104,42 @@ def get_progression_reasons(
     *,
     window: int | None = None,
     threshold: float | None = None,
+    strategy: ProgressionStrategy | None = None,
+    streak_to_advance: int | None = None,
 ) -> list[str]:
     """Return reasons explaining the progression decision."""
     if window is None:
         window = micro.advancement_window
     if threshold is None:
         threshold = micro.advancement_threshold
-    if window is None or threshold is None:
+    if (
+        window is None
+        or threshold is None
+        or strategy is None
+        or (
+            strategy == ProgressionStrategy.STREAK
+            and streak_to_advance is None
+        )
+    ):
         conf = cfg.load().get("advance", {})
         if window is None:
             window = int(conf.get("window", WINDOW_DEFAULT))
         if threshold is None:
             threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
+        if strategy is None:
+            strategy = ProgressionStrategy(conf.get("strategy", "ratio"))
+        if streak_to_advance is None:
+            streak_to_advance = int(conf.get("streak_to_advance", 10))
+
+    reasons: list[str] = []
+
+    if strategy == ProgressionStrategy.STREAK:
+        streak = _current_streak(micro.checkins)
+        reasons.append(f"Current streak: {streak}/{streak_to_advance}")
+        return reasons
 
     recent = _recent_checkins(micro.checkins, window)
     successes = sum(ci.success for ci in recent)
-    reasons: list[str] = []
     reasons.append(
         f"{successes} successes in last {len(recent)}/{window} days"
     )
