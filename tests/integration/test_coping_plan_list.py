@@ -1,4 +1,5 @@
 from click.testing import CliRunner
+
 from loopbloom.__main__ import cli
 
 

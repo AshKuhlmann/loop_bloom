@@ -4,7 +4,6 @@ import click
 
 from loopbloom.core import config as cfg
 
-
 _DEF_HELP = "Pause notifications globally or for a specific goal."
 
 
@@ -13,7 +12,7 @@ def _parse_duration(text: str) -> timedelta | None:
     if not text:
         return None
     num = "".join(ch for ch in text if ch.isdigit())
-    unit = text[len(num):]
+    unit = text[len(num) :]
     if not num or unit not in {"d", "w"}:
         return None
     days = int(num) * (7 if unit == "w" else 1)

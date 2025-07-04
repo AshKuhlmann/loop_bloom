@@ -3,6 +3,6 @@
 # linters or tests do not pass.
 set -e
 
-flake8                 # style checks
-mypy loopbloom         # static type analysis
-PYTHONPATH=. pytest --cov=loopbloom --cov-fail-under=80 -q
+poetry run ruff check .           # linting and import sorting
+poetry run mypy loopbloom         # static type analysis
+PYTHONPATH=. poetry run pytest --cov=loopbloom --cov-fail-under=80 -q
