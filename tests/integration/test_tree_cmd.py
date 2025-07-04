@@ -13,6 +13,7 @@ def test_tree_displays_hierarchy(tmp_path) -> None:
 
     os.environ["LOOPBLOOM_DATA_PATH"] = str(data_file)
     from loopbloom import __main__ as main
+
     cli = main.cli
 
     runner.invoke(cli, ["goal", "add", "Exercise"], env=env)

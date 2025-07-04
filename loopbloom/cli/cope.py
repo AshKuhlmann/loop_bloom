@@ -5,9 +5,10 @@ overwhelming situations. Plans are defined in YAML so users can add their
 own customised coping strategies.
 """
 
+import logging
+
 import click
 import yaml
-import logging
 
 from loopbloom.core.coping import COPING_DIR, PlanRepository, run_plan
 
