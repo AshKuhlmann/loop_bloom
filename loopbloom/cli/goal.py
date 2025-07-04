@@ -1,13 +1,13 @@
 """LoopBloom CLI: goal, phase, and micro-habit CRUD."""
 
+import logging
 from typing import List, Optional
 
 import click
-import logging
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
 from loopbloom.cli.interactive import choose_from
+from loopbloom.cli.utils import find_goal, find_phase, goal_not_found
 from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 logger = logging.getLogger(__name__)
@@ -67,9 +67,7 @@ def goal_rm(
     if name is None:
         if not goals:
             logger.info("No goals to remove")
-            click.echo(
-                "[italic]No goals – nothing to remove."
-            )  # pragma: no cover
+            click.echo("[italic]No goals – nothing to remove.")  # pragma: no cover
             return  # pragma: no cover
         click.echo("Which goal do you want to delete?")  # pragma: no cover
         selected = choose_from(
@@ -145,9 +143,7 @@ def phase_add(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase addition")
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal for new phase:")  # pragma: no cover
         goal_name = choose_from(
@@ -192,9 +188,7 @@ def phase_rm(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase removal")
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            click.echo("[red]No goals – use `loopbloom goal add`.")  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal:")  # pragma: no cover
         goal_name = choose_from(
@@ -215,9 +209,7 @@ def phase_rm(
         options = [p.name for p in g.phases]
         if not options:
             logger.error("No phases in goal %s", goal_name)
-            click.echo(
-                "[red]No phases found for this goal."
-            )  # pragma: no cover
+            click.echo("[red]No phases found for this goal.")  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select phase to delete:")  # pragma: no cover
         phase_name = choose_from(
@@ -271,9 +263,7 @@ def phase_notes(
     else:
         p.notes = text.strip() or None
         logger.info("Saved notes for phase %s under %s", phase_name, goal_name)
-        click.echo(
-            f"[green]Saved notes for phase '{phase_name}' under {goal_name}."
-        )
+        click.echo(f"[green]Saved notes for phase '{phase_name}' under {goal_name}.")
 
 
 @goal.command(

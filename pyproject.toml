@@ -28,7 +28,6 @@ mypy = "*"
 beartype = "*"
 types-PyYAML = "*"
 tomli-w = "*"
-flake8 = "*"
 
 [tool.poetry.scripts]
 loopbloom = "loopbloom.__main__:cli"
@@ -38,7 +37,7 @@ line-length = 88
 
 [tool.ruff]
 line-length = 88
-select = ["E", "F", "I", "B", "W", "D"]
+select = ["E", "F", "I", "B", "W"]
 
 [tool.mypy]
 strict = true

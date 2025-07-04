@@ -20,13 +20,9 @@ From inside the environment (or by prefixing commands with `poetry run`), you ca
 
 ## Linting
 
-- **Ruff** – fast linter and formatter:
+- **Ruff** – linter and import sorter:
   ```bash
   poetry run ruff check .
-  ```
-- **Flake8** – style and import checks:
-  ```bash
-  poetry run flake8
   ```
 
 ## Type Checking
