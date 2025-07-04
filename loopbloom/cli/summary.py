@@ -7,14 +7,14 @@ checks whether it should be advanced.
 
 from __future__ import annotations
 
+import logging
 from datetime import date, timedelta
 from typing import List
 
 import click
-import logging
 from rich.console import Console, Group
-from rich.table import Table
 from rich.progress_bar import ProgressBar
+from rich.table import Table
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found

@@ -1,8 +1,13 @@
 #!/bin/sh
-# Simple pre-commit hook used during development. Fails the commit if any
-# linters or tests do not pass.
+# Pre-commit helper mirroring the CI workflow. Fails if any step does not pass.
 set -e
 
-flake8                 # style checks
-mypy loopbloom         # static type analysis
-PYTHONPATH=. pytest --cov=loopbloom --cov-fail-under=80 -q
+# Ensure required dependencies are installed
+pip install poetry
+poetry install
+
+# Run formatters and linters using Poetry
+poetry run black --check .
+poetry run ruff check .
+poetry run mypy loopbloom
+poetry run pytest --cov=loopbloom --cov-fail-under=80 -q
