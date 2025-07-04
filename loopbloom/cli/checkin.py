@@ -113,6 +113,13 @@ def checkin(
     else:
         print(
             "\n[bold]Keep up the great work! You're making steady " "progress.[/bold]"
+
+        # fmt: off
+        progress_msg = (
+            "\n[bold]Keep up the great work! You're making steady "
+            "progress.[/bold]"
         )
+        # fmt: on
+        print(progress_msg)
         for reason in reasons:
             print(f"- {reason}")
