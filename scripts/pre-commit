@@ -6,7 +6,8 @@ set -e
 pip install poetry
 poetry install
 
-# Run linters and tests using Poetry
-poetry run flake8 .
+# Run formatters and linters using Poetry
+poetry run black --check .
+poetry run ruff check .
 poetry run mypy loopbloom
 poetry run pytest --cov=loopbloom --cov-fail-under=80 -q
