@@ -1,13 +1,19 @@
 """LoopBloom CLI: goal, phase, and micro-habit CRUD."""
 
+import logging
 from typing import List, Optional
 
 import click
-import logging
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.utils import goal_not_found, find_goal, find_phase
 from loopbloom.cli.interactive import choose_from
+from loopbloom.cli.utils import (
+    find_goal,
+    find_phase,
+    get_goal_from_name,
+    goal_not_found,
+    save_goal,
+)
 from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 logger = logging.getLogger(__name__)
@@ -67,9 +73,8 @@ def goal_rm(
     if name is None:
         if not goals:
             logger.info("No goals to remove")
-            click.echo(
-                "[italic]No goals – nothing to remove."
-            )  # pragma: no cover
+            msg = "[italic]No goals – nothing to remove."
+            click.echo(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Which goal do you want to delete?")  # pragma: no cover
         selected = choose_from(
@@ -96,23 +101,23 @@ def goal_rm(
     click.echo(f"[green]Deleted goal:[/] {name}")
 
 
-@goal.command(name="notes", help="View or set notes for a goal.")
+@goal.command(name="notes", help="View and edit goal notes in $EDITOR.")
 @click.argument("name")
-@click.argument("text", required=False)
-@with_goals
-def goal_notes(name: str, text: Optional[str], goals: List[GoalArea]) -> None:
-    """Display or update notes for ``name``."""
-    g = find_goal(goals, name)
-    if not g:
-        logger.error("Goal not found for notes: %s", name)
-        goal_not_found(name, [x.name for x in goals])
-        return
-    if text is None:
-        click.echo(g.notes or "")
+@click.pass_context
+def goal_notes(ctx: click.Context, name: str) -> None:
+    """Open ``name``'s notes in the user's editor."""
+    goal = get_goal_from_name(name)
+    if not goal:
+        goal_not_found(name, [])
+        raise click.Abort()
+
+    edited = click.edit(goal.notes or "")
+    if edited is None:
+        click.echo(goal.notes or "")
     else:
-        g.notes = text.strip() or None
-        logger.info("Saved notes for goal %s", name)
-        click.echo(f"[green]Saved notes for '{name}'.")
+        goal.notes = edited.strip()
+        save_goal(goal)
+        click.echo(f"[green]Notes for goal '{name}' updated.")
 
 
 # Phase commands
@@ -145,9 +150,8 @@ def phase_add(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase addition")
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            msg = "[red]No goals – use `loopbloom goal add`."
+            click.echo(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal for new phase:")  # pragma: no cover
         goal_name = choose_from(
@@ -192,9 +196,8 @@ def phase_rm(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase removal")
-            click.echo(
-                "[red]No goals – use `loopbloom goal add`."
-            )  # pragma: no cover
+            msg = "[red]No goals – use `loopbloom goal add`."
+            click.echo(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal:")  # pragma: no cover
         goal_name = choose_from(
@@ -215,9 +218,8 @@ def phase_rm(
         options = [p.name for p in g.phases]
         if not options:
             logger.error("No phases in goal %s", goal_name)
-            click.echo(
-                "[red]No phases found for this goal."
-            )  # pragma: no cover
+            msg = "[red]No phases found for this goal."
+            click.echo(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select phase to delete:")  # pragma: no cover
         phase_name = choose_from(
@@ -244,36 +246,35 @@ def phase_rm(
     click.echo(f"[green]Deleted phase '{phase_name}' from {goal_name}")
 
 
-@phase.command(name="notes", help="View or set notes for a phase.")
+@phase.command(
+    name="notes",
+    help="View and edit notes for a phase in $EDITOR.",
+)
 @click.argument("goal_name")
 @click.argument("phase_name")
-@click.argument("text", required=False)
-@with_goals
-def phase_notes(
-    goal_name: str,
-    phase_name: str,
-    text: Optional[str],
-    goals: List[GoalArea],
-) -> None:
-    """Display or update notes for a phase."""
-    g = find_goal(goals, goal_name)
-    if not g:
-        logger.error("Goal not found for phase notes: %s", goal_name)
-        goal_not_found(goal_name, [x.name for x in goals])
-        return
-    p = find_phase(g, phase_name)
-    if not p:
-        logger.error("Phase not found for notes: %s/%s", goal_name, phase_name)
+@click.pass_context
+def phase_notes(ctx: click.Context, goal_name: str, phase_name: str) -> None:
+    """Open notes for ``phase_name`` under ``goal_name`` in the editor."""
+    goal = get_goal_from_name(goal_name)
+    if not goal:
+        goal_not_found(goal_name, [])
+        raise click.Abort()
+    phase = find_phase(goal, phase_name)
+    if not phase:
         click.echo("[red]Phase not found.")
-        return
-    if text is None:
-        click.echo(p.notes or "")
+        raise click.Abort()
+
+    edited = click.edit(phase.notes or "")
+    if edited is None:
+        click.echo(phase.notes or "")
     else:
-        p.notes = text.strip() or None
-        logger.info("Saved notes for phase %s under %s", phase_name, goal_name)
-        click.echo(
-            f"[green]Saved notes for phase '{phase_name}' under {goal_name}."
+        phase.notes = edited.strip()
+        save_goal(goal)
+        msg = "[green]Notes for phase '{}' under {} updated.".format(
+            phase_name,
+            goal_name,
         )
+        click.echo(msg)
 
 
 @goal.command(
