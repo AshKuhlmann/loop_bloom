@@ -85,7 +85,9 @@ def get_progression_reasons(
     recent = _recent_checkins(micro.checkins, window)
     successes = sum(ci.success for ci in recent)
     reasons: list[str] = []
-    reasons.append(f"{successes} successes in last {len(recent)}/{window} days")
+    reasons.append(
+        f"{successes} successes in last {len(recent)}/{window} days"
+    )
     if len(recent) < window:
         remaining = window - len(recent)
         reasons.append(f"{remaining} more day(s) needed for full window")
