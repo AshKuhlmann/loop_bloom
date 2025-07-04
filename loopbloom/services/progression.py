@@ -1,9 +1,9 @@
-from __future__ import annotations
-
 """Business logic wrapper for goal progression."""
 
+from __future__ import annotations
+
 from loopbloom.core.models import GoalArea
-from loopbloom.core.progression import should_advance, get_progression_reasons
+from loopbloom.core.progression import get_progression_reasons, should_advance
 
 
 class ProgressionService:
