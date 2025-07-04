@@ -4,15 +4,15 @@ This subcommand records progress for the active micro-habit under a goal
 and offers a small pep talk to keep momentum going.
 """
 
+import logging
 from typing import List, Optional
 
 import click
 from rich import print
-import logging
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.utils import goal_not_found
 from loopbloom.cli.interactive import choose_from
+from loopbloom.cli.utils import goal_not_found
 from loopbloom.core.models import Checkin, GoalArea
 from loopbloom.core.talks import TalkPool
 from loopbloom.services.progression import ProgressionService
@@ -112,8 +112,8 @@ def checkin(
             print(f"- {reason}")
     else:
         print(
-            "\n[bold]Keep up the great work! You're making steady "
-            "progress.[/bold]"
+            "\n[bold]Keep up the great work! You're making steady " "progress.[/bold]"
         )
         for reason in reasons:
             print(f"- {reason}")
+

@@ -12,9 +12,7 @@ from loopbloom.core.models import Checkin, GoalArea, MicroGoal
 
 def test_report_helpers(capsys) -> None:  # noqa: D103
     goal = GoalArea(name="G", micro_goals=[MicroGoal(name="M")])
-    goal.micro_goals[0].checkins.append(
-        Checkin(date=date.today(), success=True)
-    )
+    goal.micro_goals[0].checkins.append(Checkin(date=date.today(), success=True))
     _calendar_heatmap([goal])
     out = capsys.readouterr().out
     assert "LoopBloom Check-in Heatmap" in out

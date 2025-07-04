@@ -9,9 +9,10 @@ from click.testing import CliRunner
 
 def _reload_cli(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    import loopbloom.__main__ as main
     import loopbloom.core.config as cfg_mod
     import loopbloom.core.review as review_mod
-    import loopbloom.__main__ as main
+
     importlib.reload(cfg_mod)
     importlib.reload(review_mod)
     importlib.reload(main)

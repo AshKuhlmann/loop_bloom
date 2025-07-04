@@ -7,10 +7,10 @@ structure.
 
 import csv
 import json
+import logging
 from typing import List
 
 import click
-import logging
 
 from loopbloom.storage.base import Storage
 
