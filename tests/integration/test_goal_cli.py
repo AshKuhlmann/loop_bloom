@@ -184,37 +184,53 @@ def test_goal_and_phase_notes(tmp_path) -> None:
     cli = main.cli
 
     # Goal notes
+    runner.invoke(cli, ["goal", "add", "Exercise"], env=env)
+    script = tmp_path / "edit_goal.sh"
+    script.write_text("#!/bin/sh\necho 'start' > \"$1\"\n")
+    script.chmod(0o755)
     runner.invoke(
-        cli,
-        ["goal", "add", "Exercise", "--notes", "start"],
-        env=env,
+        cli, ["goal", "notes", "Exercise"], env={**env, "EDITOR": str(script)}
     )
-    res = runner.invoke(cli, ["goal", "notes", "Exercise"], env=env)
+    res = runner.invoke(
+        cli, ["goal", "notes", "Exercise"], env={**env, "EDITOR": "cat"}
+    )
     assert "start" in res.output
-    runner.invoke(cli, ["goal", "notes", "Exercise", "updated"], env=env)
-    res = runner.invoke(cli, ["goal", "notes", "Exercise"], env=env)
+
+    script.write_text("#!/bin/sh\necho 'updated' > \"$1\"\n")
+    runner.invoke(
+        cli, ["goal", "notes", "Exercise"], env={**env, "EDITOR": str(script)}
+    )
+    res = runner.invoke(
+        cli, ["goal", "notes", "Exercise"], env={**env, "EDITOR": "cat"}
+    )
     assert "updated" in res.output
 
     # Phase notes
+    runner.invoke(cli, ["goal", "phase", "add", "Exercise", "Base"], env=env)
+    script_p = tmp_path / "edit_phase.sh"
+    script_p.write_text("#!/bin/sh\necho 'plan' > \"$1\"\n")
+    script_p.chmod(0o755)
     runner.invoke(
         cli,
-        ["goal", "phase", "add", "Exercise", "Base", "--notes", "plan"],
-        env=env,
+        ["goal", "phase", "notes", "Exercise", "Base"],
+        env={**env, "EDITOR": str(script_p)},
     )
     res = runner.invoke(
         cli,
         ["goal", "phase", "notes", "Exercise", "Base"],
-        env=env,
+        env={**env, "EDITOR": "cat"},
     )
     assert "plan" in res.output
+
+    script_p.write_text("#!/bin/sh\necho 'do it' > \"$1\"\n")
     runner.invoke(
         cli,
-        ["goal", "phase", "notes", "Exercise", "Base", "do it"],
-        env=env,
+        ["goal", "phase", "notes", "Exercise", "Base"],
+        env={**env, "EDITOR": str(script_p)},
     )
     res = runner.invoke(
         cli,
         ["goal", "phase", "notes", "Exercise", "Base"],
-        env=env,
+        env={**env, "EDITOR": "cat"},
     )
     assert "do it" in res.output

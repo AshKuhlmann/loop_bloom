@@ -41,3 +41,16 @@ def find_phase(goal: GoalArea, name: str) -> Optional[Phase]:
         (p for p in goal.phases if p.name.lower() == name.lower()),
         None,
     )
+
+
+def get_goal_from_name(name: str) -> Optional[GoalArea]:
+    """Load and return the goal matching ``name`` from the current store."""
+    store = click.get_current_context().obj
+    goals = store.load()
+    return next((g for g in goals if g.name.lower() == name.lower()), None)
+
+
+def save_goal(goal: GoalArea) -> None:
+    """Persist ``goal`` using the current store."""
+    store = click.get_current_context().obj
+    store.save_goal_area(goal)
