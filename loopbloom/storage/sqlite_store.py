@@ -1,5 +1,6 @@
 """SQLite implementation of :class:`~loopbloom.storage.base.Storage` using
-SQLAlchemy Core for lightweight database access."""
+SQLAlchemy Core for lightweight database access.
+"""
 
 from __future__ import annotations
 
@@ -22,13 +23,11 @@ from sqlalchemy import (
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 
+from loopbloom.core.config import APP_DIR
 from loopbloom.core.models import GoalArea
 from loopbloom.storage.base import Storage, StorageError
-from loopbloom.core.config import APP_DIR
 
-DEFAULT_PATH = Path(
-    os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db")
-)
+DEFAULT_PATH = Path(os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db"))
 # Ensure parent directory exists for the database file.
 # ``LOOPBLOOM_SQLITE_PATH`` can relocate the DB for testing or advanced usage.
 DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)

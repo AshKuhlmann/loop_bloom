@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import click
 import logging
+
+import click
 
 from loopbloom.core import journal as jr
 
