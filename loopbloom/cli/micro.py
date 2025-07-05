@@ -258,22 +258,21 @@ def micro_add(
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
+    store = click.get_current_context().obj
+
+    target_phase = _get_or_select_phase(store, goal_name, phase_name)
+    if phase_name and target_phase is None:
+        target_phase = Phase(name=phase_name.strip())
+        g.phases.append(target_phase)
+        logger.info("Created phase %s under %s", phase_name, goal_name)
+        click.echo(f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'.")
+    elif target_phase is not None:
+        target_phase = find_phase(g, target_phase.name) or target_phase
+
     if name is None:
         name = _prompt_for_new_micro_goal()
     else:
         name = name.strip()
-
-    if phase_name is None:
-        target_phase = None
-    else:
-        target_phase = find_phase(g, phase_name)
-        if not target_phase:
-            target_phase = Phase(name=phase_name.strip())
-            g.phases.append(target_phase)
-            logger.info("Created phase %s under %s", phase_name, goal_name)
-            click.echo(
-                (f"[yellow]Created phase '{phase_name}' " f"under goal '{goal_name}'.")
-            )
 
     if target_phase is None:
         g.micro_goals.append(MicroGoal(name=name))
@@ -287,7 +286,6 @@ def micro_add(
             )
         )
 
-    store = click.get_current_context().obj
     store.save_goal_area(g)
     logger.info("Added micro-habit %s", name)
 
