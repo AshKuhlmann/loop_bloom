@@ -7,11 +7,13 @@ specified by ``XDG_CONFIG_HOME``) so multiple tools can share settings.
 from __future__ import annotations
 
 import os
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict
 
 import tomli_w
 import tomllib
+from pydantic import BaseModel
 
 # Resolve the user's configuration directory (e.g. ``~/.config`` on Linux).
 # Honour the ``XDG_CONFIG_HOME`` environment variable with a sensible default.
@@ -38,7 +40,12 @@ DEFAULTS: Dict[str, Any] = {
     # How progress notifications are delivered.
     "notify": "terminal",  # terminal | desktop | none
     # Parameters for the auto-progression engine.
-    "advance": {"threshold": 0.80, "window": 14},
+    "advance": {
+        "threshold": 0.80,
+        "window": 14,
+        "strategy": "ratio",
+        "streak_to_advance": 10,
+    },
     # Notification pause settings
     "pause_until": "",  # ISO date string when global pause expires
     "goal_pauses": {},  # Mapping of goal name -> ISO date
@@ -80,3 +87,19 @@ def save(new_cfg: Dict[str, Any]) -> None:
     merged = _deep_merge(DEFAULTS, new_cfg)
     with CONFIG_PATH.open("wb") as fp:
         tomli_w.dump(merged, fp)
+
+
+class ProgressionStrategy(str, Enum):
+    """Progression evaluation modes."""
+
+    RATIO = "ratio"
+    STREAK = "streak"
+
+
+class ProgressionConfig(BaseModel):
+    """Typed view over advancement settings."""
+
+    threshold: float = 0.80
+    window: int = 14
+    strategy: ProgressionStrategy = ProgressionStrategy.RATIO
+    streak_to_advance: int = 10

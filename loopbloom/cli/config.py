@@ -76,6 +76,12 @@ def _set(key: str, value: str) -> None:
                 cast = lower == "true"
             else:
                 cast = value
+    if key == "advance.strategy":
+        lower = str(cast).lower()
+        if lower not in ("ratio", "streak"):
+            click.echo("[red]Invalid strategy. Use 'ratio' or 'streak'.")
+            return
+        cast = lower
     # Assign the converted value and persist.
     d[parts[-1]] = cast
     cfg.save(conf)
