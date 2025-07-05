@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from typing import List
 
 from loopbloom.core import config as cfg
+from loopbloom.core.config import ProgressionStrategy
 from loopbloom.core.models import Checkin, MicroGoal
 
 # Default history window and success rate threshold for progression logic.
@@ -23,6 +24,18 @@ def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
     cutoff = date.today() - timedelta(days=window - 1)
     # Return only the check-ins that fall within the calculated window.
     return [ci for ci in checkins if ci.date >= cutoff]
+
+
+def _current_streak(checkins: List[Checkin]) -> int:
+    """Return trailing run of successful check-ins."""
+    streak = 0
+    ordered = sorted(checkins, key=lambda c: c.date)
+    for ci in reversed(ordered):
+        if ci.success:
+            streak += 1
+        else:
+            break
+    return streak
 
 
 def should_advance(
@@ -45,22 +58,22 @@ def should_advance(
         window = micro.advancement_window
     if threshold is None:
         threshold = micro.advancement_threshold
+    conf = cfg.load().get("advance", {})
+    strategy = ProgressionStrategy(conf.get("strategy", "ratio"))
     if window is None or threshold is None:
-        # Pull defaults from the user's config so behaviour can be tuned
-        # without modifying library code.
-        conf = cfg.load().get("advance", {})
         if window is None:
             window = int(conf.get("window", WINDOW_DEFAULT))
         if threshold is None:
             threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
 
-    # Filter check-ins down to just those within the relevant window.
+    if strategy is ProgressionStrategy.STREAK:
+        streak_target = int(conf.get("streak_to_advance", 10))
+        return _current_streak(micro.checkins) >= streak_target
+
     recent = _recent_checkins(micro.checkins, window)
-    if len(recent) < window:  # need full window
-        # Not enough data yet to make a decision.
+    if len(recent) < window:
         return False
     success_ratio = sum(ci.success for ci in recent) / window
-    # True when the user's streak meets or exceeds the threshold.
     return success_ratio >= threshold
 
 
@@ -75,16 +88,23 @@ def get_progression_reasons(
         window = micro.advancement_window
     if threshold is None:
         threshold = micro.advancement_threshold
+    conf = cfg.load().get("advance", {})
+    strategy = ProgressionStrategy(conf.get("strategy", "ratio"))
     if window is None or threshold is None:
-        conf = cfg.load().get("advance", {})
         if window is None:
             window = int(conf.get("window", WINDOW_DEFAULT))
         if threshold is None:
             threshold = float(conf.get("threshold", THRESHOLD_DEFAULT))
 
+    reasons: list[str] = []
+    if strategy is ProgressionStrategy.STREAK:
+        streak_target = int(conf.get("streak_to_advance", 10))
+        streak = _current_streak(micro.checkins)
+        reasons.append(f"Current streak {streak}/{streak_target}")
+        return reasons
+
     recent = _recent_checkins(micro.checkins, window)
     successes = sum(ci.success for ci in recent)
-    reasons: list[str] = []
     reasons.append(f"{successes} successes in last {len(recent)}/{window} days")
     if len(recent) < window:
         remaining = window - len(recent)

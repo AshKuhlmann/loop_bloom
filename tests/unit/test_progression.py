@@ -55,3 +55,27 @@ def test_microgoal_custom_criteria(monkeypatch) -> None:
         lambda: {"advance": {"threshold": 0.99, "window": 14}},
     )
     assert should_advance(mg)
+
+
+def test_should_advance_streak_strategy(monkeypatch) -> None:
+    """Streak strategy uses trailing successes."""
+    mg = MicroGoal(name="Streak")
+    for i in range(7):
+        mg.checkins.append(Checkin(date=TODAY - timedelta(days=i), success=True))
+    monkeypatch.setattr(
+        "loopbloom.core.config.load",
+        lambda: {"advance": {"strategy": "streak", "streak_to_advance": 5}},
+    )
+    assert should_advance(mg)
+
+
+def test_streak_strategy_insufficient(monkeypatch) -> None:
+    """Fails when streak shorter than required."""
+    mg = MicroGoal(name="Short")
+    for i in range(3):
+        mg.checkins.append(Checkin(date=TODAY - timedelta(days=i), success=True))
+    monkeypatch.setattr(
+        "loopbloom.core.config.load",
+        lambda: {"advance": {"strategy": "streak", "streak_to_advance": 5}},
+    )
+    assert not should_advance(mg)
