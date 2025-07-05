@@ -10,7 +10,8 @@ import logging
 import click
 import yaml
 
-from loopbloom.core.coping import COPING_DIR, PlanRepository, run_plan
+from loopbloom.constants import COPING_DIR
+from loopbloom.core.coping import PlanRepository, run_plan
 
 logger = logging.getLogger(__name__)
 

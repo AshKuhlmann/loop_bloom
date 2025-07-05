@@ -8,24 +8,19 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import ContextManager, List
 
 from pydantic.json import pydantic_encoder
 
-from loopbloom.core.config import APP_DIR
+from loopbloom.constants import JSON_STORE_PATH
 from loopbloom.core.models import GoalArea
 from loopbloom.storage.base import Storage, StorageError
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_PATH = Path(os.getenv("LOOPBLOOM_DATA_PATH", APP_DIR / "data.json"))
-# Ensure the data directory exists before any read/write operations.
-# Users may override this path via the ``LOOPBLOOM_DATA_PATH`` environment
-# variable for ad-hoc experiments or testing.
-DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
+DEFAULT_PATH = JSON_STORE_PATH
 
 
 class JSONStore(Storage):

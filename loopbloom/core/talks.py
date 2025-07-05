@@ -8,13 +8,9 @@ from __future__ import annotations
 
 import json
 import random
-from pathlib import Path
 from typing import Dict, List
 
-# Directory containing bundled data files such as the default pep talks.
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-# JSON file with two lists of pep-talk snippets keyed by mood (success/skip).
-TALKS_PATH = DATA_DIR / "default_talks.json"
+from loopbloom.constants import TALKS_PATH
 
 
 class TalkPool:

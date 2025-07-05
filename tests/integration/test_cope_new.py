@@ -12,8 +12,10 @@ def test_cope_new(tmp_path, monkeypatch):
     coping_dir = tmp_path / "coping"
     coping_dir.mkdir()
 
+    import loopbloom.constants as const_mod
     import loopbloom.core.coping as cp_mod
 
+    monkeypatch.setattr(const_mod, "COPING_DIR", coping_dir)
     monkeypatch.setattr(cp_mod, "COPING_DIR", coping_dir)
     import loopbloom.cli as cli_mod
     import loopbloom.cli.cope as cope_mod
