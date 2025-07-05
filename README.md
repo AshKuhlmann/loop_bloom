@@ -78,6 +78,8 @@ pip install git+https://github.com/ashkuhlmann/loopbloom-cli.git@main
 
 ## 4  Quick Start
 
+For a step-by-step walkthrough, see the [Getting Started Tutorial](TUTORIAL.md).
+
 ```bash
 # 1  Create a goal area
 loopbloom goal add "Sleep Hygiene"
