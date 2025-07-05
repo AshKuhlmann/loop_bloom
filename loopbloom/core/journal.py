@@ -7,10 +7,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from pydantic.json import pydantic_encoder
 
-from loopbloom.core.config import APP_DIR
-
-JOURNAL_PATH = APP_DIR / "journal.json"
-JOURNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
+from loopbloom.constants import JOURNAL_PATH
 
 
 class JournalEntry(BaseModel):

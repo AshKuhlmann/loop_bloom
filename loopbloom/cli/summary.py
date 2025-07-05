@@ -18,6 +18,7 @@ from rich.table import Table
 
 from loopbloom.cli import with_goals
 from loopbloom.cli.utils import goal_not_found
+from loopbloom.constants import WINDOW_DEFAULT
 from loopbloom.core import config as cfg
 from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
@@ -25,8 +26,6 @@ from loopbloom.core.progression import should_advance
 console = Console()
 
 logger = logging.getLogger(__name__)
-
-WINDOW_DEFAULT = 14  # days
 
 
 @click.command(
