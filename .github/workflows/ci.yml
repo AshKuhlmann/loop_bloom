@@ -18,3 +18,5 @@ jobs:
           poetry install
       - name: Run lint, type checks, tests, and build
         run: ./scripts/pre-commit
+      - name: Build documentation
+        run: make -C docs html
