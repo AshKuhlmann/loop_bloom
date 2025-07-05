@@ -205,9 +205,12 @@ flowchart TD
     Progression -->|otherwise| CompassionateNudge
 ```
 
-Parameters `threshold` and `window` are user-configurable.
-When omitted by commands, the progression rule reads these values from
-`~/.config/loopbloom/config.toml`.
+Parameters `threshold` and `window` are user configurable.
+Users may also choose how progress is evaluated using
+`advance.strategy` (`ratio` or `streak`). When the `streak` strategy is
+selected, the `advance.streak_to_advance` setting determines how many
+consecutive successes are required. When omitted by commands, the
+progression rule reads these values from `~/.config/loopbloom/config.toml`.
 
 <a id="notifications"></a>
 
