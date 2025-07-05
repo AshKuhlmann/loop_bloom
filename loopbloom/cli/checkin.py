@@ -11,7 +11,7 @@ import click
 from rich import print
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.interactive import choose_from, interactive_select
+from loopbloom.cli.interactive import interactive_select
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.core.models import Checkin, GoalArea, MicroGoal, Status
 from loopbloom.core.talks import TalkPool
@@ -52,7 +52,7 @@ def checkin(
     if fail:
         success = False
 
-    mg = None
+    mg: MicroGoal | None = None
     goal: GoalArea | None = None
 
     # Interactive selection when no goal specified
@@ -106,6 +106,8 @@ def checkin(
             logger.error("No active micro-goal in goal %s", goal.name)
             click.echo("[red]No active micro-goal found for this goal.")
             return
+
+    assert mg is not None
     # Inform the user which micro-habit is being checked in
     logger.info("Checking in for %s", mg.name)
     click.echo(f"Checking in for: [bold]{mg.name}[/bold]")
