@@ -458,7 +458,7 @@ def test_checkin_cancel(
 
     cli = _reload_cli(tmp_path, monkeypatch)
     JSONStore(path=tmp_path / "data.json").save([GoalArea(name="G")])
-    monkeypatch.setattr(checkin_mod, "choose_from", lambda *_, **__: None)
+    monkeypatch.setattr(checkin_mod, "interactive_select", lambda *_, **__: None)
     runner = CliRunner()
     env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
     res = runner.invoke(cli, ["checkin"], env=env)

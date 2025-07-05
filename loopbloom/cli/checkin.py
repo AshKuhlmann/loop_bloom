@@ -11,9 +11,9 @@ import click
 from rich import print
 
 from loopbloom.cli import with_goals
-from loopbloom.cli.interactive import choose_from
+from loopbloom.cli.interactive import interactive_select
 from loopbloom.cli.utils import goal_not_found
-from loopbloom.core.models import Checkin, GoalArea
+from loopbloom.core.models import Checkin, GoalArea, MicroGoal, Status
 from loopbloom.core.talks import TalkPool
 from loopbloom.services.progression import ProgressionService
 
@@ -51,35 +51,63 @@ def checkin(
     # alias for ``--skip`` and overrides ``success`` when provided.
     if fail:
         success = False
-    # If the user did not specify which goal to log, prompt with a list.
+
+    mg: MicroGoal | None = None
+    goal: GoalArea | None = None
+
+    # Interactive selection when no goal specified
     if goal_name is None:
-        names = [g.name for g in goals]
-        if not names:
+        if not goals:
             logger.error("No goals available for check-in")
             click.echo("[red]No goals – use `loopbloom goal add`.")
             return
+
         click.echo("Which goal do you want to check in for?")
-        logger.info("Prompting for goal selection")
-        goal_name = choose_from(names, "Enter number")
-        if goal_name is None:
+
+        active: list[tuple[str, tuple[GoalArea, MicroGoal]]] = []
+        for g in goals:
+            for ph in g.phases:
+                for m in ph.micro_goals:
+                    if m.status is Status.active:
+                        active.append((f"{g.name} -> {ph.name} -> {m.name}", (g, m)))
+            for m in g.micro_goals:
+                if m.status is Status.active:
+                    active.append((f"{g.name} -> {m.name}", (g, m)))
+
+        if not active:
+            logger.info("No active micro-goals for interactive check-in")
+            click.echo("No active micro-goals to check in for.")
             return
 
-    # Locate the goal by name (case-insensitive) from the loaded list.
-    goal = next(
-        (g for g in goals if g.name.lower() == goal_name.lower()),
-        None,
-    )
-    if not goal:
-        logger.error("Goal not found: %s", goal_name)
-        goal_not_found(goal_name, [g.name for g in goals])
-        return
-    # Find the active micro-goal
-    mg = goal.get_active_micro_goal()
+        selection = interactive_select(
+            "Select a micro-goal to check in for",
+            {label: pair for label, pair in active},
+        )
+        if selection is None:
+            return
 
-    if mg is None:
-        logger.error("No active micro-goal in goal %s", goal.name)
-        click.echo("[red]No active micro-goal found for this goal.")
-        return
+        goal, mg = selection
+        goal_name = goal.name
+
+    # Locate the goal by name if it wasn't selected interactively.
+    if goal is None:
+        goal = next(
+            (g for g in goals if g.name.lower() == goal_name.lower()),
+            None,
+        )
+        if not goal:
+            logger.error("Goal not found: %s", goal_name)
+            goal_not_found(goal_name, [g.name for g in goals])
+            return
+        # Find the active micro-goal in the chosen goal
+        mg = goal.get_active_micro_goal()
+
+        if mg is None:
+            logger.error("No active micro-goal in goal %s", goal.name)
+            click.echo("[red]No active micro-goal found for this goal.")
+            return
+
+    assert mg is not None
     # Inform the user which micro-habit is being checked in
     logger.info("Checking in for %s", mg.name)
     click.echo(f"Checking in for: [bold]{mg.name}[/bold]")

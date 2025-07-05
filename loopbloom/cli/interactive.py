@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable, List, Optional, TypeVar
+from typing import Iterable, List, Mapping, Optional, TypeVar
 
 import click
 
@@ -21,3 +21,14 @@ def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
     # Use ``click.IntRange`` to validate the choice automatically.
     idx: int = click.prompt(prompt, type=click.IntRange(1, len(items)))
     return items[idx - 1]
+
+
+def interactive_select(prompt: str, options: Mapping[str, T]) -> Optional[T]:
+    """Present ``options`` as a numbered menu and return the chosen item."""
+    if not options:
+        return None
+    labels = list(options.keys())
+    for i, label in enumerate(labels, 1):
+        click.echo(f"{i}. {label}")
+    idx: int = click.prompt(prompt, type=click.IntRange(1, len(labels)))
+    return options[labels[idx - 1]]
