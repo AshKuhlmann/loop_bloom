@@ -11,7 +11,15 @@ T = TypeVar("T")
 
 
 def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
-    """Show numbered menu of ``options`` and return the chosen item."""
+    """Show a numbered menu of ``options`` and return the user's choice.
+
+    Args:
+        options: Sequence of selectable values.
+        prompt: Prompt displayed when asking for the selection.
+
+    Returns:
+        The selected item or ``None`` if ``options`` is empty.
+    """
     # Convert to a list so we can index user selections.
     items: List[T] = list(options)
     if not items:
@@ -24,7 +32,16 @@ def choose_from(options: Iterable[T], prompt: str) -> Optional[T]:
 
 
 def interactive_select(prompt: str, options: Mapping[str, T]) -> Optional[T]:
-    """Present ``options`` as a numbered menu and return the chosen item."""
+    """Present a dictionary of options and return the chosen value.
+
+    Args:
+        prompt: Prompt displayed for selection.
+        options: Mapping of label to value.
+
+    Returns:
+        The value corresponding to the selected label, or ``None`` when no
+        options are provided.
+    """
     if not options:
         return None
     labels = list(options.keys())

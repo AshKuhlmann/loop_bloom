@@ -11,7 +11,15 @@ class ProgressionService:
 
     @staticmethod
     def check_progression(goal: GoalArea) -> tuple[bool, list[str]]:
-        """Return whether ``goal`` should advance to the next micro-habit."""
+        """Assess whether ``goal`` should move to its next micro-habit.
+
+        Args:
+            goal: The goal area containing the micro-goal hierarchy.
+
+        Returns:
+            tuple[bool, list[str]]: A flag indicating progression eligibility
+            and an explanation for the decision.
+        """
         micro = goal.get_active_micro_goal()
         if micro is None:
             return False, ["No active micro-goal."]

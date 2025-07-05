@@ -27,11 +27,20 @@ class JSONStore(Storage):
     """Atomic JSON persistence."""
 
     def __init__(self, path: Path | str = DEFAULT_PATH) -> None:  # noqa: D401
-        """Initialise the store with the given file ``path``."""
+        """Create a new JSON store instance.
+
+        Args:
+            path: Location of the JSON file used for persistence.
+        """
         self._path = Path(path)
 
     def load(self) -> List[GoalArea]:  # noqa: D401
-        """Return all goal areas from the backing JSON file."""
+        """Load goal areas from the JSON data file.
+
+        Returns:
+            list[GoalArea]: All stored goal areas, or an empty list when the
+            file does not exist.
+        """
         logger.debug("Loading goals from %s", self._path)
         if not self._path.exists():
             logger.debug("Data file not found; returning empty list")
@@ -68,7 +77,7 @@ class JSONStore(Storage):
             raise StorageError(str(exc)) from exc
 
     def save_goal_area(self, goal: GoalArea) -> None:
-        """Update or append a single goal area."""
+        """Persist a single goal area by updating or appending it."""
         goals = self.load()
         for i, g in enumerate(goals):
             if g.id == goal.id or g.name == goal.name:
@@ -80,7 +89,7 @@ class JSONStore(Storage):
 
     # Advisory lock not required for single-process Phase 1
     def lock(self) -> ContextManager[None]:
-        """Return a no-op context manager for compatibility."""
+        """Return an empty context manager when locking isn't required."""
         from contextlib import nullcontext
 
         # JSON files don't need locking in single-user mode.

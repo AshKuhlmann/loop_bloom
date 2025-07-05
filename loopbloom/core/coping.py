@@ -23,7 +23,11 @@ class Step:
     """Single interaction step within a coping plan."""
 
     def __init__(self, raw: Dict[str, Any]):
-        """Initialize from a raw dictionary."""
+        """Initialise a step from raw plan data.
+
+        Args:
+            raw: Mapping describing the step fields.
+        """
         # ``prompt`` means the plan expects user input at this step.
         self.prompt = raw.get("prompt")
         # ``message`` is printed verbatim, optionally using stored values.
@@ -51,12 +55,19 @@ class PlanRepository:
 
     @staticmethod
     def list_plans() -> List[CopingPlan]:
-        """Return all available plans found in :data:`COPING_DIR`."""
+        """Return all available coping plans found on disk."""
         return [CopingPlan(p) for p in COPING_DIR.glob("*.yml")]
 
     @staticmethod
     def get(plan_id: str) -> CopingPlan | None:
-        """Return plan matching ``plan_id`` or ``None`` if not found."""
+        """Look up a plan by its ID.
+
+        Args:
+            plan_id: Identifier taken from the plan filename.
+
+        Returns:
+            CopingPlan instance when found, otherwise ``None``.
+        """
         for p in COPING_DIR.glob("*.yml"):
             if p.stem == plan_id:
                 return CopingPlan(p)
@@ -64,7 +75,7 @@ class PlanRepository:
 
 
 def run_plan(plan: CopingPlan) -> None:
-    """Interactively walk through ``plan`` via standard input/output."""
+    """Interactively execute the steps in ``plan``."""
     # Collected answers referenced by later steps. Step ``message`` templates
     # use ``str.format`` with this dictionary to inject previous responses.
     ctx: Dict[str, str] = {}

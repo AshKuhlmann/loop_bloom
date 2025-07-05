@@ -6,7 +6,11 @@ from loopbloom.core.config import APP_DIR
 
 
 def setup_logging(level: int = logging.INFO) -> None:
-    """Configure root logger with a rotating file handler."""
+    """Configure the root logger with a rotating file handler.
+
+    Args:
+        level: Logging level used for the root logger. Defaults to ``INFO``.
+    """
     log_dir = APP_DIR / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "loopbloom.log"

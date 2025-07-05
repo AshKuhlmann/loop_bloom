@@ -41,10 +41,15 @@ def checkin(
     note: str,
     goals: List[GoalArea],
 ) -> None:
-    """Append a Checkin to the current active micro-goal of ``GOAL_NAME``.
+    """Append a ``Checkin`` to the active micro-goal.
 
-    When ``goal_name`` is omitted, the command interactively asks which
-    goal to check in for.
+    Args:
+        goal_name: Name of the goal to check in for. When ``None`` an
+            interactive selection is presented.
+        success: Whether the check-in represents a success.
+        fail: If ``True`` overrides ``success`` to record a failure/skip.
+        note: Optional note stored with the check-in.
+        goals: List of all goal areas loaded from storage.
     """
     # ``success`` determines which pep-talk pool we draw from. ``note`` is an
     # optional free-form comment stored alongside the check-in. ``fail`` is an

@@ -16,7 +16,16 @@ from loopbloom.core.models import Checkin, MicroGoal
 
 
 def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
-    """Return check-ins occurring within the last ``window`` days."""
+    """Return check-ins occurring within the given window.
+
+    Args:
+        checkins: All recorded check-ins for the micro-goal.
+        window: Number of days to include, counting backwards from today.
+
+    Returns:
+        list[Checkin]: Only the check-ins whose ``date`` falls inside the
+        specified window.
+    """
     # ``window`` is inclusive of today, so a 7-day window looks back 6 days.
     cutoff = date.today() - timedelta(days=window - 1)
     # Return only the check-ins that fall within the calculated window.
@@ -24,7 +33,14 @@ def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
 
 
 def _current_streak(checkins: List[Checkin]) -> int:
-    """Return trailing run of successful check-ins."""
+    """Calculate consecutive successes at the end of ``checkins``.
+
+    Args:
+        checkins: The full history of check-ins for a micro-goal.
+
+    Returns:
+        int: Length of the trailing streak of successful check-ins.
+    """
     streak = 0
     ordered = sorted(checkins, key=lambda c: c.date)
     for ci in reversed(ordered):
@@ -41,13 +57,21 @@ def should_advance(
     window: int | None = None,
     threshold: float | None = None,
 ) -> bool:
-    """Return True if micro-habit qualifies for advancement.
+    """Determine if ``micro`` should progress to the next stage.
 
-    If ``window`` or ``threshold`` are omitted, values are looked up on the
-    ``micro`` object first (``advancement_window`` and
-    ``advancement_threshold``). When those aren't defined, global
-    defaults from :mod:`loopbloom.core.config` are used (keys
-    ``advance.window`` and ``advance.threshold``).
+    The evaluation uses either a success ratio or a streak strategy based on
+    the user's configuration.
+
+    Args:
+        micro: The micro-goal being evaluated.
+        window: Optional custom window size in days. When omitted the value is
+            read from the micro-goal or global config.
+        threshold: Optional ratio required to progress. Falls back to the
+            micro-goal's value or the global default when not provided.
+
+    Returns:
+        bool: ``True`` when the micro-goal meets the configured progression
+        criteria.
     """
     # ``window`` and ``threshold`` may be specified per micro-habit or fall
     # back to the user configuration.
@@ -80,7 +104,16 @@ def get_progression_reasons(
     window: int | None = None,
     threshold: float | None = None,
 ) -> list[str]:
-    """Return reasons explaining the progression decision."""
+    """Explain why a micro-goal should or should not progress.
+
+    Args:
+        micro: The micro-goal under evaluation.
+        window: Optional window override in days.
+        threshold: Optional success ratio required to progress.
+
+    Returns:
+        list[str]: Human-readable messages describing the evaluation.
+    """
     if window is None:
         window = micro.advancement_window
     if threshold is None:

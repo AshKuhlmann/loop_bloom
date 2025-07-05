@@ -28,7 +28,17 @@ def send(
     mode: NotifyMode = "terminal",
     goal: str | None = None,
 ) -> None:  # noqa: D401
-    """Send a desktop or terminal notification."""
+    """Deliver a notification to the user.
+
+    Args:
+        title: Title text for the notification.
+        message: Body of the notification.
+        mode: Delivery mechanism; ``terminal``, ``desktop`` or ``none``.
+        goal: Optional goal name used when checking pause settings.
+
+    Returns:
+        None
+    """
     # ``mode`` controls the delivery mechanism. ``desktop`` uses plyer,
     # ``terminal`` prints to stdout, and ``none`` disables notifications.
     config = cfg.load()

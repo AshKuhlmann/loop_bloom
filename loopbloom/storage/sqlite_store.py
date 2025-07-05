@@ -43,7 +43,11 @@ class SQLiteStore(Storage):
     """Store goals in a single-row SQLite table."""
 
     def __init__(self, path: Path | str = DEFAULT_PATH):
-        """Initialise the SQLite store."""
+        """Create a SQLite backed store.
+
+        Args:
+            path: Path to the SQLite database file.
+        """
         # ``future=True`` enables SQLAlchemy 2.0 style usage while remaining
         # compatible with older versions.
         self._engine: Engine = create_engine(f"sqlite:///{path}", future=True)
@@ -51,7 +55,7 @@ class SQLiteStore(Storage):
         metadata.create_all(self._engine)
 
     def load(self) -> List[GoalArea]:
-        """Return stored GoalAreas from disk."""
+        """Load GoalAreas from the SQLite database."""
         try:
             with self._engine.begin() as conn:
                 query = select(raw_table.c.payload)
