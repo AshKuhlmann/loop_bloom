@@ -87,3 +87,6 @@ def _set(key: str, value: str) -> None:
     cfg.save(conf)
     logger.info("Config set %s", key)
     click.echo("[green]Saved.")
+
+
+config_cmd = config

@@ -34,3 +34,6 @@ def tree(goals: List[GoalArea]) -> None:
         for m in g.micro_goals:
             g_branch.add(m.name)
     console.print(root)
+
+
+tree_cmd = tree

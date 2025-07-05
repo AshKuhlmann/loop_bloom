@@ -44,3 +44,6 @@ def pause(goal_name: str | None, duration: str) -> None:
         conf["pause_until"] = until
         click.echo(f"[green]Paused all notifications until {until}.")
     cfg.save(conf)
+
+
+pause_cmd = pause

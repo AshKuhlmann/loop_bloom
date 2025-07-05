@@ -91,3 +91,6 @@ def _new() -> None:
     # and can edit it manually if desired.
     logger.info("Created plan %s", path)
     click.echo(f"[green]Created plan:[/] {path}")
+
+
+cope_cmd = cope
