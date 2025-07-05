@@ -51,16 +51,17 @@ def checkin(
         note: Optional note stored with the check-in.
         goals: List of all goal areas loaded from storage.
     """
-    # ``success`` determines which pep-talk pool we draw from. ``note`` is an
-    # optional free-form comment stored alongside the check-in. ``fail`` is an
-    # alias for ``--skip`` and overrides ``success`` when provided.
+    # ``success`` picks the pep-talk mood. ``fail`` is merely an alias for
+    # ``--skip`` and flips ``success`` when present. The optional ``note`` is
+    # stored verbatim with the check-in.
     if fail:
         success = False
 
     mg: MicroGoal | None = None
     goal: GoalArea | None = None
 
-    # Interactive selection when no goal specified
+    # If the user omitted a goal we ask interactively to ensure the check-in is
+    # attributed to the correct micro-habit.
     if goal_name is None:
         if not goals:
             logger.error("No goals available for check-in")
@@ -104,7 +105,8 @@ def checkin(
             logger.error("Goal not found: %s", goal_name)
             goal_not_found(goal_name, [g.name for g in goals])
             return
-        # Find the active micro-goal in the chosen goal
+        # Once we know the goal, locate its currently active micro-habit so the
+        # check-in updates the right place.
         mg = goal.get_active_micro_goal()
 
         if mg is None:
@@ -113,10 +115,12 @@ def checkin(
             return
 
     assert mg is not None
-    # Inform the user which micro-habit is being checked in
+    # Echo the chosen micro-habit so the user can confirm we recorded the
+    # intended one.
     logger.info("Checking in for %s", mg.name)
     click.echo(f"Checking in for: [bold]{mg.name}[/bold]")
-    # Create check-in object and attach to the micro-goal.
+    # Append the new check-in so progress reports and streak calculations
+    # include today's result.
     talk = TalkPool.random("success" if success else "skip")
     if success and "\u2713" not in talk:
         talk = "\u2713 " + talk
@@ -129,7 +133,8 @@ def checkin(
     from loopbloom.core import config as cfg
     from loopbloom.services import notifier
 
-    # Notification style (desktop or terminal) comes from user config.
+    # Respect the user's preferred notification channel when sending the pep
+    # talk.
     notify_mode = cfg.load().get("notify", "terminal")
     notifier.send("LoopBloom Check-in", talk, mode=notify_mode, goal=goal.name)
 

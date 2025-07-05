@@ -20,17 +20,18 @@ console = Console()
 @with_goals
 def tree(goals: List[GoalArea]) -> None:
     """Display all goals, phases, and micro-habits in a tree view."""
-    # Root node representing the entire goal collection. The tree emoji makes
-    # it easy to spot this view in terminal scrollback.
+    # Start with a single root node. The tree emoji helps users quickly locate
+    # this view in their terminal history.
     root = Tree("\U0001f333 LoopBloom Goals")
     for g in goals:
         g_branch = root.add(g.name)
-        # List micro-habits grouped under each phase
+        # Show micro-habits grouped by phase to mirror the goal hierarchy.
         for ph in g.phases:
             p_branch = g_branch.add(f"[dim]Phase:[/] {ph.name}")
             for m in ph.micro_goals:
                 p_branch.add(m.name)
-        # Micro-habits attached directly to the goal
+        # Also include any micro-habits that aren't part of a phase so nothing
+        # is missed.
         for m in g.micro_goals:
             g_branch.add(m.name)
     console.print(root)

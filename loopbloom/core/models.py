@@ -25,25 +25,30 @@ class Status(str, Enum):
 class Checkin(BaseModel):
     """A single daily micro-goal check-in."""
 
-    # Date when the check-in occurred (defaults to today).
+    # Store the day separately from the timestamp so daily statistics remain
+    # consistent regardless of timezone.
     date: dt_date = Field(default_factory=dt_date.today)
     success: bool
     note: str | None = None
-    # Optional pep-talk chosen at check-in time.
+    # Persist the pep talk shown to the user so past encouragement can be
+    # displayed alongside the check-in history.
     self_talk_generated: str | None = None
 
 
 class MicroGoal(BaseModel):
     """A very small behavioural target the user wants to track."""
 
-    # Unique identifier for referencing this micro-habit.
+    # Use a UUID rather than the name so references remain valid even if the
+    # micro-habit gets renamed later.
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     status: Status = Status.active
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    # History of successes/failures for this micro-habit.
+    # Chronological log of successes and skips used when calculating streaks
+    # and advancement eligibility.
     checkins: list[Checkin] = Field(default_factory=list)
-    # Optional progression overrides for this specific micro-habit.
+    # Allow this micro-habit to override the global advancement rules with its
+    # own window and threshold values.
     advancement_window: int | None = None
     advancement_threshold: float | None = None
 
