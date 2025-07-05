@@ -19,7 +19,11 @@ class JournalEntry(BaseModel):
 
 
 def load_entries() -> List[JournalEntry]:
-    """Return all stored journal entries."""
+    """Load all stored journal entries from disk.
+
+    Returns:
+        list[JournalEntry]: Chronologically ordered journal entries.
+    """
     if not JOURNAL_PATH.exists():
         return []
     with JOURNAL_PATH.open("r", encoding="utf-8") as fp:
@@ -28,7 +32,12 @@ def load_entries() -> List[JournalEntry]:
 
 
 def add_entry(text: str, goal: str | None = None) -> None:
-    """Append a new journal entry to the file."""
+    """Append a new journal entry to the journal file.
+
+    Args:
+        text: Entry text supplied by the user.
+        goal: Optional goal name associated with the entry.
+    """
     entries = load_entries()
     entries.append(JournalEntry(text=text.strip(), goal=goal))
     with JOURNAL_PATH.open("w", encoding="utf-8") as fp:

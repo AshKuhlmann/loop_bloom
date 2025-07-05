@@ -49,7 +49,14 @@ class MicroGoal(BaseModel):
 
     @field_validator("name")
     def _strip(cls, v: str) -> str:  # noqa: D401
-        """Normalize whitespace around the name."""
+        """Normalize whitespace around the name.
+
+        Args:
+            v: Raw name string potentially containing surrounding spaces.
+
+        Returns:
+            str: The cleaned name.
+        """
         # Validators in Pydantic V2 must be class methods; we simply strip
         # leading/trailing whitespace when models are parsed or created.
         return v.strip()
@@ -78,7 +85,7 @@ class GoalArea(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     def get_active_micro_goal(self) -> MicroGoal | None:
-        """Find the active micro-goal within phases or direct goals."""
+        """Return the currently active micro-goal if one exists."""
         # Search phases first to match the user's hierarchical structure.
         for ph in self.phases:
             mg = next(

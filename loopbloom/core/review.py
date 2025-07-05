@@ -19,7 +19,7 @@ class ReviewEntry(BaseModel):
 
 
 def load_entries() -> List[ReviewEntry]:
-    """Return saved review entries."""
+    """Load saved reflection entries from disk."""
     if not REVIEW_PATH.exists():
         return []
     with REVIEW_PATH.open("r", encoding="utf-8") as fp:
@@ -28,7 +28,12 @@ def load_entries() -> List[ReviewEntry]:
 
 
 def add_entry(period: str, went_well: str) -> None:
-    """Persist a new review entry."""
+    """Persist a new review entry.
+
+    Args:
+        period: Period covered by the reflection.
+        went_well: Summary of what went well during that period.
+    """
     entries = load_entries()
     entries.append(ReviewEntry(period=period, went_well=went_well.strip()))
     with REVIEW_PATH.open("w", encoding="utf-8") as fp:

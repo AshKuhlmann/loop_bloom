@@ -20,6 +20,7 @@ class TalkPool:
 
     @classmethod
     def _load(cls) -> Dict[str, List[str]]:
+        """Load talk templates from disk if not cached."""
         # Lazily read and parse the bundled pep talk file only once per run.
         # Caching avoids unnecessary disk I/O when multiple pep talks are
         # requested in a single invocation.
@@ -29,7 +30,7 @@ class TalkPool:
 
     @classmethod
     def random(cls, mood: str = "success") -> str:  # mood: success | skip
-        """Return a random pep talk for the given ``mood``."""
+        """Return a random pep talk for the given mood."""
         # Retrieve the list for the requested mood, falling back to an
         # empty list if the mood doesn't exist in the JSON file.
         pool = cls._load().get(mood, [])

@@ -36,7 +36,11 @@ def _view() -> None:
 @config.command(name="get", help="Get a single key (dot-notation).")
 @click.argument("key")
 def _get(key: str) -> None:
-    """Retrieve a specific key via dot-notation."""
+    """Retrieve a specific configuration value.
+
+    Args:
+        key: Dot-separated key, e.g. ``advance.window``.
+    """
     # ``key`` may refer to nested values like ``advance.window`` which maps
     # to ``{"advance": {"window": ...}}`` in the TOML file.
     val: Any = cfg.load()
@@ -56,7 +60,12 @@ def _get(key: str) -> None:
 @click.argument("key")
 @click.argument("value")
 def _set(key: str, value: str) -> None:
-    """Set ``key`` to ``value`` with naive type casting."""
+    """Set ``key`` to ``value`` with naive type casting.
+
+    Args:
+        key: Dot-separated key to update.
+        value: New value as string; basic types are coerced automatically.
+    """
     conf = cfg.load()
     parts = key.split(".")
     d = conf

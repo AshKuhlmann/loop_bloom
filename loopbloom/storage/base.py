@@ -20,20 +20,24 @@ class Storage(Protocol):
     """Persistence interface."""
 
     def load(self) -> List[GoalArea]:
-        """Return all goal areas from disk (or remote).
+        """Load every goal area from persistent storage.
 
-        Implementations must raise ``StorageError`` on unrecoverable errors and
-        return ``[]`` on first-run or if the data file is missing.
+        Implementations may read from local files or remote services. A
+        :class:`StorageError` should be raised for unrecoverable failures while
+        a missing data file should simply result in an empty list.
+
+        Returns:
+            list[GoalArea]: Parsed goal areas from the backend.
         """
 
     def save(self, goals: List[GoalArea]) -> None:  # noqa: D401
-        """Persist full graph atomically."""
+        """Persist the entire goal graph in one operation."""
 
     def save_goal_area(self, goal: GoalArea) -> None:
-        """Persist a single goal area."""
+        """Update or append ``goal`` in storage."""
 
     def lock(self) -> ContextManager[None]:  # noqa: D401
-        """Return an optional advisory lock (no-op by default)."""
+        """Return an advisory lock if the backend supports it."""
         from contextlib import nullcontext
 
         # Single-user mode doesn't require locking, so we return a context

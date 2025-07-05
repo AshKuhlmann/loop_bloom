@@ -53,7 +53,15 @@ DEFAULTS: Dict[str, Any] = {
 
 
 def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
-    """Recursively merge dict ``b`` into ``a`` and return the result."""
+    """Recursively merge ``b`` into ``a``.
+
+    Args:
+        a: Base dictionary which will receive updates.
+        b: Dictionary whose values take precedence.
+
+    Returns:
+        dict: A new dictionary containing the merged result.
+    """
     # ``b`` wins when keys collide, mirroring how ``dict.update`` works but
     # recursively for nested mappings.
     # We make a copy of ``a`` so callers keep their original unchanged.
@@ -69,7 +77,7 @@ def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def load() -> Dict[str, Any]:
-    """Return config file contents merged with :data:`DEFAULTS`."""
+    """Load the user configuration merged with built-in defaults."""
     # Missing files are treated as empty configs so first-run works without
     # requiring any setup from the user.
     if not CONFIG_PATH.exists():
