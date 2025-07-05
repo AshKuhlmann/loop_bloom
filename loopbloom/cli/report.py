@@ -146,3 +146,6 @@ def _line_chart(goals: List[GoalArea]) -> None:
     plt.ylim(0, 100)
     plt.yticks([0, 25, 50, 75, 100])
     plt.show()
+
+
+report_cmd = report

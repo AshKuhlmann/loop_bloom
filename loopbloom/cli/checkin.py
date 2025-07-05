@@ -120,3 +120,6 @@ def checkin(
         print(progress_msg)
         for reason in reasons:
             print(f"- {reason}")
+
+
+checkin_cmd = checkin

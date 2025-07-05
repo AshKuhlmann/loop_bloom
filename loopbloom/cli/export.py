@@ -80,3 +80,6 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         writer.writerows(rows)
     logger.info("CSV export complete")
     click.echo(f"[green]Exported CSV → {out_path}")
+
+
+export_cmd = export

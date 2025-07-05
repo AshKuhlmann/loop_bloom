@@ -132,3 +132,6 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
             mode=cfg.load().get("notify", "terminal"),
             goal=g.name,
         )
+
+
+summary_cmd = summary

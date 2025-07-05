@@ -311,3 +311,6 @@ def goal_wizard(goals: List[GoalArea]) -> None:
         f"with phase '{phase_name}' and micro '{micro_name}'."
     )
     click.echo(msg)
+
+
+goal_cmd = goal

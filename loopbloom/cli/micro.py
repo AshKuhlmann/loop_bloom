@@ -361,3 +361,6 @@ def micro_rm(
     store.save_goal_area(g)
     logger.info("Deleted micro-habit %s", mg.name)
     click.echo(f"[green]Deleted micro-habit:[/] {mg.name}")
+
+
+micro_cmd = micro

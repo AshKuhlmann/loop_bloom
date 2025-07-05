@@ -65,3 +65,6 @@ def backup() -> None:
     except Exception as exc:
         logger.error("Backup failed: %s", exc)
         click.echo("[red]Backup failed.")
+
+
+backup_cmd = backup

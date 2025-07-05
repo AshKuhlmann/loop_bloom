@@ -16,3 +16,6 @@ def review(period: str) -> None:
     answer = click.prompt("What went well?")
     rv.add_entry(period=period, went_well=answer)
     click.echo("[green]Review saved.")
+
+
+review_cmd = review

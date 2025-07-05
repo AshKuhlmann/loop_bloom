@@ -27,3 +27,6 @@ def journal(text: str, goal_name: str | None) -> None:
     )
     jr.add_entry(text, goal_name)
     click.echo("[green]Entry saved.")
+
+
+journal_cmd = journal
