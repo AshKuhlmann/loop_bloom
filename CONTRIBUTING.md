@@ -18,15 +18,15 @@ poetry shell
 
 From inside the environment (or by prefixing commands with `poetry run`), you can run all tooling and tests.
 
-## Linting
+## Linting & Formatting
 
-- **Ruff** – fast linter and formatter:
+- **Black** – code formatter:
+  ```bash
+  poetry run black --check .
+  ```
+- **Ruff** – fast linter:
   ```bash
   poetry run ruff check .
-  ```
-- **Flake8** – style and import checks:
-  ```bash
-  poetry run flake8
   ```
 
 ## Type Checking

@@ -1,5 +1,6 @@
 import json
 import os
+
 from click.testing import CliRunner
 
 
@@ -7,10 +8,12 @@ def _reload_cli_modules():
     """Return CLI instance."""
     import sys
     from pathlib import Path
+
     root = Path(__file__).resolve().parents[2]
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     from loopbloom import __main__ as main
+
     return main.cli
 
 
@@ -34,9 +37,7 @@ def test_direct_microgoal_workflow(tmp_path):
         env=env,
     )
     assert res_add.exit_code == 0
-    assert (
-        "Added micro-habit 'Read 1 page' to goal 'Reading'" in res_add.output
-    )
+    assert "Added micro-habit 'Read 1 page' to goal 'Reading'" in res_add.output
 
     # 3. Verify with `tree`
     res_tree = runner.invoke(cli, ["tree"], env=env)

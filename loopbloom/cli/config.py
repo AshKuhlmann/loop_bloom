@@ -6,10 +6,10 @@ storage backend and notification style.
 """
 
 import json
+import logging
 from typing import Any
 
 import click
-import logging
 
 from loopbloom.core import config as cfg
 from loopbloom.core.config import ProgressionStrategy

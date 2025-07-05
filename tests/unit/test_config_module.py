@@ -18,8 +18,9 @@ def test_cli_set_casts_integer(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
 
     import importlib
-    import loopbloom.core.config as cfg_mod
+
     import loopbloom.cli.config as cli_cfg
+    import loopbloom.core.config as cfg_mod
 
     importlib.reload(cfg_mod)
     importlib.reload(cli_cfg)
@@ -35,8 +36,9 @@ def test_cli_set_casts_boolean(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
 
     import importlib
-    import loopbloom.core.config as cfg_mod
+
     import loopbloom.cli.config as cli_cfg
+    import loopbloom.core.config as cfg_mod
 
     importlib.reload(cfg_mod)
     importlib.reload(cli_cfg)
@@ -52,8 +54,9 @@ def test_cli_get_missing_key(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
 
     import importlib
-    import loopbloom.core.config as cfg_mod
+
     import loopbloom.cli.config as cli_cfg
+    import loopbloom.core.config as cfg_mod
 
     importlib.reload(cfg_mod)
     importlib.reload(cli_cfg)
