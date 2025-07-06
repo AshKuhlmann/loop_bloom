@@ -37,7 +37,8 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
 
     Usage: ``loopbloom export --fmt csv --out progress.csv``
     """
-    # Load all goals from the configured storage backend.
+    # Use whichever storage backend the user configured so exports always match
+    # their real data.
     logger.info("Exporting data to %s as %s", out_path, fmt)
     goals = store.load()
 
@@ -48,8 +49,8 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         click.echo(f"[green]Exported JSON → {out_path}")
         return
 
-    # CSV export produces a flat table where each row represents a single
-    # check-in. The first row is the header matching the column order below.
+    # CSV output is a flat table – one row per check-in – to make importing the
+    # data into spreadsheets straightforward. The first row acts as the header.
     rows: List[List[str]] = [
         [
             "date",
@@ -64,7 +65,8 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
         for ph in g.phases:
             for m in ph.micro_goals:
                 for ci in m.checkins:
-                    # Flatten nested objects into a simple row per check-in.
+                    # Collapse the hierarchical objects into a row so external
+                    # tools don't need to understand our data model.
                     rows.append(
                         [
                             str(ci.date),

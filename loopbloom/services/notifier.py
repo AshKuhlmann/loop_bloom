@@ -39,8 +39,9 @@ def send(
     Returns:
         None
     """
-    # ``mode`` controls the delivery mechanism. ``desktop`` uses plyer,
-    # ``terminal`` prints to stdout, and ``none`` disables notifications.
+    # ``mode`` determines how we deliver the notification. We honour the user's
+    # preference but fall back gracefully when dependencies like ``plyer`` are
+    # unavailable.
     config = cfg.load()
     pause_until = config.get("pause_until")
     if pause_until:

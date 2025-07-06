@@ -48,8 +48,9 @@ def summary(goal_name: str | None, goals: List[GoalArea]):  # type: ignore
 
 
 def _overview(goals: List[GoalArea]) -> None:
-    # Display one row per goal summarising recent success.
-    # Use configured window length when calculating streaks.
+    # Show a compact summary row for each goal. Successes are calculated using
+    # the configured window so the overview matches the user's advancement
+    # settings.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
     table = Table(title=f"LoopBloom Progress (last {window}\u00a0days)")
     table.add_column("Goal")
@@ -60,13 +61,14 @@ def _overview(goals: List[GoalArea]) -> None:
     for g in goals:
         successes = 0
         total = 0
-        # Collect all check-ins across phases and direct micro-goals.
+        # Collect check-ins from every micro-habit so the goal's progress
+        # reflects all activity beneath it.
         all_checkins = []
-        # Aggregate checkins from phases
+        # Grab check-ins from phases first
         for ph in g.phases:
             for m in ph.micro_goals:
                 all_checkins.extend(m.checkins)
-        # Aggregate checkins from direct micro-goals
+        # Then include micro-goals attached directly to the goal
         for m in g.micro_goals:
             all_checkins.extend(m.checkins)
 
@@ -77,13 +79,15 @@ def _overview(goals: List[GoalArea]) -> None:
                     successes += 1
         ratio: Group | str
         if total:
-            # Visual progress bar along with numeric ratio.
+            # Display a progress bar to make the ratio easier to scan at a
+            # glance.
             bar = ProgressBar(total=total, completed=successes)
             ratio = Group(bar, f" {successes}/{total}")
         else:
             ratio = "\u2013"
 
-        # Find the active micro-goal
+        # Determine which micro-habit is currently active so we can suggest
+        # whether the goal should advance.
         active = g.get_active_micro_goal()
         flag = "Advance?" if active and should_advance(active) else "\u2014"
         table.add_row(g.name, ratio, flag)
@@ -91,15 +95,16 @@ def _overview(goals: List[GoalArea]) -> None:
 
 
 def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
-    # Detailed statistics for a single goal/micro-habit.
-    # Use configured window for the success calculation.
+    # Show focused statistics for a single goal using the same window length
+    # as the advancement logic so the recommendations are consistent.
     window = cfg.load().get("advance", {}).get("window", WINDOW_DEFAULT)
-    # Find the matching goal object from the list.
+    # Look up the requested goal so we can inspect its check-ins.
     g = next((x for x in goals if x.name.lower() == goal_name.lower()), None)
     if not g:
         goal_not_found(goal_name, [x.name for x in goals])
         return
-    # Update logic to find the active micro-goal
+    # Identify which micro-habit is currently active to evaluate its progress
+    # in isolation.
     mg = g.get_active_micro_goal()
 
     if mg is None:
@@ -122,7 +127,8 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
         progress,
         f"  {flag}",
     )
-    # notify if eligible for advancement
+    # If the micro-habit meets the advancement criteria send a reminder via the
+    # user's preferred notification channel.
     from loopbloom.services import notifier
 
     if should_advance(mg):

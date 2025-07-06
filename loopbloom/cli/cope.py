@@ -24,7 +24,8 @@ def cope() -> None:
 
 @cope.command(name="list", help="Show available coping plans.")
 def _list() -> None:
-    # Show all YAML plans bundled or created by the user.
+    # Display every available plan so the user knows what can be executed or
+    # edited.
     plans = PlanRepository.list_plans()
     logger.info("Listing coping plans")
     for p in plans:
@@ -34,7 +35,8 @@ def _list() -> None:
 @cope.command(name="run", help="Run a coping plan by ID.")
 @click.argument("plan_id")
 def _run(plan_id: str) -> None:
-    # Load the requested plan from disk.
+    # Fetch the plan fresh from disk to ensure we run the most up-to-date
+    # version.
     plan = PlanRepository.get(plan_id)
     if not plan:
         logger.error("Plan not found: %s", plan_id)
@@ -58,7 +60,8 @@ def _new() -> None:
     msg = "Add steps. Type 'p' for prompt, 'm' for message, 'q' to finish."
     click.echo(msg)
     steps = []
-    # Steps are collected interactively until the user chooses to quit.
+    # Keep prompting for step definitions until the user indicates they're
+    # finished, allowing an arbitrary number of steps to be added.
     while True:
         kind = click.prompt("Step type", default="q").lower().strip()
         if kind.startswith("q"):

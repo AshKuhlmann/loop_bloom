@@ -36,7 +36,8 @@ def backup() -> None:
     """Copy the active data file into :data:`BACKUP_DIR`."""
     config = cfg.load()
     storage = config.get("storage", "json")
-    # User may override the default data file location in the config.
+    # Allow the user to relocate the data file via configuration. This keeps
+    # backups in sync with whatever path they have chosen.
     cfg_path = str(config.get("data_path") or "")
 
     if storage == "sqlite":

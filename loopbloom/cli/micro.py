@@ -113,7 +113,7 @@ def micro_complete(
     goals: List[GoalArea],
 ) -> None:
     """Mark a micro-habit as complete."""
-    # Locate the parent goal first.
+    # Find the goal so we update the correct part of the hierarchy.
     g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro complete: %s", goal_name)
@@ -122,7 +122,7 @@ def micro_complete(
 
     target_list: List[MicroGoal]
     if phase_name:
-        # When a phase is provided we search within it.
+        # Restrict the search to the specified phase when one is given.
         p = find_phase(g, phase_name)
         if not p:
             logger.error(
@@ -134,10 +134,11 @@ def micro_complete(
             return
         target_list = p.micro_goals
     else:
-        # Otherwise search micro-goals attached directly to the goal.
+        # Without a phase we look at micro-habits attached directly to the
+        # goal itself.
         target_list = g.micro_goals
 
-    # Case-insensitive match on micro-habit name.
+    # Accept case-insensitive names so the command is forgiving of user input.
     mg = next((m for m in target_list if m.name.lower() == name.lower()), None)
     if not mg:
         loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
@@ -145,7 +146,7 @@ def micro_complete(
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
 
-    # Persist the new lifecycle state.
+    # Update the status immediately so subsequent commands reflect the change.
     mg.status = Status.complete
     logger.info("Marked micro-habit %s complete", name)
     click.echo(f"[green]Marked micro-habit '{name}' as complete.")
@@ -173,7 +174,7 @@ def micro_cancel(
     goals: List[GoalArea],
 ) -> None:
     """Cancel a micro-habit without deleting it."""
-    # Locate the goal that owns this micro-habit.
+    # Find the owning goal so we modify the right micro-habit.
     g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro cancel: %s", goal_name)
@@ -182,7 +183,7 @@ def micro_cancel(
 
     target_list: List[MicroGoal]
     if phase_name:
-        # Search within the specified phase when provided.
+        # Only look inside the given phase when the user specifies one.
         p = find_phase(g, phase_name)
         if not p:
             logger.error(
@@ -194,7 +195,8 @@ def micro_cancel(
             return
         target_list = p.micro_goals
     else:
-        # Otherwise operate on direct micro-goals of the goal.
+        # If no phase is specified check the micro-habits attached directly to
+        # the goal.
         target_list = g.micro_goals
 
     mg = next((m for m in target_list if m.name.lower() == name.lower()), None)
@@ -204,7 +206,7 @@ def micro_cancel(
         click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
         return
 
-    # Mark the habit as cancelled without deleting history.
+    # Cancel the habit but keep its check-in history for future reference.
     mg.status = Status.cancelled
     logger.info("Cancelled micro-habit %s", name)
     click.echo(f"[green]Cancelled micro-habit '{name}'.")
@@ -238,7 +240,8 @@ def micro_add(
     If ``phase_name`` is provided but doesn't exist, a new phase will be
     created automatically.
     """
-    # If no goal specified, prompt interactively for one.
+    # When the user doesn't specify a goal we prompt them so the new micro-habit
+    # ends up attached to the intended place.
     if goal_name is None:
         names = [g.name for g in goals]
         if not names:
@@ -251,7 +254,7 @@ def micro_add(
         if goal_name is None:
             return
 
-    # Ensure the referenced goal exists.
+    # Look up the goal to verify it exists before we try to add anything to it.
     g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro add: %s", goal_name)
@@ -314,7 +317,7 @@ def micro_rm(
     goals: List[GoalArea],
 ) -> None:
     """Remove a micro-habit by its name."""
-    # Validate and locate the target goal.
+    # Ensure the command targets a valid goal before proceeding.
     g = find_goal(goals, goal_name)
     if not g:
         logger.error("Goal not found for micro rm: %s", goal_name)

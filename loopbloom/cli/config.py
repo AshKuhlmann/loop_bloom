@@ -41,10 +41,11 @@ def _get(key: str) -> None:
     Args:
         key: Dot-separated key, e.g. ``advance.window``.
     """
-    # ``key`` may refer to nested values like ``advance.window`` which maps
-    # to ``{"advance": {"window": ...}}`` in the TOML file.
+    # ``key`` may contain dots to access nested sections, e.g. ``advance.window``
+    # refers to ``{"advance": {"window": ...}}`` inside the TOML file.
     val: Any = cfg.load()
-    # Walk the nested dictionaries using ``.`` as a separator.
+    # Traverse the nested dictionaries using ``.`` so arbitrarily deep keys can
+    # be read.
     for part in key.split("."):
         val = val.get(part) if isinstance(val, dict) else None
     if val is None:
@@ -69,7 +70,8 @@ def _set(key: str, value: str) -> None:
     conf = cfg.load()
     parts = key.split(".")
     d = conf
-    # Walk down the hierarchy, creating intermediate dictionaries as needed
+    # Create parent sections on the fly so ``config set a.b.c`` works even when
+    # ``a`` or ``b`` don't exist yet.
     for p in parts[:-1]:
         d = d.setdefault(p, {})
     # Convert the string to int/float/bool when possible so numbers are not

@@ -59,8 +59,8 @@ def _calendar_heatmap(goals: List[GoalArea]) -> None:
     """Print an ASCII calendar heatmap of the current month."""
     today = date.today()
     cal = Calendar()
-    # Build map of day -> (successes, total)
-    # Map day -> (number of successes, total check-ins)
+    # Track both successes and total check-ins per day so the heatmap can
+    # shade each cell based on performance rather than mere activity.
     stats: dict[int, tuple[int, int]] = {}
     for m in _gather_all_micro(goals):
         for ci in m.checkins:
@@ -98,7 +98,8 @@ def _success_bars(goals: List[GoalArea]) -> None:
     for g in goals:
         successes = 0
         total = 0
-        # Aggregate all check-ins for this goal across phases.
+        # Combine check-ins from every micro-habit so the bar reflects the
+        # goal's overall success rate.
         for m in _gather_all_micro([g]):
             for ci in m.checkins:
                 total += 1
