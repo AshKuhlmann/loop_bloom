@@ -2,8 +2,17 @@
 
 import json
 import os
+from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
+
+
+@pytest.fixture()
+def runner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> CliRunner:
+    """Return a CLI runner with the data path configured."""
+    monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(tmp_path / "data.json"))
+    return CliRunner()
 
 
 def test_goal_phase_micro_crud(tmp_path):
@@ -234,3 +243,76 @@ def test_goal_and_phase_notes(tmp_path) -> None:
         env={**env, "EDITOR": "cat"},
     )
     assert "do it" in res.output
+
+
+class TestGoalCLI:
+    def setup_method(self) -> None:
+        """Reload and store the CLI for each test."""
+        from loopbloom import __main__ as main
+
+        self.cli = main.cli
+
+    def test_goal_notes_with_empty_input(
+        self, runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Tests that 'goal notes' handles empty input from the editor correctly."""
+        # Setup: Create a goal
+        runner.invoke(
+            self.cli,
+            ["goal", "add", "Goal for Empty Notes"],
+            catch_exceptions=False,
+        )
+
+        # Mock the editor to return an empty string
+        monkeypatch.setenv("EDITOR", "echo '' >")
+
+        # Action: Edit notes
+        runner.invoke(
+            self.cli,
+            ["goal", "notes", "Goal for Empty Notes"],
+            catch_exceptions=False,
+        )
+
+        # Assert: Check that the notes are empty
+        result = runner.invoke(
+            self.cli,
+            ["goal", "show", "Goal for Empty Notes"],
+            catch_exceptions=False,
+        )
+        assert "Notes: \n" in result.output or "Notes: None" in result.output
+
+    def test_phase_notes_with_multiline_input(
+        self, runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Tests that 'phase notes' correctly saves and displays multi-line notes."""
+        # Setup: Create a goal and a phase
+        runner.invoke(
+            self.cli,
+            ["goal", "add", "Goal for Multiline"],
+            catch_exceptions=False,
+        )
+        runner.invoke(
+            self.cli,
+            ["goal", "phase", "add", "Goal for Multiline", "Phase for Multiline"],
+            catch_exceptions=False,
+        )
+
+        # Mock the editor to return a multi-line string
+        multiline_notes = "First line of notes.\nSecond line."
+        monkeypatch.setenv("EDITOR", f"echo '{multiline_notes}' >")
+
+        # Action: Edit phase notes
+        runner.invoke(
+            self.cli,
+            ["goal", "phase", "notes", "Goal for Multiline", "Phase for Multiline"],
+            catch_exceptions=False,
+        )
+
+        # Assert: Check that the multi-line notes are displayed correctly
+        result = runner.invoke(
+            self.cli,
+            ["goal", "show", "Goal for Multiline"],
+            catch_exceptions=False,
+        )
+        assert "First line of notes." in result.output
+        assert "Second line." in result.output
