@@ -31,8 +31,10 @@ def pause(goal_name: str | None, duration: str) -> None:
     """Pause notifications for ``duration`` days or weeks."""
     delta = _parse_duration(duration)
     if not delta:
-        click.echo("[red]Invalid duration. Use Nd or Nw e.g. 3d, 1w")
-        return
+        raise click.BadParameter(
+            "Invalid duration format. Use Nd or Nw e.g. 3d, 1w",
+            param_hint="--for",
+        )
     until = (date.today() + delta).isoformat()
     conf = cfg.load()
     if goal_name:
