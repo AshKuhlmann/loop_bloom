@@ -56,6 +56,11 @@ class TestTreeCommand:
         runner.invoke(self.cli, ["goal", "add", "Complex Goal"], catch_exceptions=False)
         runner.invoke(
             self.cli,
+            ["micro", "add", "Direct Micro", "--goal", "Complex Goal"],
+            catch_exceptions=False,
+        )
+        runner.invoke(
+            self.cli,
             ["goal", "phase", "add", "Complex Goal", "Phase 1"],
             catch_exceptions=False,
         )
@@ -101,11 +106,6 @@ class TestTreeCommand:
                 "--phase",
                 "Phase 2",
             ],
-            catch_exceptions=False,
-        )
-        runner.invoke(
-            self.cli,
-            ["micro", "add", "Direct Micro", "--goal", "Complex Goal"],
             catch_exceptions=False,
         )
         runner.invoke(self.cli, ["goal", "add", "Simple Goal"], catch_exceptions=False)
