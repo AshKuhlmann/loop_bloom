@@ -253,7 +253,10 @@ class TestGoalCLI:
         self.cli = main.cli
 
     def test_goal_notes_with_empty_input(
-        self, runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+        self,
+        runner: CliRunner,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
     ) -> None:
         """Tests that 'goal notes' handles empty input from the editor correctly."""
         # Setup: Create a goal
@@ -264,7 +267,10 @@ class TestGoalCLI:
         )
 
         # Mock the editor to return an empty string
-        monkeypatch.setenv("EDITOR", "echo '' >")
+        script = tmp_path / "empty_notes.sh"
+        script.write_text('#!/bin/sh\n: > "$1"\n')
+        script.chmod(0o755)
+        monkeypatch.setenv("EDITOR", str(script))
 
         # Action: Edit notes
         runner.invoke(
@@ -276,13 +282,17 @@ class TestGoalCLI:
         # Assert: Check that the notes are empty
         result = runner.invoke(
             self.cli,
-            ["goal", "show", "Goal for Empty Notes"],
+            ["goal", "notes", "Goal for Empty Notes"],
             catch_exceptions=False,
+            env={"EDITOR": "cat"},
         )
-        assert "Notes: \n" in result.output or "Notes: None" in result.output
+        assert result.output.strip() in {"", "None"}
 
     def test_phase_notes_with_multiline_input(
-        self, runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+        self,
+        runner: CliRunner,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
     ) -> None:
         """Tests that 'phase notes' correctly saves and displays multi-line notes."""
         # Setup: Create a goal and a phase
@@ -299,7 +309,12 @@ class TestGoalCLI:
 
         # Mock the editor to return a multi-line string
         multiline_notes = "First line of notes.\nSecond line."
-        monkeypatch.setenv("EDITOR", f"echo '{multiline_notes}' >")
+        script = tmp_path / "multiline_notes.sh"
+        script.write_text(
+            "#!/bin/sh\nprintf '%s' > \"$1\"\n" % multiline_notes.replace("\n", "\\n")
+        )
+        script.chmod(0o755)
+        monkeypatch.setenv("EDITOR", str(script))
 
         # Action: Edit phase notes
         runner.invoke(
@@ -311,8 +326,15 @@ class TestGoalCLI:
         # Assert: Check that the multi-line notes are displayed correctly
         result = runner.invoke(
             self.cli,
-            ["goal", "show", "Goal for Multiline"],
+            [
+                "goal",
+                "phase",
+                "notes",
+                "Goal for Multiline",
+                "Phase for Multiline",
+            ],
             catch_exceptions=False,
+            env={"EDITOR": "cat"},
         )
         assert "First line of notes." in result.output
         assert "Second line." in result.output
