@@ -9,6 +9,35 @@ from click.testing import CliRunner
 from loopbloom.__main__ import cli
 
 
+def test_checkin_goal_with_no_active_micro_goals(tmp_path) -> None:
+    """Check in when a goal has no active micro-goals."""
+    runner = CliRunner()
+    env = {"LOOPBLOOM_DATA_PATH": str(tmp_path / "data.json")}
+
+    # Setup: create goal and immediately complete its only micro-goal
+    runner.invoke(cli, ["goal", "add", "Goal With No Micros"], env=env)
+    runner.invoke(
+        cli,
+        ["micro", "add", "A completed micro", "--goal", "Goal With No Micros"],
+        env=env,
+    )
+    runner.invoke(
+        cli,
+        ["micro", "complete", "A completed micro", "--goal", "Goal With No Micros"],
+        env=env,
+    )
+
+    result = runner.invoke(
+        cli,
+        ["checkin", "Goal With No Micros"],
+        env=env,
+        input="y\n",
+    )
+
+    assert result.exit_code == 0
+    assert "No active micro-goal found for this goal." in result.output
+
+
 def test_failed_checkin(tmp_path) -> None:
     """Add a goal/micro-habit then log a failed check-in."""
     runner = CliRunner()
