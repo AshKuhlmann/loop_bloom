@@ -13,6 +13,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator
 
+from loopbloom.services.datetime import get_current_datetime
+
 
 class Status(str, Enum):
     """Lifecycle stages for a :class:`MicroGoal`."""
@@ -27,7 +29,7 @@ class Checkin(BaseModel):
 
     # Store the day separately from the timestamp so daily statistics remain
     # consistent regardless of timezone.
-    date: dt_date = Field(default_factory=dt_date.today)
+    date: dt_date = Field(default_factory=lambda: get_current_datetime().date())
     success: bool
     note: str | None = None
     # Persist the pep talk shown to the user so past encouragement can be

@@ -76,7 +76,8 @@ def get_goal_from_name(name: str) -> Optional[GoalArea]:
     Returns:
         The :class:`GoalArea` when found, otherwise ``None``.
     """
-    store = click.get_current_context().obj
+    ctx = click.get_current_context()
+    store = ctx.obj.store
     goals = store.load()
     return next((g for g in goals if g.name.lower() == name.lower()), None)
 
@@ -87,5 +88,5 @@ def save_goal(goal: GoalArea) -> None:
     Args:
         goal: Goal to save.
     """
-    store = click.get_current_context().obj
-    store.save_goal_area(goal)
+    ctx = click.get_current_context()
+    ctx.obj.store.save_goal_area(goal)

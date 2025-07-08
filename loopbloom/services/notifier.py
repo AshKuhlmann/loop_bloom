@@ -11,6 +11,7 @@ from datetime import date
 from typing import Literal
 
 from loopbloom.core import config as cfg
+from loopbloom.services.datetime import get_current_datetime
 
 try:
     from plyer import notification
@@ -46,7 +47,7 @@ def send(
     pause_until = config.get("pause_until")
     if pause_until:
         try:
-            if date.today() <= date.fromisoformat(pause_until):
+            if get_current_datetime().date() <= date.fromisoformat(pause_until):
                 return
         except ValueError:
             pass
@@ -55,7 +56,7 @@ def send(
         until = gp.get(goal)
         if until:
             try:
-                if date.today() <= date.fromisoformat(until):
+                if get_current_datetime().date() <= date.fromisoformat(until):
                     return
             except ValueError:
                 pass

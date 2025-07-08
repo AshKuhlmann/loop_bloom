@@ -7,7 +7,7 @@ heatmap, bar chart or simple line graph to visualise progress.
 from __future__ import annotations
 
 from calendar import Calendar, month_name
-from datetime import date, timedelta
+from datetime import timedelta
 from typing import Iterable, Iterator, List
 
 import click
@@ -18,6 +18,7 @@ from rich.table import Table
 from loopbloom.cli import with_goals
 from loopbloom.constants import DEFAULT_TIMEFRAME
 from loopbloom.core.models import GoalArea, MicroGoal
+from loopbloom.services.datetime import get_current_datetime
 
 console = Console()
 
@@ -57,7 +58,7 @@ def _gather_all_micro(goals: Iterable[GoalArea]) -> Iterator[MicroGoal]:
 
 def _calendar_heatmap(goals: List[GoalArea]) -> None:
     """Print an ASCII calendar heatmap of the current month."""
-    today = date.today()
+    today = get_current_datetime().date()
     cal = Calendar()
     # Track both successes and total check-ins per day so the heatmap can
     # shade each cell based on performance rather than mere activity.
@@ -122,7 +123,7 @@ def _line_chart(goals: List[GoalArea]) -> None:
     # the library isn't installed.
     import plotext as plt
 
-    today = date.today()
+    today = get_current_datetime().date()
     start = today - timedelta(days=DEFAULT_TIMEFRAME - 1)
 
     rates: list[float] = []

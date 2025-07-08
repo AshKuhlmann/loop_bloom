@@ -12,8 +12,6 @@ from typing import List
 
 import click
 
-from loopbloom.storage.base import Storage
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,8 +29,8 @@ logger = logging.getLogger(__name__)
     required=True,
     help="File to write exported data to.",
 )
-@click.pass_obj
-def export(store: Storage, fmt: str, out_path: str) -> None:
+@click.pass_context
+def export(ctx: click.Context, fmt: str, out_path: str) -> None:
     """Write all goal history to OUT_PATH in format FMT.
 
     Usage: ``loopbloom export --fmt csv --out progress.csv``
@@ -40,6 +38,7 @@ def export(store: Storage, fmt: str, out_path: str) -> None:
     # Use whichever storage backend the user configured so exports always match
     # their real data.
     logger.info("Exporting data to %s as %s", out_path, fmt)
+    store = ctx.obj.store
     goals = store.load()
 
     if fmt == "json":

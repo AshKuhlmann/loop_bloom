@@ -33,6 +33,11 @@ def goal() -> None:
 @with_goals
 def goal_add(name: str, notes: str, goals: List[GoalArea]) -> None:
     """Add a new goal area."""
+    logger.debug("Received call to 'goal add' with name='%s'", name)
+    from click import get_current_context
+
+    ctx = get_current_context()
+    logger.debug("Dry run mode is %s", "ON" if ctx.obj.dry_run else "OFF")
     if find_goal(goals, name):
         logger.error("Goal already exists: %s", name)
         click.echo("[yellow]Goal already exists.")
