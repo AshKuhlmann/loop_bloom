@@ -15,6 +15,7 @@ from loopbloom.cli.interactive import interactive_select
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.core.models import Checkin, GoalArea, MicroGoal, Status
 from loopbloom.core.talks import TalkPool
+from loopbloom.services.datetime import get_current_datetime
 from loopbloom.services.progression import ProgressionService
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,11 @@ def checkin(
     # ``success`` picks the pep-talk mood. ``fail`` is merely an alias for
     # ``--skip`` and flips ``success`` when present. The optional ``note`` is
     # stored verbatim with the check-in.
+    logger.debug("Starting check-in for goal_name=%s", goal_name)
+    ctx = click.get_current_context()
+    logger.debug("Dry run mode is %s", "ON" if ctx.obj.dry_run else "OFF")
+    if ctx.obj.debug:
+        click.echo(f"Dry run: {ctx.obj.dry_run}")
     if fail:
         success = False
 
@@ -124,7 +130,13 @@ def checkin(
     talk = TalkPool.random("success" if success else "skip")
     if success and "\u2713" not in talk:
         talk = "\u2713 " + talk
-    ci = Checkin(success=success, note=note or None, self_talk_generated=talk)
+    today = get_current_datetime().date()
+    ci = Checkin(
+        date=today, success=success, note=note or None, self_talk_generated=talk
+    )
+    logger.debug("Check-in recorded for date: %s", today)
+    if ctx.obj.debug:
+        click.echo(f"Check-in recorded for date: {today}")
     mg.checkins.append(ci)
 
     # Output pep-talk so the user gets immediate encouragement.

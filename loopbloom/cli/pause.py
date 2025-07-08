@@ -1,8 +1,9 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 import click
 
 from loopbloom.core import config as cfg
+from loopbloom.services.datetime import get_current_datetime
 
 _DEF_HELP = "Pause notifications globally or for a specific goal."
 
@@ -35,7 +36,7 @@ def pause(goal_name: str | None, duration: str) -> None:
             "Invalid duration format. Use Nd or Nw e.g. 3d, 1w",
             param_hint="--for",
         )
-    until = (date.today() + delta).isoformat()
+    until = (get_current_datetime().date() + delta).isoformat()
     conf = cfg.load()
     if goal_name:
         pauses = conf.get("goal_pauses", {})

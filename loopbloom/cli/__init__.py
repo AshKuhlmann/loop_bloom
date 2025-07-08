@@ -25,17 +25,19 @@ def with_goals(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
     @click.pass_context
     def wrapper(ctx: click.Context, /, *args: Any, **kwargs: Any) -> Any:
-        # The root ``cli`` command stores the chosen persistence backend in
-        # ``ctx.obj`` so every subcommand can access it without re-reading
-        # configuration files.
-        store = ctx.obj
+        # ``ctx.obj`` contains the application context created in ``__main__``.
+        app = ctx.obj
+        store = app.store
         # Load the entire goal graph before executing the command.
         goals = store.load()
         # ``f`` receives the list via the ``goals`` keyword argument so it can
         # mutate the collection in-place.
         result = f(*args, goals=goals, **kwargs)
-        # Persist all changes once the command finishes.
-        store.save(goals)
+        # Persist all changes once the command finishes unless dry-run is active.
+        if not app.dry_run:
+            store.save(goals)
+        else:
+            click.echo("[yellow]DRY RUN: Changes not saved.[/yellow]")
         return result
 
     return wrapper

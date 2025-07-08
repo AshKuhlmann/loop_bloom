@@ -6,13 +6,14 @@ If an active micro-habit hits ≥ `threshold` success ratio within the last
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import timedelta
 from typing import List
 
 from loopbloom.constants import THRESHOLD_DEFAULT, WINDOW_DEFAULT
 from loopbloom.core import config as cfg
 from loopbloom.core.config import ProgressionStrategy
 from loopbloom.core.models import Checkin, MicroGoal
+from loopbloom.services.datetime import get_current_datetime
 
 
 def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
@@ -27,7 +28,7 @@ def _recent_checkins(checkins: List[Checkin], window: int) -> List[Checkin]:
         specified window.
     """
     # ``window`` is inclusive of today, so a 7-day window looks back 6 days.
-    cutoff = date.today() - timedelta(days=window - 1)
+    cutoff = get_current_datetime().date() - timedelta(days=window - 1)
     # Return only the check-ins that fall within the calculated window.
     return [ci for ci in checkins if ci.date >= cutoff]
 

@@ -55,6 +55,13 @@ For convenience, a helper script combines linting, type checks and tests. Run it
 
 It fails if any step does not pass, mirroring the checks that run in CI.
 
+## Debugging
+
+Use the global `--debug` flag for verbose output when running any CLI command.
+You can also run commands with `--dry-run` to avoid writing changes. Set the
+environment variable `LOOPBLOOM_DEBUG_DATE` to override the current date for
+testing time-sensitive logic.
+
 ## Submitting Pull Requests
 
 1. Fork the repository on GitHub and create a feature branch.

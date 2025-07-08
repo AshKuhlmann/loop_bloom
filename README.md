@@ -231,6 +231,14 @@ loopbloom export --fmt csv --out ~/Desktop/loopbloom_progress.csv
 
 *Thin CLI → Service → Core → Storage* layered architecture; see [USER_GUIDE.md](USER_GUIDE.md) for full docs.
 
+### Debugging
+
+Enable debug mode on any command with `--debug` to see verbose logging and
+extra diagnostics. Use `--dry-run` to preview changes without saving them.
+The application date can be overridden for testing by setting the
+`LOOPBLOOM_DEBUG_DATE` environment variable (YYYY-MM-DD). To dump the raw
+goal state run `loopbloom debug-state`.
+
 <a id="testing"></a>
 
 ## 14  Testing & CI

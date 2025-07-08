@@ -29,6 +29,18 @@ from loopbloom.storage.sqlite_store import (
     SQLiteStore,
 )
 
+
+class AppContext:
+    """Object passed via Click context to hold global flags and store."""
+
+    def __init__(
+        self, store: Storage, *, debug: bool = False, dry_run: bool = False
+    ) -> None:
+        self.store = store
+        self.debug = debug
+        self.dry_run = dry_run
+
+
 if TYPE_CHECKING:  # pragma: no cover - hints for mypy
     pass
 
@@ -47,13 +59,18 @@ def register_commands() -> None:
 
 
 @click.group()
-@click.option("--verbose", is_flag=True, help="Enable debug logging.")
+@click.option("--debug", is_flag=True, help="Enable debug mode with verbose logging.")
+@click.option(
+    "--dry-run", is_flag=True, help="Simulate commands without saving changes."
+)
 @click.pass_context
-def cli(ctx: click.Context, verbose: bool) -> None:
+def cli(ctx: click.Context, debug: bool, dry_run: bool) -> None:
     """LoopBloom – tiny habits, big momentum."""
     register_commands()
-    # Load user configuration to determine which storage backend to use.
-    setup_logging(level=logging.DEBUG if verbose else logging.INFO)
+    setup_logging(level=logging.DEBUG if debug else logging.INFO)
+    if debug:
+        logging.getLogger().debug("Debug mode is ON")
+        click.echo("Debug mode is ON")
 
     config = cfg.load()
     storage_type = config.get("storage", "json")
@@ -72,7 +89,7 @@ def cli(ctx: click.Context, verbose: bool) -> None:
         store = JSONStore(path)
 
     # Expose the store instance to subcommands via Click's context object.
-    ctx.obj = store
+    ctx.obj = AppContext(store, debug=debug, dry_run=dry_run)
 
 
 register_commands()

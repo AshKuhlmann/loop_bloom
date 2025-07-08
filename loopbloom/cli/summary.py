@@ -8,7 +8,7 @@ checks whether it should be advanced.
 from __future__ import annotations
 
 import logging
-from datetime import date, timedelta
+from datetime import timedelta
 from typing import List
 
 import click
@@ -22,6 +22,7 @@ from loopbloom.constants import WINDOW_DEFAULT
 from loopbloom.core import config as cfg
 from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
+from loopbloom.services.datetime import get_current_datetime
 
 console = Console()
 
@@ -56,7 +57,7 @@ def _overview(goals: List[GoalArea]) -> None:
     table.add_column("Goal")
     table.add_column("Successes")
     table.add_column("Next Action")
-    today = date.today()
+    today = get_current_datetime().date()
 
     for g in goals:
         successes = 0
