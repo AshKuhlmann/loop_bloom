@@ -261,7 +261,8 @@ def micro_add(
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
         return  # pragma: no cover
 
-    store = click.get_current_context().obj
+    ctx = click.get_current_context()
+    store = ctx.obj.store
 
     target_phase = _get_or_select_phase(store, goal_name, phase_name)
     if phase_name and target_phase is None:
@@ -329,7 +330,7 @@ def micro_rm(
         return
 
     result = _get_or_select_micro_goal(
-        click.get_current_context().obj,
+        click.get_current_context().obj.store,
         goal_name,
         phase_name,
         name,
@@ -360,8 +361,8 @@ def micro_rm(
         return
 
     target_list.remove(mg_actual)
-    store = click.get_current_context().obj
-    store.save_goal_area(g)
+    ctx = click.get_current_context()
+    ctx.obj.store.save_goal_area(g)
     logger.info("Deleted micro-habit %s", mg.name)
     click.echo(f"[green]Deleted micro-habit:[/] {mg.name}")
 

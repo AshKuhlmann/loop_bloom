@@ -65,6 +65,10 @@ def checkin(
 
     mg: MicroGoal | None = None
     goal: GoalArea | None = None
+    today = get_current_datetime().date()
+    logger.debug("Check-in date: %s", today)
+    if ctx.obj.debug:
+        click.echo(f"Check-in recorded for date: {today}")
 
     # If the user omitted a goal we ask interactively to ensure the check-in is
     # attributed to the correct micro-habit.
@@ -130,13 +134,10 @@ def checkin(
     talk = TalkPool.random("success" if success else "skip")
     if success and "\u2713" not in talk:
         talk = "\u2713 " + talk
-    today = get_current_datetime().date()
     ci = Checkin(
         date=today, success=success, note=note or None, self_talk_generated=talk
     )
     logger.debug("Check-in recorded for date: %s", today)
-    if ctx.obj.debug:
-        click.echo(f"Check-in recorded for date: {today}")
     mg.checkins.append(ci)
 
     # Output pep-talk so the user gets immediate encouragement.
