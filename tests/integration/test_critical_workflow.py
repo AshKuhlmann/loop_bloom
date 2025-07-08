@@ -5,6 +5,7 @@ Integration test for the critical user workflow.
 """
 
 from click.testing import CliRunner
+
 from loopbloom.__main__ import cli
 
 
