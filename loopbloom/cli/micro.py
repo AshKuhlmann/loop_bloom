@@ -247,7 +247,7 @@ def micro_add(
         if not names:
             logger.error("No goals available for micro add")
             click.echo("[red]No goals – use `loopbloom goal add`.")
-            return
+            raise click.Abort()
         click.echo("Select goal for new micro-habit:")
         logger.info("Prompting for goal selection for micro add")
         goal_name = choose_from(names, "Enter number")
@@ -259,7 +259,7 @@ def micro_add(
     if not g:
         logger.error("Goal not found for micro add: %s", goal_name)
         goal_not_found(goal_name, [x.name for x in goals])  # pragma: no cover
-        return  # pragma: no cover
+        raise click.Abort()  # pragma: no cover
 
     store = click.get_current_context().obj
 
