@@ -66,13 +66,40 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 
 ## 3  Installation
 
-```bash
-pip install loopbloom-cli   # PyPI release
-# or bleeding edge
-pip install git+https://github.com/ashkuhlmann/loopbloom-cli.git@main
-````
+LoopBloom CLI requires Python >= 3.9.
 
-> **Requires** Python ≥ 3.9. Optional: `plyer` for desktop notifications.
+### For End-Users
+The recommended way to install is via pipx to ensure dependencies are isolated:
+
+```bash
+pipx install loopbloom-cli
+```
+Alternatively, you can use pip:
+
+```bash
+pip install loopbloom-cli
+```
+
+### For Contributors
+To set up a development environment, you will need Poetry.
+
+Clone the repository:
+```bash
+git clone https://github.com/ashkuhlmann/loopbloom-cli.git
+```
+Navigate into the project directory:
+```bash
+cd loopbloom-cli
+```
+Install dependencies with Poetry:
+```bash
+poetry install
+```
+Activate the virtual environment:
+```bash
+poetry shell
+```
+Once the environment is activated, you can run the CLI directly with the `loopbloom` command. Refer to `CONTRIBUTING.md` for more details.
 
 <a id="quick-start"></a>
 
@@ -85,8 +112,8 @@ For a step-by-step walkthrough, see the [Getting Started Tutorial](TUTORIAL.md).
 loopbloom goal add "Sleep Hygiene"
 
 # 2  Add a micro-habit (≤ 5 min!)
-loopbloom micro add --goal "Sleep Hygiene" --name "Wake up at 08:00" \
-                   --cue "After alarm" --scaffold "Alarm+Sunlight" --target-time 08:00
+# The name of the micro-habit is a positional argument.
+loopbloom micro add "Wake up at 08:00" --goal "Sleep Hygiene"
 
 # 3  Begin tracking each day
 loopbloom checkin --goal "Sleep Hygiene" --status done --note "Groggy but did it!"
@@ -120,7 +147,7 @@ Goal: Exercise → Micro #1 "Walk 5 min"
 • Success rate: 86 % (last 14 days)
 • Auto-advance suggestion: ➜ "Walk 6 min"  (accept? [Y/n])
 
-$ loopbloom checkin --goal Exercise --status skip --note "Rainy" 
+$ loopbloom checkin "Exercise" --skip --note "Rainy" 
 ⚠️  Skipped today. Mini-pep-talk: “A single rainy day doesn’t wash away progress—see you tomorrow!”
 
 $ loopbloom cope run overwhelmed
@@ -145,7 +172,7 @@ GOALS & MICRO-HABITS
   loopbloom tree                         # show goal hierarchy
 
 CHECK-INS & FEEDBACK
-  loopbloom checkin   [--goal <name>] [--status done|skip] [--note ..]
+  loopbloom checkin   <goal_name> [--success|--skip|--fail] [--note ..]
   loopbloom summary   [--goal <name>]   # streak banner, next steps
   loopbloom review    [--period day|week]   # reflect on progress
 
