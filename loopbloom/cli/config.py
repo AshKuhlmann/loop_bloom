@@ -8,10 +8,13 @@ storage backend and notification style.
 import json
 import logging
 from typing import Any
+from pathlib import Path # New import
+import shutil # New import
 
 import click
 
 from loopbloom.core import config as cfg
+from loopbloom.storage.base import Storage # New import
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +101,37 @@ def _set(key: str, value: str) -> None:
     cfg.save(conf)
     logger.info("Config set %s", key)
     click.echo("[green]Saved.")
+
+
+@config.command(name="reset", help="Reset all user data and goals.")
+@click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
+@click.pass_context
+def reset(ctx: click.Context, yes: bool) -> None:
+    """Reset all user data and goals."""
+    if not yes and not click.confirm(
+        "This will delete all your LoopBloom data and goals. Are you sure?",
+        default=False,
+    ):
+        click.echo("[yellow]Reset cancelled.[/yellow]")
+        return
+
+    store: Storage = ctx.obj.store
+    data_path = Path(store._path) # Access the path from the store object
+
+    try:
+        if data_path.exists():
+            if data_path.is_file():
+                data_path.unlink() # Delete the file
+            elif data_path.is_dir():
+                # If it's a directory (e.g., for SQLite with multiple files), remove recursively
+                import shutil
+                shutil.rmtree(data_path)
+            click.echo(f"[green]Successfully deleted data at: {data_path}[/green]")
+        else:
+            click.echo("[yellow]No data found to reset.[/yellow]")
+    except Exception as e:
+        click.echo(f"[red]Error resetting data: {e}[/red]")
+        logger.error(f"Error resetting data: {e}")
 
 
 config_cmd = config
