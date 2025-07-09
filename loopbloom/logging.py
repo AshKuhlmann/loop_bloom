@@ -1,3 +1,5 @@
+"""Lightweight logging configuration for the LoopBloom CLI."""
+
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
