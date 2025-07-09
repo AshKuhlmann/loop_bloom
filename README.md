@@ -53,7 +53,7 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 | Area                    | What you get                                                       | 
 | ----------------------- | ------------------------------------------------------------------ | 
 | **Hierarchical Goals**  | `goal → phase → micro` with reorder, cancel, edit.                 | 
-| **Fast Check-ins**      | `checkin` records ✓/✕ & note in <10 s—CLI responds with self-talk. | 
+| **Focused Check-ins**   | `checkin` automatically finds the one active micro-habit for a goal and records your progress on it in under 10 seconds. | 
 | **Smart Progression**   | ≥ 80 % over 14 days triggers *advance* prompt.                     | 
 | **Guided Coping**       | `cope` launches YAML Q\&A scripts for overwhelm.                   | 
 | **Gentle Banners**      | `summary` prints streaks, nudges, celebrations. Optional `--goal`. | 
@@ -116,6 +116,7 @@ loopbloom goal add "Sleep Hygiene"
 loopbloom micro add "Wake up at 08:00" --goal "Sleep Hygiene"
 
 # 3  Begin tracking each day
+# This command will find the currently active micro-habit under "Sleep Hygiene" (which is "Wake up at 08:00") and record a successful check-in for it.
 loopbloom checkin --goal "Sleep Hygiene" --status done --note "Groggy but did it!"
 ```
 
