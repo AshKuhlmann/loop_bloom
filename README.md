@@ -266,6 +266,9 @@ The application date can be overridden for testing by setting the
 `LOOPBLOOM_DEBUG_DATE` environment variable (YYYY-MM-DD). To dump the raw
 goal state run `loopbloom debug-state`.
 
+### Testing Interactive Commands
+Several commands like `cope new` or `goal wizard` are interactive. While the integration test suite uses input redirection to test these flows (see `tests/integration/test_cope_new.py` and `tests/integration/test_goal_wizard.py`), running these within automated scripts that cannot provide interactive input may be challenging. We recommend using Click's testing utilities for robust testing of interactive prompts.
+
 <a id="testing"></a>
 
 ## 14  Testing & CI
