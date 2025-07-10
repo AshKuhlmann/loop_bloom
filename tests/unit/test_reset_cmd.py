@@ -2,7 +2,7 @@ import pytest
 from click.testing import CliRunner
 from pathlib import Path
 import json
-from pydantic.json import pydantic_encoder # New import
+from pydantic.json import pydantic_encoder
 
 from loopbloom.__main__ import cli
 from loopbloom.core.models import GoalArea
@@ -14,8 +14,9 @@ def runner():
 
 
 @pytest.fixture
-def setup_temp_data_path(tmp_path):
+def setup_temp_data_path(tmp_path, monkeypatch):
     # This fixture ensures each test gets a clean, isolated data directory
+    monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(tmp_path / "data.json"))
     return tmp_path
 
 

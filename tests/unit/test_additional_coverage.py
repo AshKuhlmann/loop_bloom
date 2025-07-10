@@ -93,6 +93,10 @@ def _reload_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     from loopbloom import __main__ as main
 
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(tmp_path / "data.json"))
+    monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "json")
+    # Ensure a clean slate for each test
+    monkeypatch.delenv("LOOPBLOOM_SQLITE_PATH", raising=False)
+    importlib.reload(main)
     return main.cli
 
 
@@ -481,6 +485,8 @@ def test_cope_new_existing(
     importlib.reload(main)
     cli = main.cli
     runner = CliRunner()
+    # Explicitly set storage backend to JSON for this test
+    monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "json")
     res = runner.invoke(cli, ["cope", "new"])
     assert "Plan already exists" in res.output
 
@@ -502,6 +508,8 @@ def test_cope_new_invalid(
     importlib.reload(main)
     cli = main.cli
     runner = CliRunner()
+    # Explicitly set storage backend to JSON for this test
+    monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "json")
     res = runner.invoke(cli, ["cope", "new"])
     assert "Use 'p', 'm', or 'q'." in res.output
     assert "No steps defined" in res.output

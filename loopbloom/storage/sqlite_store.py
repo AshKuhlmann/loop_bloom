@@ -48,6 +48,7 @@ class SQLiteStore(Storage):
         Args:
             path: Path to the SQLite database file.
         """
+        self._path = path
         # ``future=True`` enables SQLAlchemy 2.0 style usage while remaining
         # compatible with older versions.
         self._engine: Engine = create_engine(f"sqlite:///{path}", future=True)

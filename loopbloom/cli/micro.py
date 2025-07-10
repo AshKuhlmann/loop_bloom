@@ -290,7 +290,6 @@ def micro_add(
             )
         )
 
-    store.save_goal_area(g)
     logger.info("Added micro-habit %s", name)
 
 
@@ -361,8 +360,6 @@ def micro_rm(
         return
 
     target_list.remove(mg_actual)
-    ctx = click.get_current_context()
-    ctx.obj.store.save_goal_area(g)
     logger.info("Deleted micro-habit %s", mg.name)
     click.echo(f"[green]Deleted micro-habit:[/] {mg.name}")
 

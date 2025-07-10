@@ -56,21 +56,12 @@ class JSONStore(Storage):
             logger.error("Error loading %s: %s", self._path, exc)
             raise StorageError(str(exc)) from exc
 
-    def save(self, goals: List[GoalArea]) -> None:  # noqa: D401
+    def save(self, goals: List[GoalArea]) -> None:
         """Persist the entire goal graph atomically."""
         logger.debug("Saving %d goals to %s", len(goals), self._path)
-        tmp_path: Path
         try:
-            with NamedTemporaryFile(
-                "w",
-                delete=False,
-                dir=self._path.parent,
-            ) as tmp:
-                # Write to a temp file then rename for atomicity.
-                # ``delete=False`` ensures Windows compatibility.
-                json.dump(goals, tmp, default=pydantic_encoder, indent=2)
-                tmp_path = Path(tmp.name)
-            tmp_path.replace(self._path)
+            with self._path.open("w", encoding="utf-8") as fp:
+                json.dump(goals, fp, default=pydantic_encoder, indent=2)
             logger.debug("Save successful")
         except Exception as exc:  # pragma: no cover
             logger.error("Error saving %s: %s", self._path, exc)
@@ -79,11 +70,17 @@ class JSONStore(Storage):
     def save_goal_area(self, goal: GoalArea) -> None:
         """Persist a single goal area by updating or appending it."""
         goals = self.load()
+        logger.debug(f"Saving goal: {goal.name} (ID: {goal.id})")
+        found = False
         for i, g in enumerate(goals):
-            if g.id == goal.id or g.name == goal.name:
+            logger.debug(f"  Comparing with existing goal: {g.name} (ID: {g.id})")
+            if g.id == goal.id:
+                logger.debug(f"    Match by ID: {g.id}")
                 goals[i] = goal
+                found = True
                 break
-        else:
+        if not found:
+            logger.debug(f"  No match found, appending new goal: {goal.name}")
             goals.append(goal)
         self.save(goals)
 

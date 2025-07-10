@@ -36,6 +36,7 @@ def goal_not_found(name: str, goals: Iterable[str]) -> None:
     if match:
         click.echo(f'\nDid you mean "{match}"?')  # pragma: no cover
     click.echo("Run 'loopbloom goal list' to see your available goals.")
+    click.get_current_context().exit(1)
 
 
 def find_goal(goals: Iterable[GoalArea], name: str) -> Optional[GoalArea]:
@@ -90,3 +91,13 @@ def save_goal(goal: GoalArea) -> None:
     """
     ctx = click.get_current_context()
     ctx.obj.store.save_goal_area(goal)
+
+
+def save_goals(goals: list[GoalArea]) -> None:
+    """Persist ``goals`` using the current store.
+
+    Args:
+        goals: Goals to save.
+    """
+    ctx = click.get_current_context()
+    ctx.obj.store.save(goals)

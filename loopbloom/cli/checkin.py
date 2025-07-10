@@ -114,7 +114,7 @@ def checkin(
         if not goal:
             logger.error("Goal not found: %s", goal_name)
             goal_not_found(goal_name, [g.name for g in goals])
-            return
+            # No return here, let goal_not_found handle the exit
         # Once we know the goal, locate its currently active micro-habit so the
         # check-in updates the right place.
         mg = goal.get_active_micro_goal()

@@ -13,6 +13,7 @@ from loopbloom.cli.utils import (
     get_goal_from_name,
     goal_not_found,
     save_goal,
+    save_goals,
 )
 from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
@@ -87,7 +88,7 @@ def goal_rm(
             "Enter number",
         )  # pragma: no cover
         if selected is None:
-            return  # pragma: no cover
+            click.get_current_context().exit(1) # Exit with error if user cancels
         name = selected
 
     g = find_goal(goals, name)
@@ -102,8 +103,10 @@ def goal_rm(
     ):
         return
     goals.remove(g)
+    save_goals(goals) # Save changes after removing the goal
     logger.info("Deleted goal %s", name)
     click.echo(f"[green]Deleted goal:[/] {name}")
+    click.get_current_context().exit(0)
 
 
 @goal.command(name="notes", help="View and edit goal notes in $EDITOR.")

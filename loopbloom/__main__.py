@@ -73,19 +73,15 @@ def cli(ctx: click.Context, debug: bool, dry_run: bool) -> None:
         click.echo("Debug mode is ON")
 
     config = cfg.load()
-    storage_type = config.get("storage", "json")
-    cfg_path = str(config.get("data_path") or "")
+    storage_backend = os.getenv("LOOPBLOOM_STORAGE_BACKEND", config.get("storage", "json"))
+    data_path = os.getenv("LOOPBLOOM_DATA_PATH", config.get("data_path"))
 
     store: Storage
-    if storage_type == "sqlite":
-        # Environment variable overrides config which overrides the default.
-        sqlite_env = os.getenv("LOOPBLOOM_SQLITE_PATH")
-        path = sqlite_env or cfg_path or str(SQLITE_DEFAULT_PATH)
+    if storage_backend == "sqlite":
+        path = data_path or str(SQLITE_DEFAULT_PATH)
         store = SQLiteStore(path)
     else:
-        # ``LOOPBLOOM_DATA_PATH`` or config ``data_path`` may override.
-        data_env = os.getenv("LOOPBLOOM_DATA_PATH")
-        path = data_env or cfg_path or str(JSON_DEFAULT_PATH)
+        path = data_path or str(JSON_DEFAULT_PATH)
         store = JSONStore(path)
 
     # Expose the store instance to subcommands via Click's context object.
