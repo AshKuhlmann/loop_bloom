@@ -73,7 +73,9 @@ def cli(ctx: click.Context, debug: bool, dry_run: bool) -> None:
         click.echo("Debug mode is ON")
 
     config = cfg.load()
-    storage_backend = os.getenv("LOOPBLOOM_STORAGE_BACKEND", config.get("storage", "json"))
+    storage_backend = os.getenv(
+        "LOOPBLOOM_STORAGE_BACKEND", config.get("storage", "json")
+    )
     data_path = os.getenv("LOOPBLOOM_DATA_PATH", config.get("data_path"))
 
     store: Storage

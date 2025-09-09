@@ -88,7 +88,7 @@ def goal_rm(
             "Enter number",
         )  # pragma: no cover
         if selected is None:
-            click.get_current_context().exit(1) # Exit with error if user cancels
+            click.get_current_context().exit(1)  # Exit with error if user cancels
         name = selected
 
     g = find_goal(goals, name)
@@ -103,7 +103,7 @@ def goal_rm(
     ):
         return
     goals.remove(g)
-    save_goals(goals) # Save changes after removing the goal
+    save_goals(goals)  # Save changes after removing the goal
     logger.info("Deleted goal %s", name)
     click.echo(f"[green]Deleted goal:[/] {name}")
     click.get_current_context().exit(0)

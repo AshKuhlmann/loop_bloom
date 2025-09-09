@@ -1,0 +1,11 @@
+2025-09-09 10:02:20,204 [INFO] loopbloom.cli.goal: Added goal Goal Name
+2025-09-09 10:02:26,045 [INFO] loopbloom.cli.micro: Added micro-habit Tiny Habit
+2025-09-09 10:02:32,846 [INFO] loopbloom.cli.checkin: Checking in for Tiny Habit
+2025-09-09 10:02:32,847 [INFO] loopbloom.cli.checkin: Pep talk: ✓ Awesome work—momentum is building.
+2025-09-09 10:05:48,353 [INFO] loopbloom.cli.cope: Listing coping plans
+2025-09-09 10:05:53,799 [INFO] loopbloom.cli.cope: Running plan overwhelmed
+2025-09-09 10:06:01,207 [INFO] loopbloom.cli.export: Exporting data to /Users/shae/Development/loop_bloom/tmp_cli/export.csv as csv
+2025-09-09 10:06:01,209 [INFO] loopbloom.cli.export: CSV export complete
+2025-09-09 10:06:06,827 [INFO] loopbloom.cli.backup: Backing up /Users/shae/Development/loop_bloom/tmp_cli/data.json
+2025-09-09 10:06:06,828 [INFO] loopbloom.cli.backup: Copying to /Users/shae/Development/loop_bloom/tmp_cli/xdg/loopbloom/backups/data-backup-2025-09-09T10-06-06.json
+2025-09-09 10:06:06,829 [INFO] loopbloom.cli.backup: Backup saved to /Users/shae/Development/loop_bloom/tmp_cli/xdg/loopbloom/backups/data-backup-2025-09-09T10-06-06.json

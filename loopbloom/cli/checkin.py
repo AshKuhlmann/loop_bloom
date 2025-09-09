@@ -107,14 +107,15 @@ def checkin(
 
     # Locate the goal by name if it wasn't selected interactively.
     if goal is None:
-        goal = next(
+        found = next(
             (g for g in goals if g.name.lower() == goal_name.lower()),
             None,
         )
-        if not goal:
+        if found is None:
             logger.error("Goal not found: %s", goal_name)
             goal_not_found(goal_name, [g.name for g in goals])
-            # No return here, let goal_not_found handle the exit
+            return
+        goal = found
         # Once we know the goal, locate its currently active micro-habit so the
         # check-in updates the right place.
         mg = goal.get_active_micro_goal()
@@ -149,6 +150,7 @@ def checkin(
     # Respect the user's preferred notification channel when sending the pep
     # talk.
     notify_mode = cfg.load().get("notify", "terminal")
+    assert goal is not None
     notifier.send("LoopBloom Check-in", talk, mode=notify_mode, goal=goal.name)
 
     progression_service = ProgressionService()

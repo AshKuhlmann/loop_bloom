@@ -48,6 +48,9 @@ class SQLiteStore(Storage):
         Args:
             path: Path to the SQLite database file.
         """
+        path = Path(path)
+        # Ensure parent directory exists before creating the engine/DB file.
+        path.parent.mkdir(parents=True, exist_ok=True)
         self._path = path
         # ``future=True`` enables SQLAlchemy 2.0 style usage while remaining
         # compatible with older versions.

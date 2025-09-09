@@ -40,5 +40,6 @@ def add_entry(text: str, goal: str | None = None) -> None:
     """
     entries = load_entries()
     entries.append(JournalEntry(text=text.strip(), goal=goal))
+    JOURNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
     with JOURNAL_PATH.open("w", encoding="utf-8") as fp:
         json.dump(entries, fp, default=pydantic_encoder, indent=2)

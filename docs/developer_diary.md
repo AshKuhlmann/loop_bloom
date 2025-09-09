@@ -17,7 +17,7 @@ Below is an actionable checklist capturing the review, fixes applied, and sugges
 - [x] Align Python version across repo:
   - Decision: support Python ≥ 3.10 (code uses `|` unions from 3.10).
   - Updated pyproject to `python = "^3.10"` and docs (README/TUTORIAL).
-  - CI updated to test 3.10, 3.11, 3.12.
+  - CI updated to run a single Python (3.11) per repo policy.
 - [ ] Replace deprecated Pydantic serialization:
   - Stop using `pydantic.json.pydantic_encoder` and switch to `model_dump(mode="json")` and/or `pydantic_core.to_jsonable_python`.
   - Update: storage/json_store.py, core/review.py, core/journal.py.

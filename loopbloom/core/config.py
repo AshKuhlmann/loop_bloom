@@ -18,10 +18,9 @@ from pydantic import BaseModel
 # Resolve the user's configuration directory (e.g. ``~/.config`` on Linux).
 # Honour the ``XDG_CONFIG_HOME`` environment variable with a sensible default.
 XDG_CONFIG_HOME = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
-# Application-specific directory where LoopBloom stores its settings.
+# Application-specific directory where LoopBloom stores its settings. The
+# directory is created lazily by ``save`` to avoid side effects at import time.
 APP_DIR = XDG_CONFIG_HOME / "loopbloom"
-# Ensure the directory exists so the rest of the module can freely write files.
-APP_DIR.mkdir(parents=True, exist_ok=True)
 # Users may override ``CONFIG_PATH`` for testing by setting this variable.
 # Full path to the TOML configuration file.
 # Used by :func:`load` and :func:`save`.
@@ -93,6 +92,8 @@ def save(new_cfg: Dict[str, Any]) -> None:
     # ``_deep_merge`` ensures partial configs don't drop missing defaults.
     # This makes ``config set`` operations idempotent.
     merged = _deep_merge(DEFAULTS, new_cfg)
+    # Ensure configuration directory exists when saving.
+    APP_DIR.mkdir(parents=True, exist_ok=True)
     with CONFIG_PATH.open("wb") as fp:
         tomli_w.dump(merged, fp)
 

@@ -15,16 +15,12 @@ TALKS_PATH = DATA_DIR / "default_talks.json"
 
 # User data files
 REVIEW_PATH = APP_DIR / "reviews.json"
-REVIEW_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 JOURNAL_PATH = APP_DIR / "journal.json"
-JOURNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 JSON_STORE_PATH = Path(os.getenv("LOOPBLOOM_DATA_PATH", APP_DIR / "data.json"))
-JSON_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 SQLITE_STORE_PATH = Path(os.getenv("LOOPBLOOM_SQLITE_PATH", APP_DIR / "data.db"))
-SQLITE_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Progression and reporting defaults
 WINDOW_DEFAULT = 14
