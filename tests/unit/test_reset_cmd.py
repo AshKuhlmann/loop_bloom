@@ -2,7 +2,6 @@ import json
 
 import pytest
 from click.testing import CliRunner
-from pydantic.json import pydantic_encoder
 
 from loopbloom.__main__ import cli
 from loopbloom.core.models import GoalArea
@@ -28,9 +27,7 @@ def test_reset_command_confirms_and_deletes_data(runner, setup_temp_data_path):
 
     # Create a dummy data file
     with open(data_file, "w") as f:
-        json.dump(
-            [GoalArea(name="Test Goal").model_dump()], f, default=pydantic_encoder
-        )
+        json.dump([GoalArea(name="Test Goal").model_dump(mode="json")], f)
 
     # Configure the CLI to use this data file
     result = runner.invoke(cli, ["config", "set", "data_path", str(data_file)])
@@ -56,9 +53,7 @@ def test_reset_command_can_be_skipped(runner, setup_temp_data_path):
 
     # Create a dummy data file
     with open(data_file, "w") as f:
-        json.dump(
-            [GoalArea(name="Test Goal").model_dump()], f, default=pydantic_encoder
-        )
+        json.dump([GoalArea(name="Test Goal").model_dump(mode="json")], f)
 
     # Configure the CLI to use this data file
     result = runner.invoke(cli, ["config", "set", "data_path", str(data_file)])
@@ -84,9 +79,7 @@ def test_reset_command_with_yes_flag(runner, setup_temp_data_path):
 
     # Create a dummy data file
     with open(data_file, "w") as f:
-        json.dump(
-            [GoalArea(name="Test Goal").model_dump()], f, default=pydantic_encoder
-        )
+        json.dump([GoalArea(name="Test Goal").model_dump(mode="json")], f)
 
     # Configure the CLI to use this data file
     result = runner.invoke(cli, ["config", "set", "data_path", str(data_file)])

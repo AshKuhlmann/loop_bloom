@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel, Field
-from pydantic.json import pydantic_encoder
 
 from loopbloom.constants import REVIEW_PATH
 
@@ -38,4 +37,4 @@ def add_entry(period: str, went_well: str) -> None:
     entries.append(ReviewEntry(period=period, went_well=went_well.strip()))
     REVIEW_PATH.parent.mkdir(parents=True, exist_ok=True)
     with REVIEW_PATH.open("w", encoding="utf-8") as fp:
-        json.dump(entries, fp, default=pydantic_encoder, indent=2)
+        json.dump([e.model_dump(mode="json") for e in entries], fp, indent=2)
