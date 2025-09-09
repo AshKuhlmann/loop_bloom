@@ -18,10 +18,10 @@ Below is an actionable checklist capturing the review, fixes applied, and sugges
   - Decision: support Python ≥ 3.10 (code uses `|` unions from 3.10).
   - Updated pyproject to `python = "^3.10"` and docs (README/TUTORIAL).
   - CI updated to run a single Python (3.11) per repo policy.
-- [ ] Replace deprecated Pydantic serialization:
+- [x] Replace deprecated Pydantic serialization:
   - Stop using `pydantic.json.pydantic_encoder` and switch to `model_dump(mode="json")` and/or `pydantic_core.to_jsonable_python`.
-  - Update: storage/json_store.py, core/review.py, core/journal.py.
-  - Remove/waive related warnings in tests once complete.
+  - Updated: `storage/json_store.py`, `core/review.py`, `core/journal.py` to emit JSON via `model_dump(mode="json")`.
+  - Updated tests to drop `pydantic_encoder`; confirmed no Pydantic deprecation warnings; all tests green.
 - [ ] Update ruff config to new schema:
   - Move `[tool.ruff].select` → `[tool.ruff.lint].select` to silence deprecation warnings.
 - [ ] Update docs to match actual CLI:
