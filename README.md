@@ -66,7 +66,7 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 
 ## 3  Installation
 
-LoopBloom CLI requires Python >= 3.9.
+LoopBloom CLI requires Python >= 3.10.
 
 ### For End-Users
 The recommended way to install is via pipx to ensure dependencies are isolated:
