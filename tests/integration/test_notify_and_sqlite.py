@@ -5,8 +5,6 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from loopbloom.__main__ import cli
-
 
 def test_switch_to_sqlite_and_notify(tmp_path, monkeypatch):
     """Switch backend and ensure notify call occurs."""
@@ -17,14 +15,15 @@ def test_switch_to_sqlite_and_notify(tmp_path, monkeypatch):
     monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "sqlite")
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(db_path))
 
-    import loopbloom.core.config as cfg_mod
     import loopbloom.__main__ as main
+    import loopbloom.core.config as cfg_mod
 
     # Reload the modules to pick up the new environment variables
     importlib.reload(cfg_mod)
     importlib.reload(main)
 
-    # No need to set the storage backend via the CLI, it's already set by the environment variable
+    # No need to set the storage backend via the CLI; it's already set
+    # by the environment variable.
 
     env = {"LOOPBLOOM_DATA_PATH": str(db_path)}
     runner.invoke(main.cli, ["goal", "add", "NotifyGoal"], env=env)

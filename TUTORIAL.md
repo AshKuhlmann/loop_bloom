@@ -4,7 +4,7 @@ This short tutorial walks you through installing the CLI, adding your first goal
 
 ## 1. Installation
 
-LoopBloom requires **Python 3.9 or later**. Install the package from PyPI:
+LoopBloom requires **Python 3.10 or later**. Install the package from PyPI:
 
 ```bash
 pip install loopbloom-cli

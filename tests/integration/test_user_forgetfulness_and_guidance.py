@@ -2,7 +2,6 @@ import pytest
 from click.testing import CliRunner
 
 from loopbloom.__main__ import cli
-from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 
 @pytest.fixture
@@ -44,7 +43,9 @@ def test_goal_rm_without_name_triggers_prompt(runner, setup_goals):
     Test that running 'goal rm' without a goal name prompts the user to select
     which goal to delete.
     """
-    result = runner.invoke(cli, ["goal", "rm"], input="1\ny\n")  # Select the first option and confirm deletion
+    result = runner.invoke(
+        cli, ["goal", "rm"], input="1\ny\n"
+    )  # Select the first option and confirm deletion
     assert "Which goal do you want to delete?" in result.output
     assert "Exercise" in result.output
     assert "Reading" in result.output

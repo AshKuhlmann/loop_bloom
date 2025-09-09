@@ -1,8 +1,5 @@
 import pytest
 from click.testing import CliRunner
-import os
-# from loopbloom.__main__ import cli # Remove top-level import
-from loopbloom.core.models import GoalArea, MicroGoal, Phase
 
 
 @pytest.fixture
@@ -17,8 +14,7 @@ def setup_temp_data_path(tmp_path, monkeypatch):
 
 
 def _run_common_workflow(runner, data_path, backend):
-    import os
-    from loopbloom.__main__ import cli # Import cli here to ensure it picks up env vars
+    from loopbloom.__main__ import cli  # Import cli here to ensure it picks up env vars
 
     # Configure storage backend (this will use the cli initialized with env vars)
     result = runner.invoke(cli, ["config", "set", "storage", backend])
@@ -26,7 +22,15 @@ def _run_common_workflow(runner, data_path, backend):
     assert "[green]Saved." in result.output
 
     # Set data path for the current backend
-    result = runner.invoke(cli, ["config", "set", "data_path", str(data_path / f"data.{'db' if backend == 'sqlite' else 'json'}")])
+    result = runner.invoke(
+        cli,
+        [
+            "config",
+            "set",
+            "data_path",
+            str(data_path / f"data.{'db' if backend == 'sqlite' else 'json'}"),
+        ],
+    )
     assert result.exit_code == 0
 
     # Workflow steps
@@ -73,11 +77,11 @@ def test_flow_works_with_json_backend(runner, setup_temp_data_path, monkeypatch)
     """
     json_data_path = setup_temp_data_path / "json_data"
     json_data_path.mkdir()
-    
+
     # Set environment variables for JSON backend before cli is used
     monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "json")
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(json_data_path / "data.json"))
-    
+
     _run_common_workflow(runner, json_data_path, "json")
 
 
@@ -91,5 +95,5 @@ def test_flow_works_with_sqlite_backend(runner, setup_temp_data_path, monkeypatc
     # Set environment variables for SQLite backend before cli is used
     monkeypatch.setenv("LOOPBLOOM_STORAGE_BACKEND", "sqlite")
     monkeypatch.setenv("LOOPBLOOM_DATA_PATH", str(sqlite_data_path / "data.db"))
-    
+
     _run_common_workflow(runner, sqlite_data_path, "sqlite")

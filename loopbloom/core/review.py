@@ -36,5 +36,6 @@ def add_entry(period: str, went_well: str) -> None:
     """
     entries = load_entries()
     entries.append(ReviewEntry(period=period, went_well=went_well.strip()))
+    REVIEW_PATH.parent.mkdir(parents=True, exist_ok=True)
     with REVIEW_PATH.open("w", encoding="utf-8") as fp:
         json.dump(entries, fp, default=pydantic_encoder, indent=2)

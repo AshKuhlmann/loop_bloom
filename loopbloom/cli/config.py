@@ -1,20 +1,19 @@
 """`loopbloom config` command for viewing or changing settings.
 
-This module exposes a small configuration editor for the CLI.  Settings
-are stored in a user-specific TOML file and control things like the
-storage backend and notification style.
+This module exposes a small configuration editor for the CLI. Settings are
+stored in a user-specific TOML file and control things like the storage backend
+and notification style.
 """
 
 import json
 import logging
-from typing import Any
-from pathlib import Path # New import
-import shutil # New import
+from pathlib import Path
+from typing import Any, cast
 
 import click
 
 from loopbloom.core import config as cfg
-from loopbloom.storage.base import Storage # New import
+from loopbloom.storage.base import Storage
 
 logger = logging.getLogger(__name__)
 
@@ -116,15 +115,19 @@ def reset(ctx: click.Context, yes: bool) -> None:
         return
 
     store: Storage = ctx.obj.store
-    data_path = Path(store._path) # Access the path from the store object
+    # ``_path`` is a private attribute on concrete stores; cast to ``Any``
+    # for mypy since it's not part of the ``Storage`` protocol.
+    data_path = Path(cast(Any, store)._path)
 
     try:
         if data_path.exists():
             if data_path.is_file():
-                data_path.unlink() # Delete the file
+                data_path.unlink()  # Delete the file
             elif data_path.is_dir():
-                # If it's a directory (e.g., for SQLite with multiple files), remove recursively
+                # If it's a directory (e.g., for SQLite with multiple files),
+                # remove recursively.
                 import shutil
+
                 shutil.rmtree(data_path)
             click.echo(f"[green]Successfully deleted data at: {data_path}[/green]")
         else:

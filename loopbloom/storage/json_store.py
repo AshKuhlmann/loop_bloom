@@ -9,7 +9,6 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import ContextManager, List
 
 from pydantic.json import pydantic_encoder
@@ -60,6 +59,8 @@ class JSONStore(Storage):
         """Persist the entire goal graph atomically."""
         logger.debug("Saving %d goals to %s", len(goals), self._path)
         try:
+            # Ensure parent directory exists before writing.
+            self._path.parent.mkdir(parents=True, exist_ok=True)
             with self._path.open("w", encoding="utf-8") as fp:
                 json.dump(goals, fp, default=pydantic_encoder, indent=2)
             logger.debug("Save successful")
