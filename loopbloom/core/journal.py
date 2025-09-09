@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel, Field
-from pydantic.json import pydantic_encoder
 
 from loopbloom.constants import JOURNAL_PATH
 
@@ -42,4 +41,4 @@ def add_entry(text: str, goal: str | None = None) -> None:
     entries.append(JournalEntry(text=text.strip(), goal=goal))
     JOURNAL_PATH.parent.mkdir(parents=True, exist_ok=True)
     with JOURNAL_PATH.open("w", encoding="utf-8") as fp:
-        json.dump(entries, fp, default=pydantic_encoder, indent=2)
+        json.dump([e.model_dump(mode="json") for e in entries], fp, indent=2)

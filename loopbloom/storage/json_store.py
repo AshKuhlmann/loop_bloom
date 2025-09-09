@@ -9,9 +9,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import ContextManager, List
-
-from pydantic.json import pydantic_encoder
+from typing import Any, ContextManager, Iterable, List
 
 from loopbloom.constants import JSON_STORE_PATH
 from loopbloom.core.models import GoalArea
@@ -62,7 +60,11 @@ class JSONStore(Storage):
             # Ensure parent directory exists before writing.
             self._path.parent.mkdir(parents=True, exist_ok=True)
             with self._path.open("w", encoding="utf-8") as fp:
-                json.dump(goals, fp, default=pydantic_encoder, indent=2)
+                # Use Pydantic v2 JSON-mode dump to serialize dates/datetimes.
+                payload: Iterable[dict[str, Any]] = (
+                    g.model_dump(mode="json") for g in goals
+                )
+                json.dump(list(payload), fp, indent=2)
             logger.debug("Save successful")
         except Exception as exc:  # pragma: no cover
             logger.error("Error saving %s: %s", self._path, exc)
