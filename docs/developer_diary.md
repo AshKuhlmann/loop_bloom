@@ -22,8 +22,9 @@ Below is an actionable checklist capturing the review, fixes applied, and sugges
   - Stop using `pydantic.json.pydantic_encoder` and switch to `model_dump(mode="json")` and/or `pydantic_core.to_jsonable_python`.
   - Updated: `storage/json_store.py`, `core/review.py`, `core/journal.py` to emit JSON via `model_dump(mode="json")`.
   - Updated tests to drop `pydantic_encoder`; confirmed no Pydantic deprecation warnings; all tests green.
-- [ ] Update ruff config to new schema:
+- [x] Update ruff config to new schema:
   - Move `[tool.ruff].select` → `[tool.ruff.lint].select` to silence deprecation warnings.
+  - Added tests (`tests/unit/test_ruff_config_schema.py`) to enforce new schema and ensure deprecated keys are absent.
 - [ ] Update docs to match actual CLI:
   - Tutorial: `micro add` uses positional name plus `--goal` (and `--phase`), not `--name/--cue/--scaffold/--target-time`.
   - Tutorial/README: `checkin` uses `--success/--skip` or `--fail`, not `--status done`.
