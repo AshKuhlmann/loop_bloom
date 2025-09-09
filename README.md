@@ -60,7 +60,7 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 | **Tree View**           | `tree` shows your goals, phases, and micro-habits. |
 | **Exports**             | \`export csv/json                                                  | 
 | **Pluggable Storage**   | JSON by default; SQLite plugin for power-users.                    | 
-| **100 % Test Coverage** | Every line & branch, enforced by CI.                               | 
+| **Quality Gates**        | ≥ 80% coverage enforced; type checks and linting in CI.           | 
 
 <a id="install"></a>
 
@@ -117,7 +117,7 @@ loopbloom micro add "Wake up at 08:00" --goal "Sleep Hygiene"
 
 # 3  Begin tracking each day
 # This command will find the currently active micro-habit under "Sleep Hygiene" (which is "Wake up at 08:00") and record a successful check-in for it.
-loopbloom checkin --goal "Sleep Hygiene" --status done --note "Groggy but did it!"
+loopbloom checkin "Sleep Hygiene" --success --note "Groggy but did it!"
 ```
 
 The CLI replies with something like:

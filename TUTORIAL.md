@@ -28,11 +28,10 @@ You should see confirmation similar to:
 
 ## 3. Add a Micro-Habit
 
-Next, define a small action that takes five minutes or less:
+Next, define a small action that takes five minutes or less. The name is positional; add an optional goal (and phase if you want):
 
 ```bash
-loopbloom micro add --goal "Exercise" --name "Walk 5 min" \
-                   --cue "After lunch" --scaffold "Shoes ready" --target-time 13:00
+loopbloom micro add "Walk 5 min" --goal "Exercise"
 ```
 
 The CLI replies with something like:
@@ -46,7 +45,7 @@ The CLI replies with something like:
 Record whether you completed the micro-habit:
 
 ```bash
-loopbloom checkin --goal "Exercise" --status done --note "Sunny walk"
+loopbloom checkin Exercise --success --note "Sunny walk"
 ```
 
 Sample output:
