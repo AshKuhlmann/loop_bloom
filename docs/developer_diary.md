@@ -25,10 +25,11 @@ Below is an actionable checklist capturing the review, fixes applied, and sugges
 - [x] Update ruff config to new schema:
   - Move `[tool.ruff].select` → `[tool.ruff.lint].select` to silence deprecation warnings.
   - Added tests (`tests/unit/test_ruff_config_schema.py`) to enforce new schema and ensure deprecated keys are absent.
-- [ ] Update docs to match actual CLI:
+- [x] Update docs to match actual CLI:
   - Tutorial: `micro add` uses positional name plus `--goal` (and `--phase`), not `--name/--cue/--scaffold/--target-time`.
   - Tutorial/README: `checkin` uses `--success/--skip` or `--fail`, not `--status done`.
-  - README: replace “100% Test Coverage” claim with accurate statement (e.g., “≥ 80% enforced; current ~90%”).
+  - README: replace “100% Test Coverage” claim with accurate statement (≥ 80% enforced; current ~90%).
+  - Added enforcement tests (`tests/test_docs_cli_consistency.py`).
 - [ ] Pre-commit packaging step:
   - In `scripts/pre-commit`, replace `python -m pip install .` with `poetry run python -m pip install .` to avoid extra network resolution outside the venv.
   - Optionally drop the packaging step from local pre-commit and keep it in CI.
