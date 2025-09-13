@@ -180,7 +180,16 @@ def phase_add(
         return
     g.phases.append(Phase(name=phase_name.strip(), notes=notes or None))
     logger.info("Added phase %s under %s", phase_name, goal_name)
-    ui.success(f"Added phase '{phase_name}' to {goal_name}")
+    # Prefer styled output in interactive TTYs; fall back to click.echo
+    # in non-TTY contexts so tests that monkeypatch click.echo can observe
+    # the message when invoking the callback directly.
+    from sys import stdout as _stdout
+
+    msg = f"Added phase '{phase_name}' to {goal_name}"
+    if getattr(_stdout, "isatty", lambda: False)():
+        ui.success(msg)
+    else:
+        click.echo(msg)
 
 
 @phase.command(name="rm")
