@@ -11,16 +11,16 @@ from datetime import timedelta
 from typing import Iterable, Iterator, List
 
 import click
-from rich.console import Console, Group, RenderableType
+from rich.console import Group, RenderableType
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
-from loopbloom.cli import with_goals
+from loopbloom.cli import ui, with_goals
 from loopbloom.constants import DEFAULT_TIMEFRAME
 from loopbloom.core.models import GoalArea, MicroGoal
 from loopbloom.services.datetime import get_current_datetime
 
-console = Console()
+console = ui.console
 
 
 @click.command(

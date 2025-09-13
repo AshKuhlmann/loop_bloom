@@ -7,13 +7,12 @@ Renders all goals, phases and micro-habits in a nested tree using Rich's
 from typing import List
 
 import click
-from rich.console import Console
 from rich.tree import Tree
 
-from loopbloom.cli import with_goals
+from loopbloom.cli import ui, with_goals
 from loopbloom.core.models import GoalArea
 
-console = Console()
+console = ui.console
 
 
 @click.command(name="tree", help="Show goal hierarchy as a tree.")

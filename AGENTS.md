@@ -1,4 +1,5 @@
 Requirement: The pre-commit script must succeed before opening a pull request.
+Rule: Do not modify the `scripts/pre-commit` script. Keep it as the canonical local gate.
 
 Quick checklist before a PR:
 - Install tooling: `pip install poetry`
