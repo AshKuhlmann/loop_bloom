@@ -14,6 +14,8 @@ from pathlib import Path
 
 import click
 
+from loopbloom.cli import ui
+
 from loopbloom.core import config as cfg
 from loopbloom.storage.json_store import DEFAULT_PATH as JSON_DEFAULT_PATH
 from loopbloom.storage.sqlite_store import DEFAULT_PATH as SQLITE_DEFAULT_PATH
@@ -53,7 +55,7 @@ def backup() -> None:
     logger.info("Backing up %s", src)
     if not src.exists():
         logger.error("Data file not found: %s", src)
-        click.echo(f"[red]Data file not found: {src}")
+        ui.error(f"Data file not found: {src}")
         return
 
     timestamp = datetime.now().isoformat(timespec="seconds").replace(":", "-")
@@ -62,10 +64,10 @@ def backup() -> None:
     try:
         shutil.copy2(src, dest)
         logger.info("Backup saved to %s", dest)
-        click.echo(f"[green]Backup saved → {dest}")
+        ui.success(f"Backup saved → {dest}")
     except Exception as exc:
         logger.error("Backup failed: %s", exc)
-        click.echo("[red]Backup failed.")
+        ui.error("Backup failed.")
 
 
 backup_cmd = backup

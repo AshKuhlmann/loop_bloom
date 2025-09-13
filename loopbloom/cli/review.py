@@ -3,6 +3,7 @@ from __future__ import annotations
 import click
 
 from loopbloom.core import review as rv
+from loopbloom.cli import ui
 
 
 @click.command(name="review", help="Reflect on your progress.")
@@ -15,7 +16,7 @@ def review(period: str) -> None:
     """Interactive prompt that saves a review entry."""
     answer = click.prompt("What went well?")
     rv.add_entry(period=period, went_well=answer)
-    click.echo("[green]Review saved.")
+    ui.success("Review saved.")
 
 
 review_cmd = review

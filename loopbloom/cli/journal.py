@@ -7,6 +7,7 @@ import logging
 import click
 
 from loopbloom.core import journal as jr
+from loopbloom.cli import ui
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ def journal(text: str, goal_name: str | None) -> None:
         f" for {goal_name}" if goal_name else "",
     )
     jr.add_entry(text, goal_name)
-    click.echo("[green]Entry saved.")
+    ui.success("Entry saved.")
 
 
 journal_cmd = journal
