@@ -16,8 +16,7 @@ from rich.console import Group
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
-from loopbloom.cli import with_goals
-from loopbloom.cli import ui
+from loopbloom.cli import ui, with_goals
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.constants import WINDOW_DEFAULT
 from loopbloom.core import config as cfg

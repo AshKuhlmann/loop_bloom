@@ -6,8 +6,8 @@ import logging
 
 import click
 
-from loopbloom.core import journal as jr
 from loopbloom.cli import ui
+from loopbloom.core import journal as jr
 
 logger = logging.getLogger(__name__)
 

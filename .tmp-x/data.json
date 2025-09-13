@@ -1,0 +1,20 @@
+[
+  {
+    "id": "eb685399-31ee-487d-bde2-df544b1f44bc",
+    "name": "G",
+    "notes": null,
+    "phases": [],
+    "micro_goals": [
+      {
+        "id": "15ce2704-3967-4529-b7c5-5c5bd891e487",
+        "name": "M",
+        "status": "active",
+        "created_at": "2025-09-13T02:40:25.891990",
+        "checkins": [],
+        "advancement_window": null,
+        "advancement_threshold": null
+      }
+    ],
+    "created_at": "2025-09-13T02:40:25.889071"
+  }
+]

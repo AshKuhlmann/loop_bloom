@@ -11,10 +11,6 @@ import pkgutil
 from typing import TYPE_CHECKING
 
 import click
-try:  # Optional pretty help; falls back gracefully if unavailable
-    import rich_click as _rich_click  # type: ignore
-except Exception:  # pragma: no cover - optional dependency
-    _rich_click = None
 
 from loopbloom import cli as cli_package
 from loopbloom.cli import ui

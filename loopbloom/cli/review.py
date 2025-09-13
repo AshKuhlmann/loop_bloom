@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import click
 
-from loopbloom.core import review as rv
 from loopbloom.cli import ui
+from loopbloom.core import review as rv
 
 
 @click.command(name="review", help="Reflect on your progress.")

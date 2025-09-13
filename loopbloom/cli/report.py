@@ -15,8 +15,7 @@ from rich.console import Group, RenderableType
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
-from loopbloom.cli import with_goals
-from loopbloom.cli import ui
+from loopbloom.cli import ui, with_goals
 from loopbloom.constants import DEFAULT_TIMEFRAME
 from loopbloom.core.models import GoalArea, MicroGoal
 from loopbloom.services.datetime import get_current_datetime

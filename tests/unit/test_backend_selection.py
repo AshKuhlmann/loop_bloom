@@ -57,4 +57,3 @@ def test_ext_db_forces_sqlite_backend(tmp_path: Path, monkeypatch) -> None:
     # Validate SQLite file signature
     sig = data_path.read_bytes()[:15]
     assert sig == b"SQLite format 3"
-

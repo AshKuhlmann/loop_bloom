@@ -9,8 +9,7 @@ from typing import List
 import click
 from rich.tree import Tree
 
-from loopbloom.cli import with_goals
-from loopbloom.cli import ui
+from loopbloom.cli import ui, with_goals
 from loopbloom.core.models import GoalArea
 
 console = ui.console

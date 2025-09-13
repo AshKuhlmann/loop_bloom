@@ -2,9 +2,9 @@ from datetime import timedelta
 
 import click
 
+from loopbloom.cli import ui
 from loopbloom.core import config as cfg
 from loopbloom.services.datetime import get_current_datetime
-from loopbloom.cli import ui
 
 _DEF_HELP = "Pause notifications globally or for a specific goal."
 

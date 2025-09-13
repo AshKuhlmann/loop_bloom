@@ -10,9 +10,9 @@ import logging
 import click
 import yaml
 
+from loopbloom.cli import ui
 from loopbloom.constants import COPING_DIR
 from loopbloom.core.coping import PlanRepository, run_plan
-from loopbloom.cli import ui
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,6 @@ from pathlib import Path
 import click
 
 from loopbloom.cli import ui
-
 from loopbloom.core import config as cfg
 from loopbloom.storage.json_store import DEFAULT_PATH as JSON_DEFAULT_PATH
 from loopbloom.storage.sqlite_store import DEFAULT_PATH as SQLITE_DEFAULT_PATH
