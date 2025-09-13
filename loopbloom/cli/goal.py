@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import click
 
-from loopbloom.cli import with_goals
+from loopbloom.cli import ui, with_goals
 from loopbloom.cli.interactive import choose_from
 from loopbloom.cli.utils import (
     find_goal,
@@ -41,11 +41,11 @@ def goal_add(name: str, notes: str, goals: List[GoalArea]) -> None:
     logger.debug("Dry run mode is %s", "ON" if ctx.obj.dry_run else "OFF")
     if find_goal(goals, name):
         logger.error("Goal already exists: %s", name)
-        click.echo("[yellow]Goal already exists.")
+        ui.warn("Goal already exists.")
         return
     goals.append(GoalArea(name=name.strip(), notes=notes or None))
     logger.info("Added goal %s", name)
-    click.echo(f"[green]Added goal:[/] {name}")
+    ui.success(f"Added goal: {name}")
 
 
 @goal.command(name="list")
@@ -54,7 +54,7 @@ def goal_list(goals: List[GoalArea]) -> None:
     """List all goal areas."""
     if not goals:
         logger.info("No goals to list")
-        click.echo("[italic]No goals – use `loopbloom goal add`.")
+        ui.info("No goals – use `loopbloom goal add`.")
         return
     for g in goals:
         note = f" - {g.notes}" if g.notes else ""
@@ -79,7 +79,7 @@ def goal_rm(
     if name is None:
         if not goals:
             logger.info("No goals to remove")
-            msg = "[italic]No goals – nothing to remove."
+            msg = "No goals – nothing to remove."
             click.echo(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Which goal do you want to delete?")  # pragma: no cover
@@ -105,7 +105,7 @@ def goal_rm(
     goals.remove(g)
     save_goals(goals)  # Save changes after removing the goal
     logger.info("Deleted goal %s", name)
-    click.echo(f"[green]Deleted goal:[/] {name}")
+    ui.success(f"Deleted goal: {name}")
     click.get_current_context().exit(0)
 
 
@@ -125,7 +125,7 @@ def goal_notes(ctx: click.Context, name: str) -> None:
     else:
         goal.notes = edited.strip()
         save_goal(goal)
-        click.echo(f"[green]Notes for goal '{name}' updated.")
+        ui.success(f"Notes for goal '{name}' updated.")
 
 
 # Phase commands
@@ -158,8 +158,8 @@ def phase_add(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase addition")
-            msg = "[red]No goals – use `loopbloom goal add`."
-            click.echo(msg)  # pragma: no cover
+            msg = "No goals – use `loopbloom goal add`."
+            ui.error(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal for new phase:")  # pragma: no cover
         goal_name = choose_from(
@@ -176,11 +176,11 @@ def phase_add(
     # Avoid duplicates when the phase already exists.
     if find_phase(g, phase_name):
         logger.error("Phase already exists: %s/%s", goal_name, phase_name)
-        click.echo("[yellow]Phase exists.")
+        ui.warn("Phase exists.")
         return
     g.phases.append(Phase(name=phase_name.strip(), notes=notes or None))
     logger.info("Added phase %s under %s", phase_name, goal_name)
-    click.echo(f"[green]Added phase '{phase_name}' to {goal_name}")
+    ui.success(f"Added phase '{phase_name}' to {goal_name}")
 
 
 @phase.command(name="rm")
@@ -204,8 +204,8 @@ def phase_rm(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals for phase removal")
-            msg = "[red]No goals – use `loopbloom goal add`."
-            click.echo(msg)  # pragma: no cover
+            msg = "No goals – use `loopbloom goal add`."
+            ui.error(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select goal:")  # pragma: no cover
         goal_name = choose_from(
@@ -226,8 +226,8 @@ def phase_rm(
         options = [p.name for p in g.phases]
         if not options:
             logger.error("No phases in goal %s", goal_name)
-            msg = "[red]No phases found for this goal."
-            click.echo(msg)  # pragma: no cover
+            msg = "No phases found for this goal."
+            ui.error(msg)  # pragma: no cover
             return  # pragma: no cover
         click.echo("Select phase to delete:")  # pragma: no cover
         phase_name = choose_from(
@@ -241,7 +241,7 @@ def phase_rm(
     p = find_phase(g, phase_name)
     if not p:
         logger.error("Phase not found: %s/%s", goal_name, phase_name)
-        click.echo("[red]Phase not found.")  # pragma: no cover
+        ui.error("Phase not found.")  # pragma: no cover
         return  # pragma: no cover
 
     if not yes and not click.confirm(
@@ -251,7 +251,7 @@ def phase_rm(
         return
     g.phases.remove(p)
     logger.info("Deleted phase %s from %s", phase_name, goal_name)
-    click.echo(f"[green]Deleted phase '{phase_name}' from {goal_name}")
+    ui.success(f"Deleted phase '{phase_name}' from {goal_name}")
 
 
 @phase.command(
@@ -269,7 +269,7 @@ def phase_notes(ctx: click.Context, goal_name: str, phase_name: str) -> None:
         raise click.Abort()
     phase = find_phase(goal, phase_name)
     if not phase:
-        click.echo("[red]Phase not found.")
+        ui.error("Phase not found.")
         raise click.Abort()
 
     edited = click.edit(phase.notes or "")
@@ -278,11 +278,11 @@ def phase_notes(ctx: click.Context, goal_name: str, phase_name: str) -> None:
     else:
         phase.notes = edited.strip()
         save_goal(goal)
-        msg = "[green]Notes for phase '{}' under {} updated.".format(
+        msg = "Notes for phase '{}' under {} updated.".format(
             phase_name,
             goal_name,
         )
-        click.echo(msg)
+        ui.success(msg)
 
 
 @goal.command(
@@ -297,7 +297,7 @@ def goal_wizard(goals: List[GoalArea]) -> None:
     goal_name = click.prompt("Goal name").strip()
     if find_goal(goals, goal_name):
         logger.error("Goal already exists during wizard: %s", goal_name)
-        click.echo("[red]Goal already exists.")
+        ui.error("Goal already exists.")
         return
     phase_name = click.prompt("First phase name").strip()
     micro_name = click.prompt("First micro-habit name").strip()
@@ -315,10 +315,10 @@ def goal_wizard(goals: List[GoalArea]) -> None:
     )
 
     msg = (
-        f"[green]Created goal '{goal_name}' "
+        f"Created goal '{goal_name}' "
         f"with phase '{phase_name}' and micro '{micro_name}'."
     )
-    click.echo(msg)
+    ui.success(msg)
 
 
 goal_cmd = goal

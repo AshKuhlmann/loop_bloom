@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 
 import click
 
-from loopbloom.cli import with_goals
+from loopbloom.cli import ui, with_goals
 from loopbloom.cli.interactive import choose_from
 from loopbloom.cli.utils import find_goal, find_phase, goal_not_found
 from loopbloom.core.models import GoalArea, MicroGoal, Phase, Status
@@ -130,7 +130,7 @@ def micro_complete(
                 goal_name,
                 phase_name,
             )
-            click.echo(f"[red]Phase '{phase_name}' not found.")
+            ui.error(f"Phase '{phase_name}' not found.")
             return
         target_list = p.micro_goals
     else:
@@ -143,13 +143,13 @@ def micro_complete(
     if not mg:
         loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
         logger.error("Micro-habit not found: %s in %s", name, loc)
-        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+        ui.error(f"Micro-habit '{name}' not found in {loc}.")
         return
 
     # Update the status immediately so subsequent commands reflect the change.
     mg.status = Status.complete
     logger.info("Marked micro-habit %s complete", name)
-    click.echo(f"[green]Marked micro-habit '{name}' as complete.")
+    ui.success(f"Marked micro-habit '{name}' as complete.")
 
 
 @micro.command(name="cancel")
@@ -191,7 +191,7 @@ def micro_cancel(
                 goal_name,
                 phase_name,
             )
-            click.echo(f"[red]Phase '{phase_name}' not found.")
+            ui.error(f"Phase '{phase_name}' not found.")
             return
         target_list = p.micro_goals
     else:
@@ -203,13 +203,13 @@ def micro_cancel(
     if not mg:
         loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
         logger.error("Micro-habit not found for cancel: %s in %s", name, loc)
-        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+        ui.error(f"Micro-habit '{name}' not found in {loc}.")
         return
 
     # Cancel the habit but keep its check-in history for future reference.
     mg.status = Status.cancelled
     logger.info("Cancelled micro-habit %s", name)
-    click.echo(f"[green]Cancelled micro-habit '{name}'.")
+    ui.success(f"Cancelled micro-habit '{name}'.")
 
 
 @micro.command(name="add")
@@ -246,7 +246,7 @@ def micro_add(
         names = [g.name for g in goals]
         if not names:
             logger.error("No goals available for micro add")
-            click.echo("[red]No goals – use `loopbloom goal add`.")
+            ui.error("No goals – use `loopbloom goal add`.")
             raise click.Abort()
         click.echo("Select goal for new micro-habit:")
         logger.info("Prompting for goal selection for micro add")
@@ -269,7 +269,7 @@ def micro_add(
         target_phase = Phase(name=phase_name.strip())
         g.phases.append(target_phase)
         logger.info("Created phase %s under %s", phase_name, goal_name)
-        click.echo(f"[yellow]Created phase '{phase_name}' under goal '{goal_name}'.")
+        ui.warn(f"Created phase '{phase_name}' under goal '{goal_name}'.")
     elif target_phase is not None:
         target_phase = find_phase(g, target_phase.name) or target_phase
 
@@ -280,15 +280,10 @@ def micro_add(
 
     if target_phase is None:
         g.micro_goals.append(MicroGoal(name=name))
-        click.echo(f"[green]Added micro-habit '{name}' to goal '{goal_name}'")
+        ui.success(f"Added micro-habit '{name}' to goal '{goal_name}'")
     else:
         target_phase.micro_goals.append(MicroGoal(name=name))
-        click.echo(
-            (
-                f"[green]Added micro-habit '{name}' to {goal_name}/"
-                f"{target_phase.name}"
-            )
-        )
+        ui.success(f"Added micro-habit '{name}' to {goal_name}/{target_phase.name}")
 
     logger.info("Added micro-habit %s", name)
 
@@ -325,7 +320,7 @@ def micro_rm(
         return  # pragma: no cover
 
     if phase_name and not find_phase(g, phase_name):
-        click.echo(f"[red]Phase '{phase_name}' not found.")
+        ui.error(f"Phase '{phase_name}' not found.")
         return
 
     result = _get_or_select_micro_goal(
@@ -336,7 +331,7 @@ def micro_rm(
     )
     if not result:
         loc = f"phase '{phase_name}'" if phase_name else f"goal '{goal_name}'"
-        click.echo(f"[red]Micro-habit '{name}' not found in {loc}.")
+        ui.error(f"Micro-habit '{name}' not found in {loc}.")
         return
     p, mg = result
 
@@ -356,12 +351,12 @@ def micro_rm(
         None,
     )
     if mg_actual is None:
-        click.echo(f"[red]Micro-habit '{mg.name}' not found in {goal_name}.")
+        ui.error(f"Micro-habit '{mg.name}' not found in {goal_name}.")
         return
 
     target_list.remove(mg_actual)
     logger.info("Deleted micro-habit %s", mg.name)
-    click.echo(f"[green]Deleted micro-habit:[/] {mg.name}")
+    ui.success(f"Deleted micro-habit: {mg.name}")
 
 
 micro_cmd = micro

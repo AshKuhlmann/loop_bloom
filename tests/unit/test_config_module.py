@@ -63,4 +63,4 @@ def test_cli_get_missing_key(tmp_path, monkeypatch) -> None:
 
     runner = CliRunner()
     result = runner.invoke(cli_cfg._get, ["nonexistent.key"])
-    assert "[red]Key not found." in result.output
+    assert "Key not found." in result.output

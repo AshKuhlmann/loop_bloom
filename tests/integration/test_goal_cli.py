@@ -118,7 +118,7 @@ def test_phase_add_missing_goal(tmp_path) -> None:
         ["goal", "phase", "add", "Ghost", "Base"],
         env=env,
     )
-    assert "[red]Goal not found" in res.output
+    assert "Goal not found" in res.output
 
 
 def test_phase_rm(tmp_path) -> None:

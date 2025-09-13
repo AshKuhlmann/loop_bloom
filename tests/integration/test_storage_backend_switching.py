@@ -19,7 +19,7 @@ def _run_common_workflow(runner, data_path, backend):
     # Configure storage backend (this will use the cli initialized with env vars)
     result = runner.invoke(cli, ["config", "set", "storage", backend])
     assert result.exit_code == 0
-    assert "[green]Saved." in result.output
+    assert "Saved." in result.output
 
     # Set data path for the current backend
     result = runner.invoke(
@@ -36,11 +36,11 @@ def _run_common_workflow(runner, data_path, backend):
     # Workflow steps
     result = runner.invoke(cli, ["goal", "add", "My Goal"])
     assert result.exit_code == 0
-    assert "[green]Added goal:[/] My Goal" in result.output
+    assert "Added goal: My Goal" in result.output
 
     result = runner.invoke(cli, ["micro", "add", "My Micro", "--goal", "My Goal"])
     assert result.exit_code == 0
-    assert "[green]Added micro-habit 'My Micro' to goal 'My Goal'" in result.output
+    assert "Added micro-habit 'My Micro' to goal 'My Goal'" in result.output
 
     result = runner.invoke(cli, ["checkin", "My Goal", "--success"])
     assert result.exit_code == 0
