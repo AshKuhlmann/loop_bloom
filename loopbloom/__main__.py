@@ -11,13 +11,8 @@ import pkgutil
 from typing import TYPE_CHECKING
 
 import click
-try:  # Optional pretty help; falls back gracefully if unavailable
-    import rich_click as _rich_click  # type: ignore
-except Exception:  # pragma: no cover - optional dependency
-    _rich_click = None
 
 from loopbloom import cli as cli_package
-from loopbloom.cli import ui
 from loopbloom.core import config as cfg
 from loopbloom.logging import setup_logging
 from loopbloom.storage.base import Storage
@@ -63,23 +58,14 @@ def register_commands() -> None:
                     cli.add_command(cmd_obj)
 
 
-@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+@click.group()
 @click.option("--debug", is_flag=True, help="Enable debug mode with verbose logging.")
 @click.option(
     "--dry-run", is_flag=True, help="Simulate commands without saving changes."
 )
-@click.option(
-    "--no-color",
-    "--plain",
-    "no_color",
-    is_flag=True,
-    help="Disable colored/styled output.",
-)
 @click.pass_context
-def cli(ctx: click.Context, debug: bool, dry_run: bool, no_color: bool) -> None:
+def cli(ctx: click.Context, debug: bool, dry_run: bool) -> None:
     """LoopBloom – tiny habits, big momentum."""
-    # Configure UI before commands print anything.
-    ui.configure(no_color=no_color)
     register_commands()
     setup_logging(level=logging.DEBUG if debug else logging.INFO)
     if debug:

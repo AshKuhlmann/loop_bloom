@@ -12,7 +12,6 @@ import yaml
 
 from loopbloom.constants import COPING_DIR
 from loopbloom.core.coping import PlanRepository, run_plan
-from loopbloom.cli import ui
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ def _run(plan_id: str) -> None:
     plan = PlanRepository.get(plan_id)
     if not plan:
         logger.error("Plan not found: %s", plan_id)
-        ui.error("Plan not found. Use `loopbloom cope list`.")
+        click.echo("[red]Plan not found. Use `loopbloom cope list`.")
         return
     logger.info("Running plan %s", plan_id)
     click.echo(f"[cyan]{plan.title}[/cyan]")
@@ -82,10 +81,10 @@ def _new() -> None:
             message = click.prompt("Message text").strip()
             steps.append({"message": message})
         else:
-            ui.warn("Use 'p', 'm', or 'q'.")
+            click.echo("Use 'p', 'm', or 'q'.")
     if not steps:
         logger.error("No steps defined for new plan")
-        ui.error("No steps defined; aborting.")
+        click.echo("[red]No steps defined; aborting.")
         return
     content = {"id": plan_id, "title": title, "steps": steps}
     path = COPING_DIR / f"{plan_id}.yml"
@@ -94,7 +93,7 @@ def _new() -> None:
     # Show full path so users know where the YAML file lives
     # and can edit it manually if desired.
     logger.info("Created plan %s", path)
-    ui.success(f"Created plan: {path}")
+    click.echo(f"[green]Created plan:[/] {path}")
 
 
 cope_cmd = cope

@@ -3,14 +3,13 @@ import os
 from pathlib import Path
 
 import click
-
-from loopbloom.cli import ui
+from rich.console import Console
 
 from loopbloom.core import config as cfg
 from loopbloom.storage.json_store import DEFAULT_PATH as JSON_DEFAULT_PATH
 from loopbloom.storage.sqlite_store import DEFAULT_PATH as SQLITE_DEFAULT_PATH
 
-console = ui.console
+console = Console()
 
 
 @click.command(name="debug-state", help="Dump raw JSON goal state.")
@@ -27,7 +26,7 @@ def debug_state() -> None:
         path = os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or str(JSON_DEFAULT_PATH)
     data_file = Path(path)
     if not data_file.exists():
-        ui.warn("Goals file not found.")
+        console.print("[yellow]Goals file not found.[/yellow]")
         return
     with open(data_file, "r") as f:
         state = json.load(f)
