@@ -1,5 +1,8 @@
-Before finalizing any pull request, run:
-    pip install poetry
-    poetry install
-    ./scripts/pre-commit
-If any command fails, fix the issues and rerun.
+Requirement: The pre-commit script must succeed before opening a pull request.
+
+Quick checklist before a PR:
+- Install tooling: `pip install poetry`
+- Install deps: `poetry install`
+- Run checks: `./scripts/pre-commit`
+
+Only open a PR once `./scripts/pre-commit` passes end-to-end. If any step fails, fix the issues and rerun until green.

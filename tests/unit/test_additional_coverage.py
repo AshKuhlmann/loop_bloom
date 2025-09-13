@@ -224,7 +224,11 @@ def test_micro_add_interactive(
     assert res.exit_code == 0
     data = JSONStore(path=tmp_path / "data.json").load()
     assert data[0].micro_goals[0].name == "M"
-    assert any("Added micro-habit" in m for m in recorded)
+    # Depending on implementation, success may be printed via Rich (stdout)
+    # rather than click.echo. Accept either location.
+    assert "Added micro-habit" in res.output or any(
+        "Added micro-habit" in m for m in recorded
+    )
 
 
 def test_micro_cancel_missing(

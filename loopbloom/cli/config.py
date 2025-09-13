@@ -12,6 +12,7 @@ from typing import Any, cast
 
 import click
 
+from loopbloom.cli import ui
 from loopbloom.core import config as cfg
 from loopbloom.storage.base import Storage
 
@@ -52,8 +53,8 @@ def _get(key: str) -> None:
         val = val.get(part) if isinstance(val, dict) else None
     if val is None:
         logger.error("Config key not found: %s", key)
-        click.echo("[red]Key not found.")
-        click.echo("Run 'loopbloom config view' to inspect available keys.")
+        ui.error("Key not found.")
+        ui.info("Run 'loopbloom config view' to inspect available keys.")
     else:
         logger.info("Config get %s -> %s", key, val)
         click.echo(val)
@@ -92,14 +93,14 @@ def _set(key: str, value: str) -> None:
     if key == "advance.strategy":
         lower = str(cast).lower()
         if lower not in ("ratio", "streak"):
-            click.echo("[red]Invalid strategy. Use 'ratio' or 'streak'.")
+            ui.error("Invalid strategy. Use 'ratio' or 'streak'.")
             return
         cast = lower
     # Assign the converted value and persist.
     d[parts[-1]] = cast
     cfg.save(conf)
     logger.info("Config set %s", key)
-    click.echo("[green]Saved.")
+    ui.success("Saved.")
 
 
 @config.command(name="reset", help="Reset all user data and goals.")
@@ -111,7 +112,7 @@ def reset(ctx: click.Context, yes: bool) -> None:
         "This will delete all your LoopBloom data and goals. Are you sure?",
         default=False,
     ):
-        click.echo("[yellow]Reset cancelled.[/yellow]")
+        ui.warn("Reset cancelled.")
         return
 
     store: Storage = ctx.obj.store
@@ -129,11 +130,11 @@ def reset(ctx: click.Context, yes: bool) -> None:
                 import shutil
 
                 shutil.rmtree(data_path)
-            click.echo(f"[green]Successfully deleted data at: {data_path}[/green]")
+            ui.success(f"Successfully deleted data at: {data_path}")
         else:
-            click.echo("[yellow]No data found to reset.[/yellow]")
+            ui.warn("No data found to reset.")
     except Exception as e:
-        click.echo(f"[red]Error resetting data: {e}[/red]")
+        ui.error(f"Error resetting data: {e}")
         logger.error(f"Error resetting data: {e}")
 
 

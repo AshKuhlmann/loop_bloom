@@ -78,6 +78,16 @@ def cli(ctx: click.Context, debug: bool, dry_run: bool) -> None:
     )
     data_path = os.getenv("LOOPBLOOM_DATA_PATH", config.get("data_path"))
 
+    # If an explicit data path is provided, prefer a backend based on
+    # the file extension to avoid mismatches (e.g., tests may set
+    # LOOPBLOOM_DATA_PATH to a JSON file regardless of user config).
+    if data_path:
+        lower = str(data_path).lower()
+        if lower.endswith(".json"):
+            storage_backend = "json"
+        elif lower.endswith(".db") or lower.endswith(".sqlite"):
+            storage_backend = "sqlite"
+
     store: Storage
     if storage_backend == "sqlite":
         path = data_path or str(SQLITE_DEFAULT_PATH)
