@@ -1,35 +1,11 @@
 #!/bin/sh
 # Pre-commit helper mirroring the CI workflow. Fails if any step does not pass.
-#
-# Notes:
-# - Runs all tools inside the Poetry virtualenv.
-# - Executes tests in chunks and combines coverage to avoid flaky exits.
-# - Validates that the package is installable inside the same venv.
+set -e
 
-set -euo pipefail
-
-if ! command -v poetry >/dev/null 2>&1; then
-  echo "Poetry is required. Install from https://python-poetry.org/docs/#installation" >&2
-  exit 2
-fi
-
-# Formatters and linters
+# Run formatters and linters using Poetry
 poetry run black --check .
 poetry run ruff check .
 poetry run mypy loopbloom
-
-# Clean previous coverage artifacts
-rm -f .coverage .coverage.* >/dev/null 2>&1 || true
-
-# Run tests in chunks and aggregate coverage
-poetry run pytest -q tests/unit --cov=loopbloom --cov-report=
-poetry run pytest -q tests/integration --cov=loopbloom --cov-append --cov-report=
-poetry run pytest -q tests/test_docs_cli_consistency.py tests/test_python_version_policy.py \
-  --cov=loopbloom --cov-append --cov-report=
-
-# Combine and enforce coverage threshold
-poetry run python -m coverage combine
-poetry run python -m coverage report --fail-under=80
-
-# Ensure the package can be installed (in the Poetry venv)
-poetry run python -m pip install .
+poetry run pytest --cov=loopbloom --cov-fail-under=80 -q
+# Ensure the package can be installed
+python -m pip install .
