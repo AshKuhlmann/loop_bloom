@@ -31,6 +31,22 @@ def _make_console() -> Console:
 console: Console = _make_console()
 
 
+def configure(*, no_color: Optional[bool] = None) -> None:
+    """Reconfigure the global console.
+
+    Args:
+        no_color: If provided, force-disable color regardless of TTY/NO_COLOR.
+
+    This lets the top-level CLI pass a `--no-color/--plain` flag to ensure
+    deterministic output during tests or when users prefer plain text.
+    """
+    global console
+    if no_color is None:
+        console = _make_console()
+    else:
+        console = Console(no_color=bool(no_color))
+
+
 def _print(msg: str) -> None:
     """Internal print that respects console settings."""
     console.print(msg)

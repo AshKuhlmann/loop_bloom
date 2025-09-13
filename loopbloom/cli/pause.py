@@ -4,6 +4,7 @@ import click
 
 from loopbloom.core import config as cfg
 from loopbloom.services.datetime import get_current_datetime
+from loopbloom.cli import ui
 
 _DEF_HELP = "Pause notifications globally or for a specific goal."
 
@@ -42,10 +43,10 @@ def pause(goal_name: str | None, duration: str) -> None:
         pauses = conf.get("goal_pauses", {})
         pauses[goal_name] = until
         conf["goal_pauses"] = pauses
-        click.echo(f"[green]Paused '{goal_name}' until {until}.")
+        ui.success(f"Paused '{goal_name}' until {until}.")
     else:
         conf["pause_until"] = until
-        click.echo(f"[green]Paused all notifications until {until}.")
+        ui.success(f"Paused all notifications until {until}.")
     cfg.save(conf)
 
 
