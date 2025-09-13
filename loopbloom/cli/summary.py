@@ -12,12 +12,11 @@ from datetime import timedelta
 from typing import List
 
 import click
-from rich.console import Group
+from rich.console import Console, Group
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
 from loopbloom.cli import with_goals
-from loopbloom.cli import ui
 from loopbloom.cli.utils import goal_not_found
 from loopbloom.constants import WINDOW_DEFAULT
 from loopbloom.core import config as cfg
@@ -25,7 +24,7 @@ from loopbloom.core.models import GoalArea
 from loopbloom.core.progression import should_advance
 from loopbloom.services.datetime import get_current_datetime
 
-console = ui.console
+console = Console()
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +110,7 @@ def _detail_view(goal_name: str, goals: List[GoalArea]) -> None:
 
     if mg is None:
         logger.info("No active micro-goal for %s", goal_name)
-        ui.warn("No active micro-goal.")
+        click.echo("[yellow]No active micro-goal.")
         return
     successes = sum(ci.success for ci in mg.checkins[-window:])
     suggest = should_advance(mg)
