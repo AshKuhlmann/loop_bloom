@@ -15,19 +15,16 @@ console = ui.console
 
 @click.command(name="debug-state", help="Dump raw JSON goal state.")
 def debug_state() -> None:
-    """Print the contents of the current goals file."""
+    """Print the contents of the current goals file or SQLite payload."""
     config = cfg.load()
     cfg_path = str(config.get("data_path") or "")
+
     # Determine path precedence:
     # 1) env (sqlite-specific or generic), 2) config, 3) defaults
-    path = (
-        os.getenv("LOOPBLOOM_SQLITE_PATH")
-        or os.getenv("LOOPBLOOM_DATA_PATH")
-        or cfg_path
-        or str(JSON_DEFAULT_PATH)
-    )
+    path = os.getenv("LOOPBLOOM_SQLITE_PATH") or os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or ""
+
+    # Decide backend by file extension when possible, otherwise fall back to config
     lower = str(path).lower()
-    # Decide backend by file extension when possible, matching the CLI behavior
     if lower.endswith((".db", ".sqlite")):
         storage = "sqlite"
     elif lower.endswith(".json"):
@@ -36,8 +33,7 @@ def debug_state() -> None:
         storage = config.get("storage", "json")
 
     if storage == "sqlite":
-        path = path or str(SQLITE_DEFAULT_PATH)
-        db_path = Path(path)
+        db_path = Path(path or str(SQLITE_DEFAULT_PATH))
         if not db_path.exists():
             ui.warn("Goals database not found.")
             return
@@ -46,19 +42,17 @@ def debug_state() -> None:
                 cur = conn.cursor()
                 cur.execute("SELECT payload FROM raw_json LIMIT 1")
                 row = cur.fetchone()
+            payload = row[0] if row and row[0] else "[]"
         except Exception as exc:  # pragma: no cover - rare runtime failures
             ui.error(f"Failed to read SQLite payload: {exc}")
             return
-        payload = row[0] if row and row[0] else "[]"
         # Ensure pretty-printed JSON output; fall back to raw payload if parsing fails.
         try:
             console.print_json(payload)
         except Exception:
             console.print_json(json.dumps(json.loads(payload)))
-        return
     else:
-        path = path or str(JSON_DEFAULT_PATH)
-        data_file = Path(path)
+        data_file = Path(path or str(JSON_DEFAULT_PATH))
         if not data_file.exists():
             ui.warn("Goals file not found.")
             return

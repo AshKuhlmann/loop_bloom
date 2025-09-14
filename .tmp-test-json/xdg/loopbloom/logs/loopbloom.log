@@ -1,0 +1,35 @@
+2025-09-13 18:56:42,050 [INFO] loopbloom.cli.config: Viewing config
+2025-09-13 18:56:43,053 [INFO] loopbloom.cli.config: Config get advance.window -> 14
+2025-09-13 18:56:44,048 [INFO] loopbloom.cli.config: Config set notify
+2025-09-13 18:56:45,048 [INFO] loopbloom.cli.config: Config set advance.window
+2025-09-13 18:56:46,058 [INFO] loopbloom.cli.config: Config get advance.window -> 7
+2025-09-13 18:56:47,041 [INFO] loopbloom.cli.goal: Added goal Focus
+2025-09-13 18:57:02,318 [INFO] loopbloom.cli.goal: Added phase Morning under Focus
+2025-09-13 18:57:03,324 [INFO] loopbloom.cli.micro: Added micro-habit Pomodoro 1
+2025-09-13 18:57:04,323 [INFO] loopbloom.cli.goal: Added goal Exercise
+2025-09-13 18:57:05,319 [INFO] loopbloom.cli.micro: Added micro-habit Stretch 3 min
+2025-09-13 18:57:06,309 [INFO] loopbloom.cli.checkin: Checking in for Pomodoro 1
+2025-09-13 18:57:06,309 [INFO] loopbloom.cli.checkin: Pep talk: ✓ Awesome work—momentum is building.
+2025-09-13 18:57:07,324 [INFO] loopbloom.cli.checkin: Checking in for Stretch 3 min
+2025-09-13 18:57:07,325 [INFO] loopbloom.cli.checkin: Pep talk: ⚠️ Skipped today. Remember: one slip isn’t a slide. See you tomorrow!
+2025-09-13 18:57:13,309 [INFO] loopbloom.cli.journal: Adding journal entry for Focus
+2025-09-13 18:57:14,300 [INFO] loopbloom.cli.backup: Backing up /Users/shae/development/loop_bloom/.tmp-test-json/explore.json
+2025-09-13 18:57:14,300 [INFO] loopbloom.cli.backup: Copying to /Users/shae/development/loop_bloom/.tmp-test-json/xdg/loopbloom/backups/explore-backup-2025-09-13T18-57-14.json
+2025-09-13 18:57:14,301 [INFO] loopbloom.cli.backup: Backup saved to /Users/shae/development/loop_bloom/.tmp-test-json/xdg/loopbloom/backups/explore-backup-2025-09-13T18-57-14.json
+2025-09-13 18:57:16,297 [INFO] loopbloom.cli.export: Exporting data to .tmp-test-json/explore_export.json as json
+2025-09-13 18:57:16,299 [INFO] loopbloom.cli.export: JSON export complete
+2025-09-13 18:57:29,855 [INFO] loopbloom.cli.config: Config set storage
+2025-09-13 18:57:30,857 [INFO] loopbloom.cli.config: Config set data_path
+2025-09-13 18:57:31,861 [INFO] loopbloom.cli.config: Viewing config
+2025-09-13 18:57:32,861 [INFO] loopbloom.cli.goal: Added goal Diet
+2025-09-13 18:57:33,910 [INFO] loopbloom.cli.micro: Added micro-habit Log breakfast
+2025-09-13 18:57:34,960 [INFO] loopbloom.cli.checkin: Checking in for Log breakfast
+2025-09-13 18:57:34,961 [INFO] loopbloom.cli.checkin: Pep talk: ✓ Amazing! Tiny steps lead to big shifts. Keep it up!
+2025-09-13 18:57:39,021 [INFO] loopbloom.cli.export: Exporting data to .tmp-test-json/sqlite_export.csv as csv
+2025-09-13 18:57:39,024 [INFO] loopbloom.cli.export: CSV export complete
+2025-09-13 18:57:40,032 [INFO] loopbloom.cli.backup: Backing up /Users/shae/development/loop_bloom/.tmp-test-json/loopbloom.db
+2025-09-13 18:57:40,033 [INFO] loopbloom.cli.backup: Copying to /Users/shae/development/loop_bloom/.tmp-test-json/xdg/loopbloom/backups/loopbloom-backup-2025-09-13T18-57-40.db
+2025-09-13 18:57:40,033 [INFO] loopbloom.cli.backup: Backup saved to /Users/shae/development/loop_bloom/.tmp-test-json/xdg/loopbloom/backups/loopbloom-backup-2025-09-13T18-57-40.db
+2025-09-13 19:09:22,835 [INFO] loopbloom.cli.micro: Cancelled micro-habit Stretch 3 min
+2025-09-13 19:09:23,941 [INFO] loopbloom.cli.micro: Marked micro-habit Pomodoro 1 complete
+2025-09-13 19:09:26,190 [INFO] loopbloom.cli.goal: Deleted goal Exercise

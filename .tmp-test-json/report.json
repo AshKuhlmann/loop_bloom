@@ -1,0 +1,27 @@
+[
+  {
+    "id": "dded6a6c-cf7e-45f2-be7b-06b085f84e51",
+    "name": "Exercise",
+    "notes": null,
+    "phases": [],
+    "micro_goals": [
+      {
+        "id": "4c7be86c-b7b0-440e-8869-db93d039d5ee",
+        "name": "Walk 5 min",
+        "status": "active",
+        "created_at": "2025-09-14T01:52:31.049686",
+        "checkins": [
+          {
+            "date": "2025-09-13",
+            "success": true,
+            "note": "First walk",
+            "self_talk_generated": "\u2713 Logged! \ud83c\udf89 Your consistency is paying off\u2014great job showing up!"
+          }
+        ],
+        "advancement_window": null,
+        "advancement_threshold": null
+      }
+    ],
+    "created_at": "2025-09-14T01:52:29.983702"
+  }
+]

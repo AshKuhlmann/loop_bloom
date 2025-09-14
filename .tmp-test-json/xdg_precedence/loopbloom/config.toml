@@ -1,0 +1,12 @@
+storage = "json"
+data_path = ".tmp-test-json/ignored_by_env.json"
+notify = "terminal"
+pause_until = ""
+
+[advance]
+threshold = 0.8
+window = 14
+strategy = "ratio"
+streak_to_advance = 10
+
+[goal_pauses]

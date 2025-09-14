@@ -1,0 +1,60 @@
+[
+  {
+    "id": "f1a58fec-a6c2-41bf-8b18-df658414ef59",
+    "name": "Focus",
+    "notes": null,
+    "phases": [
+      {
+        "id": "44000b3f-40c0-425b-81a5-00e2b7a1ae34",
+        "name": "Morning",
+        "notes": null,
+        "micro_goals": [
+          {
+            "id": "5132c98f-49ea-44de-9703-7ad73309ec77",
+            "name": "Pomodoro 1",
+            "status": "active",
+            "created_at": "2025-09-14T01:57:03.322257",
+            "checkins": [
+              {
+                "date": "2025-09-13",
+                "success": true,
+                "note": "Focused 25 min",
+                "self_talk_generated": "\u2713 Awesome work\u2014momentum is building."
+              }
+            ],
+            "advancement_window": null,
+            "advancement_threshold": null
+          }
+        ],
+        "created_at": "2025-09-14T01:57:02.318672"
+      }
+    ],
+    "micro_goals": [],
+    "created_at": "2025-09-14T01:56:47.041097"
+  },
+  {
+    "id": "44012064-111c-460d-92d1-8989c3f0af88",
+    "name": "Exercise",
+    "notes": null,
+    "phases": [],
+    "micro_goals": [
+      {
+        "id": "6e4c421f-9fd2-4959-add6-5be00dac8d0b",
+        "name": "Stretch 3 min",
+        "status": "active",
+        "created_at": "2025-09-14T01:57:05.317014",
+        "checkins": [
+          {
+            "date": "2025-09-13",
+            "success": false,
+            "note": "Rest day",
+            "self_talk_generated": "\u26a0\ufe0f Skipped today. Remember: one slip isn\u2019t a slide. See you tomorrow!"
+          }
+        ],
+        "advancement_window": null,
+        "advancement_threshold": null
+      }
+    ],
+    "created_at": "2025-09-14T01:57:04.323023"
+  }
+]

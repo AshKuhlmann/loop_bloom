@@ -1,0 +1,27 @@
+[
+  {
+    "id": "b56235b0-8b71-4328-a630-09909371ed37",
+    "name": "My Goal",
+    "notes": null,
+    "phases": [],
+    "micro_goals": [
+      {
+        "id": "a9548f8b-82dc-41db-a2bf-48329c97f24d",
+        "name": "My Micro",
+        "status": "active",
+        "created_at": "2025-09-13T02:36:40.138023",
+        "checkins": [
+          {
+            "date": "2025-09-12",
+            "success": true,
+            "note": null,
+            "self_talk_generated": "\u2713 Amazing! Tiny steps lead to big shifts. Keep it up!"
+          }
+        ],
+        "advancement_window": null,
+        "advancement_threshold": null
+      }
+    ],
+    "created_at": "2025-09-13T02:36:40.135373"
+  }
+]
