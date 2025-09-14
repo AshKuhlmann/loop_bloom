@@ -1,5 +1,10 @@
 # User Feedback for LoopBloom CLI
 
+Note: This document captures historical feedback, some of which predates recent
+improvements. Installation, command names, and flags referenced below may have
+since been updated. Refer to the README, Tutorial, and User Guide for the
+canonical, up-to-date usage.
+
 ## Evaluation Results
 
 I performed a series of workflow simulations based on the `README.md` to evaluate the LoopBloom CLI.

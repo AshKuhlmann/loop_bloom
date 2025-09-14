@@ -57,7 +57,7 @@ Traditional trackers assume unlimited will-power and demand elaborate setups. **
 | **Smart Progression**   | ≥ 80 % over 14 days triggers *advance* prompt.                     | 
 | **Guided Coping**       | `cope` launches YAML Q\&A scripts for overwhelm.                   | 
 | **Gentle Banners**      | `summary` prints streaks, nudges, celebrations. Optional `--goal`. | 
-| **Tree View**           | `tree` shows your goals, phases, and micro-habits. |
+| **Tree View**           | `tree` shows your goals, phases, and micro-habits. Status glyphs mark active/complete/cancelled; add `--ascii` for ASCII-only. |
 | **Exports**             | \`export csv/json                                                  | 
 | **Pluggable Storage**   | JSON by default; SQLite plugin for power-users.                    | 
 | **Quality Gates**        | ≥ 80% coverage enforced; type checks and linting in CI.           | 
@@ -221,6 +221,16 @@ DATA & CONFIG
   loopbloom export --fmt csv|json --out progress.csv
   loopbloom config set key val | get key | view
 ```
+
+### Global Flags
+
+These flags work with any command and can be placed before the subcommand:
+
+- `--debug`   Enable verbose logging.
+- `--dry-run` Simulate without writing changes.
+- `--plain`/`--no-color` Disable colored output for stable logs.
+- `--data-path PATH` Use a specific data file for this session; the file
+  extension selects storage automatically (`.json` → JSON, `.db`/`.sqlite` → SQLite).
 
 <a id="config"></a>
 
