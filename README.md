@@ -101,6 +101,41 @@ poetry shell
 ```
 Once the environment is activated, you can run the CLI directly with the `loopbloom` command. Refer to `CONTRIBUTING.md` for more details.
 
+### Shell Completions
+
+Enable completions for faster CLI usage. Print the appropriate script and add it to your shell profile:
+
+- Bash (add to ~/.bashrc or ~/.bash_profile):
+
+  ```sh
+  eval "$(_LOOPBLOOM_COMPLETE=bash_source loopbloom)"
+  ```
+
+- Zsh (add to ~/.zshrc):
+
+  ```sh
+  eval "$(_LOOPBLOOM_COMPLETE=zsh_source loopbloom)"
+  ```
+
+- fish (add to ~/.config/fish/config.fish):
+
+  ```fish
+  eval (env _LOOPBLOOM_COMPLETE=fish_source loopbloom)
+  ```
+
+- PowerShell (pwsh):
+
+  ```powershell
+  $Env:_LOOPBLOOM_COMPLETE = 'powershell'; loopbloom | Out-String | Invoke-Expression; Remove-Item Env:_LOOPBLOOM_COMPLETE
+  ```
+
+You can also detect your shell or select it explicitly:
+
+```bash
+loopbloom completion            # auto-detect
+loopbloom completion zsh        # explicit
+```
+
 <a id="quick-start"></a>
 
 ## 4  Quick Start

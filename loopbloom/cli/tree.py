@@ -10,29 +10,35 @@ import click
 from rich.tree import Tree
 
 from loopbloom.cli import ui, with_goals
-from loopbloom.core.models import GoalArea
+from loopbloom.core.models import GoalArea, MicroGoal
 
 console = ui.console
 
 
 @click.command(name="tree", help="Show goal hierarchy as a tree.")
+@click.option("--ascii", "ascii_only", is_flag=True, help="Use ASCII-only symbols.")
 @with_goals
-def tree(goals: List[GoalArea]) -> None:
+def tree(goals: List[GoalArea], ascii_only: bool) -> None:
     """Display all goals, phases, and micro-habits in a tree view."""
     # Start with a single root node. The tree emoji helps users quickly locate
     # this view in their terminal history.
     root = Tree("\U0001f333 LoopBloom Goals")
+
+    def label_for(m: MicroGoal) -> str:
+        mark = ui.status_glyph(m.status, ascii_only=ascii_only)
+        return f"{mark} {m.name}"
+
     for g in goals:
         g_branch = root.add(g.name)
         # Show micro-habits grouped by phase to mirror the goal hierarchy.
         for ph in g.phases:
             p_branch = g_branch.add(f"[dim]Phase:[/] {ph.name}")
             for m in ph.micro_goals:
-                p_branch.add(m.name)
+                p_branch.add(label_for(m))
         # Also include any micro-habits that aren't part of a phase so nothing
         # is missed.
         for m in g.micro_goals:
-            g_branch.add(m.name)
+            g_branch.add(label_for(m))
     console.print(root)
 
 
