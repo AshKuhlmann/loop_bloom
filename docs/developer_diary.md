@@ -27,6 +27,13 @@ This entry captures a comprehensive, actionable improvement roadmap spanning arc
 - [ ] Normalize terminology: `--skip` and `--fail` aliases are fine; unify help text and examples for consistency.
 - [ ] In `tree`, annotate micro-habits with status glyphs (active ✓ / complete ✔ / cancelled ✖) and optionally counts (check-ins last N days).
 - [ ] Provide `--json` output for key commands (`goal list`, `summary`, `report`) to support scripting.
+- [ ] Support optional `--goal` for `goal phase add|rm` alongside positionals for consistency.
+- [ ] Add a global `--data-path` flag to override storage path without environment variables (ENV still supported).
+
+## Debugging & Ops
+
+- [ ] `debug-state` supports SQLite: detect backend and dump `raw_json.payload` JSON when using SQLite.
+- [ ] `backup` echoes resolved storage backend and data path to aid troubleshooting.
 
 ## Progression Engine
 
@@ -57,6 +64,14 @@ This entry captures a comprehensive, actionable improvement roadmap spanning arc
 - [ ] Add `pause status` and `pause clear [--goal]` commands for transparency and quick unpause.
 - [ ] Rate-limit or group notifications within a short time window to avoid spam if multiple commands run in a script.
 - [ ] Optional encryption or redaction for sensitive journal/pep-talk content echoed to terminal (user setting).
+- [ ] Suppress plyer/macOS stack traces (e.g., `pyobjus` ImportError) in non-debug runs; show concise terminal fallback.
+- [ ] Add README troubleshooting note for macOS: suggest `loopbloom config set notify terminal` if desktop notify fails.
+
+## Performance & Scaling
+
+- [ ] Stream CSV export rows directly to file (avoid building large in-memory lists).
+- [ ] Add report/summary filters: `--goal` pattern, `--limit N`, and `--since/--until` date ranges.
+- [ ] Consider caching recent-window aggregates to speed heavy datasets.
 
 ## Reporting & Visualization
 

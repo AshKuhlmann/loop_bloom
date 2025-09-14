@@ -245,6 +245,20 @@ When omitted by commands, the progression rule reads these values from
 
 Terminal banners by default; desktop via `plyer` (`loopbloom config set notify desktop`).
 
+### Troubleshooting: macOS Desktop Notifications
+
+On macOS, the optional `plyer` backend may rely on platform-specific bridges (e.g., `pyobjus`). If these are unavailable, LoopBloom will fall back to terminal notifications automatically. To explicitly avoid desktop integrations (useful on headless or minimal setups), set the notify mode to terminal:
+
+```bash
+loopbloom config set notify terminal
+```
+
+Switch back any time with:
+
+```bash
+loopbloom config set notify desktop
+```
+
 <a id="export"></a>
 
 ## 12  Data Export
