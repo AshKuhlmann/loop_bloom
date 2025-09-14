@@ -13,6 +13,8 @@ from typing import Optional
 
 from rich.console import Console
 
+from loopbloom.core.models import Status
+
 
 def _make_console() -> Console:
     """Return a configured Rich Console.
@@ -76,3 +78,15 @@ def header(text: str, *, icon: Optional[str] = None) -> None:
     """Print a bold section header optionally prefixed by an icon."""
     prefix = f"{icon} " if icon else ""
     _print(f"[bold]{prefix}{text}[/bold]")
+
+
+def status_glyph(status: Status, *, ascii_only: bool = False) -> str:
+    """Return a glyph for a micro-habit status with optional ASCII fallback.
+
+    - active: ✓ (or * in ASCII)
+    - complete: ✔ (or v in ASCII)
+    - cancelled: ✖ (or x in ASCII)
+    """
+    if ascii_only:
+        return {Status.active: "*", Status.complete: "v", Status.cancelled: "x"}[status]
+    return {Status.active: "✓", Status.complete: "✔", Status.cancelled: "✖"}[status]
