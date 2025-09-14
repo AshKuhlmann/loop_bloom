@@ -1,6 +1,0 @@
-2025-09-13 19:09:03,073 [INFO] loopbloom.cli.config: Config set storage
-2025-09-13 19:09:04,188 [INFO] loopbloom.cli.config: Config set advance.window
-2025-09-13 19:09:07,600 [INFO] loopbloom.cli.export: Exporting data to .tmp-test-json/heavy_sqlite_export.csv as csv
-2025-09-13 19:09:07,665 [INFO] loopbloom.cli.export: CSV export complete
-2025-09-13 19:09:14,566 [INFO] loopbloom.cli.cope: Listing coping plans
-2025-09-13 19:09:15,635 [INFO] loopbloom.cli.cope: Running plan overwhelmed
