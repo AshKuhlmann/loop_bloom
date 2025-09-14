@@ -141,18 +141,25 @@ def phase() -> None:
 @click.argument("goal_name", required=False)
 @click.argument("phase_name")
 @click.option("--notes", default="", help="Optional notes for the phase.")
+@click.option(
+    "--goal", "goal_name_opt", default=None, help="Goal to add this phase under."
+)
 @with_goals
 def phase_add(
     goal_name: Optional[str],
     phase_name: str,
     notes: str,
     goals: List[GoalArea],
+    goal_name_opt: Optional[str] = None,
 ) -> None:
     """Add a new phase under a goal.
 
     If ``goal_name`` is omitted, the command interactively prompts you to
     select the goal.
     """
+    # Prefer explicit flag over positional when both are provided.
+    if goal_name_opt:
+        goal_name = goal_name_opt
     # Prompt for the goal when not provided on the command line.
     if goal_name is None:
         names = [g.name for g in goals]
@@ -196,18 +203,25 @@ def phase_add(
 @click.argument("goal_name", required=False)
 @click.argument("phase_name", required=False)
 @click.option("--yes", is_flag=True, help="Skip confirmation prompt.")
+@click.option(
+    "--goal", "goal_name_opt", default=None, help="Goal containing this phase."
+)
 @with_goals
 def phase_rm(
     goal_name: Optional[str],
     phase_name: Optional[str],
     yes: bool,
     goals: List[GoalArea],
+    goal_name_opt: Optional[str] = None,
 ) -> None:
     """Remove a phase from a goal.
 
     If ``goal_name`` or ``phase_name`` is omitted, the command
     interactively asks you to choose the missing value.
     """
+    # Prefer explicit flag over positional when both are provided.
+    if goal_name_opt:
+        goal_name = goal_name_opt
     # Ask which goal to operate on if not provided.
     if goal_name is None:
         names = [g.name for g in goals]

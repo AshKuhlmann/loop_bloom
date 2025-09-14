@@ -71,8 +71,20 @@ def register_commands() -> None:
     is_flag=True,
     help="Disable colored/styled output.",
 )
+@click.option(
+    "--data-path",
+    "data_path_opt",
+    default=None,
+    help="Override data file path for this session.",
+)
 @click.pass_context
-def cli(ctx: click.Context, debug: bool, dry_run: bool, no_color: bool) -> None:
+def cli(
+    ctx: click.Context,
+    debug: bool,
+    dry_run: bool,
+    no_color: bool,
+    data_path_opt: str | None,
+) -> None:
     """LoopBloom – tiny habits, big momentum."""
     # Configure UI before commands print anything.
     ui.configure(no_color=no_color)
@@ -86,7 +98,10 @@ def cli(ctx: click.Context, debug: bool, dry_run: bool, no_color: bool) -> None:
     storage_backend = os.getenv(
         "LOOPBLOOM_STORAGE_BACKEND", config.get("storage", "json")
     )
-    data_path = os.getenv("LOOPBLOOM_DATA_PATH", config.get("data_path"))
+    # Precedence: CLI flag > env var > config
+    data_path = data_path_opt or os.getenv(
+        "LOOPBLOOM_DATA_PATH", config.get("data_path")
+    )
 
     # If an explicit data path is provided, prefer a backend based on
     # the file extension to avoid mismatches (e.g., tests may set

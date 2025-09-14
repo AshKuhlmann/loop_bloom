@@ -8,7 +8,6 @@ structure.
 import csv
 import json
 import logging
-from typing import List
 
 import click
 
@@ -50,35 +49,38 @@ def export(ctx: click.Context, fmt: str, out_path: str) -> None:
 
     # CSV output is a flat table – one row per check-in – to make importing the
     # data into spreadsheets straightforward. The first row acts as the header.
-    rows: List[List[str]] = [
-        [
-            "date",
-            "goal",
-            "phase",
-            "micro",
-            "success",
-            "note",
-        ]
-    ]
-    for g in goals:
-        for ph in g.phases:
-            for m in ph.micro_goals:
+    with open(out_path, "w", newline="", encoding="utf-8") as fp:
+        writer = csv.writer(fp)
+        # Header first to enable streaming
+        writer.writerow(["date", "goal", "phase", "micro", "success", "note"])
+        for g in goals:
+            # Phases and their micro-habits
+            for ph in g.phases:
+                for m in ph.micro_goals:
+                    for ci in m.checkins:
+                        writer.writerow(
+                            [
+                                str(ci.date),
+                                g.name,
+                                ph.name,
+                                m.name,
+                                "1" if ci.success else "0",
+                                (ci.note or "").replace("\n", " "),
+                            ]
+                        )
+            # Micro-habits directly under the goal (no phase)
+            for m in g.micro_goals:
                 for ci in m.checkins:
-                    # Collapse the hierarchical objects into a row so external
-                    # tools don't need to understand our data model.
-                    rows.append(
+                    writer.writerow(
                         [
                             str(ci.date),
                             g.name,
-                            ph.name,
+                            "",
                             m.name,
                             "1" if ci.success else "0",
                             (ci.note or "").replace("\n", " "),
                         ]
                     )
-    with open(out_path, "w", newline="", encoding="utf-8") as fp:
-        writer = csv.writer(fp)
-        writer.writerows(rows)
     logger.info("CSV export complete")
     click.echo(f"[green]Exported CSV → {out_path}")
 

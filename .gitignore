@@ -6,3 +6,6 @@ tmp_cli/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+
+# Local reports/notes not meant for version control
+report.md
