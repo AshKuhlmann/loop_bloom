@@ -21,7 +21,12 @@ def debug_state() -> None:
 
     # Determine path precedence:
     # 1) env (sqlite-specific or generic), 2) config, 3) defaults
-    path = os.getenv("LOOPBLOOM_SQLITE_PATH") or os.getenv("LOOPBLOOM_DATA_PATH") or cfg_path or ""
+    path = (
+        os.getenv("LOOPBLOOM_SQLITE_PATH")
+        or os.getenv("LOOPBLOOM_DATA_PATH")
+        or cfg_path
+        or ""
+    )
 
     # Decide backend by file extension when possible, otherwise fall back to config
     lower = str(path).lower()

@@ -9,3 +9,6 @@ tmp_cli/
 
 # Local reports/notes not meant for version control
 report.md
+# Local temp data generated during dev/testing (should not be committed)
+.tmp-test-json/
+.tmp-x/
